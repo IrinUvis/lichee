@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "652954826772",
+    "project_id": "lichee-19548",
+    "storage_bucket": "lichee-19548.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652954826772:android:36f07d161b89ceeb738f01",
+        "android_client_info": {
+          "package_name": "pl.lichee.lichee"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652954826772-4t9i66gicrlpn6p1ehr7cvcfbse1p0np.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC76ukENXDdAJFFPvIBvqZ1U9zDWvtAW7Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652954826772-4t9i66gicrlpn6p1ehr7cvcfbse1p0np.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
