@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:lichee/screens/channel_screen.dart';
 import '../constants.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static String id = 'home_screen';
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final List<String> recommendationList = [
     "https://www.fivb.org/Vis2009/Images/GetImage.asmx?No=202004911&width=920&height=588&stretch=uniformtofill",
     "https://photoresources.wtatennis.com/photo-resources/2019/08/15/dbb59626-9254-4426-915e-57397b6d6635/tennis-origins-e1444901660593.jpg?width=1200&height=630",
@@ -61,15 +67,25 @@ class HomeScreen extends StatelessWidget {
                       items: recommendationList
                           .map((e) => ClipRRect(
                                 borderRadius: BorderRadius.circular(20.0),
-                                child: Stack(
-                                  fit: StackFit.expand,
-                                  children: [
-                                    Image.network(
-                                      e,
-                                      fit: BoxFit.cover,
-                                    ),
-                                    Center(child: Text('Text', style: kBannerTextStyle,)),
-                                  ],
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, ChannelScreen.id);
+                                  },
+                                  child: Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      Image.network(
+                                        e,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      Center(
+                                        child: Text(
+                                          'Text',
+                                          style: kBannerTextStyle,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ))
                           .toList(),
