@@ -17,6 +17,12 @@ class _HomeScreenState extends State<HomeScreen> {
     "https://images.chesscomfiles.com/uploads/v1/article/27319.746c2259.668x375o.c6cf8543e2d5@2x.png",
   ];
 
+  final List<String> channelNames = [
+    'Volleyball',
+    'Tennis',
+    'Chess',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(height: 20.0),
-                    Text(
+                    const Text(
                       'Promoted channels',
                       style: kBannerTextStyle,
                     ),
@@ -69,7 +75,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 borderRadius: BorderRadius.circular(20.0),
                                 child: InkWell(
                                   onTap: () {
-                                    Navigator.pushNamed(context, ChannelScreen.id);
+                                    // Navigator.pushNamed(context, ChannelScreen.id);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChannelScreen(
+                                            channelName: channelNames[
+                                                recommendationList.indexOf(e)]),
+                                      ),
+                                    );
                                   },
                                   child: Stack(
                                     fit: StackFit.expand,
@@ -80,7 +94,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       Center(
                                         child: Text(
-                                          'Text',
+                                          channelNames[
+                                              recommendationList.indexOf(e)],
                                           style: kBannerTextStyle,
                                         ),
                                       ),
