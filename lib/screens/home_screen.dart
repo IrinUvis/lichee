@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       MaterialPageRoute(
                                         builder: (context) => ChannelScreen(
                                             channelName: channelNames[
-                                                recommendationList.indexOf(e)]),
+                                                recommendationList.indexOf(e)], imageSource: recommendationList[recommendationList.indexOf(e)],),
                                       ),
                                     );
                                   },
