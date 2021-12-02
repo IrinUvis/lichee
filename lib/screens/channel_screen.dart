@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/components/details_table.dart';
 import 'package:lichee/constants.dart';
 
 import '../channel_constants.dart';
@@ -26,7 +27,31 @@ class _ChannelScreenState extends State<ChannelScreen> {
   Widget build(BuildContext context) {
     String description =
         'owner\'s description about sport and people they are looking for etc etc.';
+    List<TableRow> aboutRows = const [
+      TableRow(children: [
+        Icon(Icons.access_time_outlined),
+        Text('Created on 1.1.2020'),
+      ]),
+      TableRow(children: [
+        Icon(Icons.groups_rounded),
+        Text('100 members'),
+      ]),
+      TableRow(children: [
+        Icon(Icons.person),
+        Text('Created by: '),
+      ])
+    ];
 
+    List<TableRow> descriptionRows = [
+      TableRow(children: [
+        Icon(Icons.near_me),
+        Text('City, Country'),
+      ]),
+      TableRow(children: [
+        Icon(Icons.trending_up_outlined),
+        Text('Level'),
+      ]),
+    ];
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -48,17 +73,13 @@ class _ChannelScreenState extends State<ChannelScreen> {
             },
           ),
         ],
-        title: Text(
-          widget.channelName,
-          style: kAppBarTitleTextStyle,
-        ),
+        title: Text(widget.channelName, style: kAppBarTitleTextStyle),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: ListView(
-                // padding: EdgeInsets.symmetric(horizontal: 8.0),
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(5.0),
@@ -106,52 +127,22 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     onPressed: () {},
                     label: const Text('Join'),
                   ),
-                  SizedBox(height: 10.0),
+                  const SizedBox(height: 10.0),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Description',
-                          style: kBannerTextStyle,
-                        ),
+                        const Text('Description', style: kBannerTextStyle),
                         Container(
-                          padding: EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 16.0, right: 16.0, bottom: 0.0),
                           child: Text(description),
                         ),
-                        const Text(
-                          'About this channel',
-                          style: kBannerTextStyle,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[850],
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 30.0, vertical: 10.0),
-                            child: Table(
-                              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                              children: const [
-                                TableRow(children: [
-                                  Icon(Icons.access_time_outlined),
-                                  Text('Created on 1.1.2020'),
-                                ]),
-                                TableRow(children: [
-                                  Icon(Icons.groups_rounded),
-                                  Text('100 members'),
-                                ]),
-                                TableRow(children: [
-                                  Icon(Icons.person),
-                                  Text('Created by: '),
-                                ]),
-                              ],
-                            ),
-                          ),
-                        ),
+                        DetailsTable(rows: descriptionRows),
+                        const Text('About this channel',
+                            style: kBannerTextStyle),
+                        DetailsTable(rows: aboutRows),
                       ],
                     ),
                   ),
