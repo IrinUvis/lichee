@@ -16,10 +16,12 @@ class ChannelScreen extends StatefulWidget {
 }
 
 class _ChannelScreenState extends State<ChannelScreen> {
+  String? report;
+
   void handleTap(String value) {
     switch (value) {
       case 'Report':
-        break;
+        _reportDialog(context);
     }
   }
 
@@ -42,7 +44,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
       ])
     ];
 
-    List<TableRow> descriptionRows = [
+    List<TableRow> descriptionRows = const [
       TableRow(children: [
         Icon(Icons.near_me),
         Text('City, Country'),
@@ -52,6 +54,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
         Text('Level'),
       ]),
     ];
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -81,42 +84,38 @@ class _ChannelScreenState extends State<ChannelScreen> {
             Expanded(
               child: ListView(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(5.0),
-                    child: Stack(
-                      alignment: AlignmentDirectional.center,
-                      children: [
-                        Container(
-                          //hard coded for now
-                          height: 200.0,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(widget.imageSource),
-                            ),
+                  Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: [
+                      Container(
+                        //hard coded for now
+                        height: 200.0,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(widget.imageSource),
                           ),
                         ),
-                        Container(
-                          height: 200.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            gradient: LinearGradient(
-                              begin: FractionalOffset.topCenter,
-                              end: FractionalOffset.bottomCenter,
-                              colors: [
-                                Colors.grey.shade800.withOpacity(0.4),
-                                Colors.black,
-                              ],
-                              stops: const [0.0, 1.0],
-                            ),
+                      ),
+                      Container(
+                        height: 200.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          gradient: LinearGradient(
+                            begin: FractionalOffset.topCenter,
+                            end: FractionalOffset.bottomCenter,
+                            colors: [
+                              Colors.grey.shade800.withOpacity(0.4),
+                              Colors.black,
+                            ],
+                            stops: const [0.0, 1.0],
                           ),
                         ),
-                        Text(widget.channelName,
-                            style:
-                                kBannerTextStyle.copyWith(letterSpacing: 2.0)),
-                      ],
-                    ),
+                      ),
+                      Text(widget.channelName,
+                          style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+                    ],
                   ),
                   ElevatedButton.icon(
                     icon: const Icon(Icons.group),
@@ -152,6 +151,46 @@ class _ChannelScreenState extends State<ChannelScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _reportDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Report a channel'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                const Text('Tell us what\'s happened'),
+                TextField(
+                  onChanged: (value) {
+                    report = value;
+                  },
+                  autofocus: true,
+                  maxLines: null,
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel', style: kAlertDialogText),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Send', style: kAlertDialogText),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
