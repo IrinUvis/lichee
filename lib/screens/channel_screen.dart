@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/components/details_table.dart';
 import 'package:lichee/constants.dart';
-
 import '../channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
   static String id = 'channel_screen';
-  String channelName;
-  String imageSource;
+  final String channelName;
+  final String imageSource;
 
-  ChannelScreen({this.channelName = ' ', this.imageSource = ' '});
+  ChannelScreen({this.channelName = '', this.imageSource = ''});
 
   @override
   State<ChannelScreen> createState() => _ChannelScreenState();
@@ -17,6 +16,8 @@ class ChannelScreen extends StatefulWidget {
 
 class _ChannelScreenState extends State<ChannelScreen> {
   String? report;
+  bool isLogged = true;
+  bool hasBeenPressed = false;
 
   void handleTap(String value) {
     switch (value) {
@@ -118,13 +119,27 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     ],
                   ),
                   ElevatedButton.icon(
-                    icon: const Icon(Icons.group),
+                    icon: hasBeenPressed
+                        ? const Icon(Icons.check, color: Colors.pinkAccent)
+                        : const Icon(Icons.group),
                     style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.pinkAccent),
+                      backgroundColor: hasBeenPressed
+                          ? MaterialStateProperty.all<Color>(Colors.white)
+                          : MaterialStateProperty.all<Color>(Colors.pinkAccent),
                     ),
-                    onPressed: () {},
-                    label: const Text('Join'),
+                    onPressed: () {
+                      setState(() {
+                        isLogged
+                            ? hasBeenPressed = !hasBeenPressed
+                            : print('please log in');
+                      });
+                    },
+                    label: hasBeenPressed
+                        ? const Text(
+                            'Request sent',
+                            style: TextStyle(color: Colors.pinkAccent),
+                          )
+                        : const Text('Join'),
                   ),
                   const SizedBox(height: 10.0),
                   Padding(
@@ -171,6 +186,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   },
                   autofocus: true,
                   maxLines: null,
+                  decoration: kReportInputDecoration,
                 ),
               ],
             ),
