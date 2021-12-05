@@ -14,18 +14,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 60.0,
-        elevation: 0.0,
-        backgroundColor: const Color(0xFF1A1A1A),
-        title: const Center(
-          child: Text(
-            //ofc we should put logo here but for now...
-            'Lichee',
-            style: kLicheeTextStyle,
-          ),
-        ),
-      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -43,7 +31,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       child: const TextField(
-                        decoration: kSearchBarInputDecoration,
+                        decoration: kHomeSearchBarInputDecoration,
                       ),
                     ),
                     SizedBox(height: 20.0),
