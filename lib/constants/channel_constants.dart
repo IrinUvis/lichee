@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/constants/colors.dart';
 
 const kAppBarTitleTextStyle = TextStyle(
   fontSize: 20.0,
   color: Colors.white,
 );
 
-const kAlertDialogText = TextStyle(
+const kCancelAlertDialogText = TextStyle(
   fontSize: 18.0,
-  color: Colors.pinkAccent,
+  color: Colors.grey,
+  fontWeight: FontWeight.bold,
+);
+
+const kSendAlertDialogText = TextStyle(
+  fontSize: 18.0,
+  color: LicheeColors.primary,
   fontWeight: FontWeight.bold,
 );
 
 const kReportInputDecoration = InputDecoration(
   focusedBorder: UnderlineInputBorder(
-    borderSide: BorderSide(color: Colors.pinkAccent),
+    borderSide: BorderSide(color: LicheeColors.primary),
   ),
 );

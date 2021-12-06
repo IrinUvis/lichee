@@ -16,8 +16,8 @@ class CustomTheme with ChangeNotifier {
       brightness: Brightness.dark,
       splashColor: LicheeColors.splashColor,
       primaryColor: LicheeColors.primary,
-      backgroundColor: const Color(0xFF1A1A1A),
-      scaffoldBackgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: LicheeColors.backgroundColor,
+      scaffoldBackgroundColor: LicheeColors.backgroundColor,
     );
   }
 }
