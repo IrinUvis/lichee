@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/bloc/bloc.dart';
 import 'package:lichee/bloc/provider.dart';
-import 'package:lichee/screens/profile_screen.dart';
 import 'package:lichee/screens/registerScreen.dart';
-import 'package:lichee/screens/tabs_screen.dart';
 
 import '../constants.dart';
 
@@ -49,7 +47,8 @@ class LoginScreenState extends State<LoginScreen> {
           ),
           TextButton(
             onPressed: () {
-              navKey.currentState!.push(
+              Navigator.pushReplacement(
+                context,
                 MaterialPageRoute(
                   builder: (context) => RegisterScreen(),
                 ),
@@ -103,9 +102,9 @@ class LoginScreenState extends State<LoginScreen> {
       child: ElevatedButton(
         onPressed: () async {
           await bloc.login();
-          if (bloc.isLoggedIn)
-            navKey.currentState!.pushReplacement(
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+          if (bloc.isLoggedIn) {
+            Navigator.pop(context);
+          }
         },
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.pinkAccent),

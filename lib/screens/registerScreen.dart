@@ -85,10 +85,7 @@ class RegisterScreenState extends State<RegisterScreen> {
       child: ElevatedButton(
         onPressed: validFields
             ? () async {
-                if (await bloc.register())
-                  navKey.currentState!.pushReplacement(
-                      MaterialPageRoute(builder: (context) => ProfileScreen()));
-                ;
+                if (await bloc.register()) Navigator.pop(context);
               }
             : null,
         style: ButtonStyle(
