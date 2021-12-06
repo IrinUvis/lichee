@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/bloc/bloc.dart';
 import 'package:lichee/bloc/provider.dart';
-import 'package:lichee/screens/registerScreen.dart';
+import 'package:lichee/screens/register_screen.dart';
 
-import 'loginScreen.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
