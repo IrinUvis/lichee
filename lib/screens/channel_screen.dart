@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/components/details_table.dart';
+import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import '../constants/channel_constants.dart';
 
@@ -59,8 +60,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        foregroundColor: Colors.pinkAccent,
-        backgroundColor: const Color(0x221A1A1A),
+        foregroundColor: LicheeColors.primary,
+        backgroundColor: LicheeColors.appBarColor,
         elevation: 0.0,
         leading: null,
         actions: [
@@ -120,12 +121,12 @@ class _ChannelScreenState extends State<ChannelScreen> {
                   ),
                   ElevatedButton.icon(
                     icon: hasBeenPressed
-                        ? const Icon(Icons.check, color: Colors.pinkAccent)
+                        ? const Icon(Icons.check, color: LicheeColors.primary)
                         : const Icon(Icons.group),
                     style: ButtonStyle(
                       backgroundColor: hasBeenPressed
                           ? MaterialStateProperty.all<Color>(Colors.white)
-                          : MaterialStateProperty.all<Color>(Colors.pinkAccent),
+                          : MaterialStateProperty.all<Color>(LicheeColors.primary),
                     ),
                     onPressed: () {
                       setState(() {
@@ -137,7 +138,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     label: hasBeenPressed
                         ? const Text(
                             'Request sent',
-                            style: TextStyle(color: Colors.pinkAccent),
+                            style: TextStyle(color: LicheeColors.primary),
                           )
                         : const Text('Join'),
                   ),
@@ -193,13 +194,13 @@ class _ChannelScreenState extends State<ChannelScreen> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel', style: kAlertDialogText),
+              child: const Text('Cancel', style: kCancelAlertDialogText),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Send', style: kAlertDialogText),
+              child: const Text('Send', style: kSendAlertDialogText),
               onPressed: () {
                 Navigator.of(context).pop();
               },

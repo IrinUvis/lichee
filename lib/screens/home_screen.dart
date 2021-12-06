@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:lichee/constants/colors.dart';
 import 'package:lichee/screens/channel_screen.dart';
 import '../constants/constants.dart';
 
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         toolbarHeight: 60.0,
         elevation: 0.0,
-        backgroundColor: const Color(0xFF1A1A1A),
+        backgroundColor: LicheeColors.backgroundColor,
         title: const Center(
           child: Text(
             //ofc we should put logo here but for now...
