@@ -40,3 +40,8 @@ const kLicheeTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 30.0,
 );
+const kRegisterTextStyle = TextStyle(
+  color: Colors.pinkAccent,
+  fontWeight: FontWeight.bold,
+  fontSize: 14.0,
+);
