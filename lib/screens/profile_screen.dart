@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/bloc/bloc.dart';
+import 'package:lichee/bloc/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({Key? key}) : super(key: key);
-
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  @override
-  Widget build(BuildContext context) {
+class ProfileScreenState extends State<ProfileScreen> {
+  Bloc bloc = Bloc();
+
+  Widget build(context) {
+    bloc = Provider.of(context);
+    String email = bloc.email;
+    String uid = bloc.userCredential.user!.uid;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    double deviceWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      body: Center(
-        child: Text('Profile Screen'),
-      ),
+      body: SafeArea(
+          child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        height: deviceHeight,
+        width: deviceWidth,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [Text(email), Text(uid)]),
+      )),
     );
   }
 }
