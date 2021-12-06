@@ -29,35 +29,8 @@ class LoginScreenState extends State<LoginScreen> {
           buildTextFieldEmail(bloc, context),
           buildTextFieldPassword(bloc, context),
           buildLoginButton(bloc, context),
-          buildSignInFlatButton(context)
         ]),
       )),
-    );
-  }
-
-  Widget buildSignInFlatButton(context) {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Text(
-            'Do you need an account?',
-            style: TextStyle(
-              fontSize: 14,
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RegisterScreen(),
-                ),
-              );
-            },
-            child: Text('Register here!', style: kRegisterTextStyle),
-          ),
-        ],
-      ),
     );
   }
 
