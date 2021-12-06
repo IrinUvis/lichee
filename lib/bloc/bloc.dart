@@ -22,9 +22,12 @@ class Bloc extends Object with Validator {
 
   String get email => _email.value.toLowerCase().trim();
   String get password => _password.value;
-  bool get isLoggedIn => _loggedin.value;
+  dynamic get isLoggedIn => _loggedin.valueOrNull;
   late UserCredential userCredential;
-
+  Bloc();
+  Bloc.init() {
+    loggedin(false);
+  }
   login() async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance

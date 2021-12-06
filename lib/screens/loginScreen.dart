@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/bloc/bloc.dart';
 import 'package:lichee/bloc/provider.dart';
-import 'package:lichee/screens/profile_screen.dart';
 import 'package:lichee/screens/registerScreen.dart';
-import 'package:lichee/screens/tabs_screen.dart';
 
 import '../constants.dart';
 
@@ -31,34 +29,8 @@ class LoginScreenState extends State<LoginScreen> {
           buildTextFieldEmail(bloc, context),
           buildTextFieldPassword(bloc, context),
           buildLoginButton(bloc, context),
-          buildSignInFlatButton(context)
         ]),
       )),
-    );
-  }
-
-  Widget buildSignInFlatButton(context) {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          Text(
-            'Do you need an account?',
-            style: TextStyle(
-              fontSize: 14,
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              navKey.currentState!.push(
-                MaterialPageRoute(
-                  builder: (context) => RegisterScreen(),
-                ),
-              );
-            },
-            child: Text('Register here!', style: kRegisterTextStyle),
-          ),
-        ],
-      ),
     );
   }
 
@@ -103,9 +75,9 @@ class LoginScreenState extends State<LoginScreen> {
       child: ElevatedButton(
         onPressed: () async {
           await bloc.login();
-          if (bloc.isLoggedIn)
-            navKey.currentState!.pushReplacement(
-                MaterialPageRoute(builder: (context) => ProfileScreen()));
+          if (bloc.isLoggedIn) {
+            Navigator.pop(context);
+          }
         },
         style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all(Colors.pinkAccent),
