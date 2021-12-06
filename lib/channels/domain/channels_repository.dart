@@ -6,26 +6,79 @@ class ChannelRepository {
       FirebaseFirestore.instance.collection('channels');
 
   Future<Channel> addChannel({required Channel channel}) async {
-    final newChannel = await _channels
-        .doc(channel.channelId)
-        .set({
-          'channelName': channel.channelName,
-          'channelId': channel.channelId,
-          'channelImageURL': channel.channelImageURL,
-          'city': channel.city,
-          'createdOn': channel.createdOn,
-          'description': channel.description,
-          'userIds': channel.userIds,
-        })
-        .then((value) => print("new channel added!!!"))
-        .catchError((error) => print("failed!!!"));
-
+    final newChannel = await _channels.doc(channel.channelId).set({
+      'channelName': channel.channelName,
+      'channelId': channel.channelId,
+      'channelImageURL': channel.channelImageURL,
+      'city': channel.city,
+      'createdOn': channel.createdOn,
+      'description': channel.description,
+      'userIds': channel.userIds,
+      'ownerId': channel.ownerId,
+    });
     return getById(id: channel.channelId!);
   }
 
   Future<Channel> getById({required String id}) async {
     final channelReference = await _channels.doc(id).get();
     return _toChannel(id, channelReference.data() as Map<String, dynamic>);
+  }
+
+  Future<List<Channel>> getAllChannels() async {
+    final channelReference = await _channels.get();
+    return channelReference.docs
+        .map((channel) =>
+            _toChannel((channel.id), channel.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Channel>> getByName({required String name}) async {
+    final channelReference =
+        await _channels.where('channelName', isEqualTo: name).get();
+    return channelReference.docs
+        .map((channel) =>
+            _toChannel((channel.id), channel.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Channel>> getByCity({required String city}) async {
+    final channelReference =
+        await _channels.where('city', isEqualTo: city).get();
+    return channelReference.docs
+        .map((channel) =>
+            _toChannel((channel.id), channel.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Channel>> getByOwner({required String owner}) async {
+    final channelReference =
+        await _channels.where('ownerId', isEqualTo: owner).get();
+    return channelReference.docs
+        .map((channel) =>
+            _toChannel((channel.id), channel.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Channel>> getPromoted() async {
+    final channelReference =
+    await _channels.where('isPromoted', isEqualTo: true).get();
+    return channelReference.docs
+        .map((channel) =>
+        _toChannel((channel.id), channel.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<Channel> updateById(
+      {required String id, required Channel updatedChannel}) async {
+    await _channels.doc(id).update({
+      'description': updatedChannel.description,
+      'channelImageURL': updatedChannel.channelImageURL,
+      'userIds': updatedChannel.userIds,
+      'channelName': updatedChannel.channelName,
+      'ownerId': updatedChannel.ownerId,
+      'isPromoted': updatedChannel.isPromoted,
+    });
+    return getById(id: id);
   }
 
   Channel _toChannel(String id, Map<String, dynamic> data) {
@@ -36,6 +89,8 @@ class ChannelRepository {
     String desc = data['description'];
     String owner = data['ownerId'];
     List<String> members = List.from(data['userIds']);
+    bool isPromoted = data['isPromoted'];
+
     return Channel(
       channelId: id,
       channelName: name,
@@ -45,6 +100,7 @@ class ChannelRepository {
       channelImageURL: image,
       createdOn: co.toDate(),
       city: city,
+      isPromoted: isPromoted,
     );
   }
 }

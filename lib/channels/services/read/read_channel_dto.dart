@@ -9,24 +9,27 @@ class ReadChannelDto {
   final String _channelImageURL;
   final DateTime _createdOn;
   final String _city;
+  final bool _isPromoted;
 
-  ReadChannelDto(
-      {required channelId,
-      required channelName,
-      required ownerId,
-      userIds,
-      description,
-      required channelImageURL,
-      required createdOn,
-      required city})
-      : _channelId = channelId,
+  ReadChannelDto({
+    required channelId,
+    required channelName,
+    required ownerId,
+    userIds,
+    description,
+    required channelImageURL,
+    required createdOn,
+    required city,
+    required isPromoted,
+  })  : _channelId = channelId,
         _channelName = channelName,
         _ownerId = ownerId,
         _userIds = userIds,
         _description = description,
         _channelImageURL = channelImageURL,
         _createdOn = createdOn,
-        _city = city;
+        _city = city,
+        _isPromoted = isPromoted;
 
   String get channelId => _channelId;
 
@@ -43,4 +46,6 @@ class ReadChannelDto {
   DateTime get createdOn => _createdOn;
 
   String get city => _city;
+
+  bool get isPromoted => _isPromoted;
 }

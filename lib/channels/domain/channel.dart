@@ -9,16 +9,19 @@ class Channel {
   String? channelImageURL;
   DateTime? createdOn;
   String? city;
+  bool? isPromoted;
 
-  Channel(
-      {this.channelId,
-      this.channelName,
-      this.ownerId,
-      this.userIds,
-      this.description,
-      this.channelImageURL,
-      this.createdOn,
-      this.city});
+  Channel({
+    this.channelId,
+    this.channelName,
+    this.ownerId,
+    this.userIds,
+    this.description,
+    this.channelImageURL,
+    this.createdOn,
+    this.city,
+    this.isPromoted,
+  });
 
   ReadChannelDto toDto() {
     return ReadChannelDto(
@@ -30,6 +33,7 @@ class Channel {
       channelImageURL: channelImageURL!,
       createdOn: createdOn!,
       city: city!,
+      isPromoted: isPromoted!,
     );
   }
 }
