@@ -3,7 +3,10 @@ import 'package:lichee/screens/add_channel_screen.dart';
 import 'package:lichee/screens/channel_list_screen.dart';
 import 'package:lichee/screens/chat_list_screen.dart';
 import 'package:lichee/screens/home_screen.dart';
-import 'package:lichee/screens/profile_screen.dart';
+
+import 'loginScreen.dart';
+
+final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
 class TabsScreen extends StatefulWidget {
   static const String id = 'tabs_screen';
@@ -20,7 +23,7 @@ class _TabsScreenState extends State<TabsScreen> {
     {'page': ChannelListScreen(), 'title': 'Your channels'},
     {'page': AddChannelScreen(), 'title': 'Add channel'},
     {'page': ChatListScreen(), 'title': 'Your chats'},
-    {'page': ProfileScreen(), 'title': 'Your profile'}
+    {'page': LoginScreen(), 'title': 'Your profile'}
   ];
 
   int _selectedPageIndex = 0;
@@ -28,6 +31,9 @@ class _TabsScreenState extends State<TabsScreen> {
 
   void _selectPage(int index) {
     setState(() {
+      //Only pops current route in case that the register screen was selected within the profile screen
+      //The nested navigator didn't notice that you were tapping other tab so it was necessary to pop it.
+      if (navKey.currentState!.canPop()) navKey.currentState!.pop();
       _selectedPageIndex = index;
       _pageController.animateToPage(
         index,
@@ -53,12 +59,17 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SizedBox.expand(
-        child: PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() => _selectedPageIndex = index);
-            },
-            children: _pages.map((map) => map['page'] as Widget).toList()),
+        child: Navigator(
+          key: navKey,
+          onGenerateRoute: (_) => MaterialPageRoute(
+            builder: (_) => PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() => _selectedPageIndex = index);
+                },
+                children: _pages.map((map) => map['page'] as Widget).toList()),
+          ),
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
