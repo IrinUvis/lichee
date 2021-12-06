@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:lichee/authentication_provider.dart';
 import 'package:lichee/screens/channel_screen.dart';
 import 'package:lichee/screens/home_screen.dart';
 import 'package:lichee/screens/tabs_screen.dart';
-
-import 'bloc/provider.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,8 +23,16 @@ class Lichee extends StatefulWidget {
 class LicheeState extends State<Lichee> {
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      key: Key("provider"),
+    return MultiProvider(
+      providers: [
+        Provider<AuthenticationProvider>(
+          create: (_) => AuthenticationProvider(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) => context.read<AuthenticationProvider>().authState,
+          initialData: null,
+        )
+      ],
       child: MaterialApp(
         theme: ThemeData.dark().copyWith(
             backgroundColor: const Color(0xFF1A1A1A),

@@ -22,7 +22,7 @@ class _TabsScreenState extends State<TabsScreen> {
     {'page': HomeScreen(), 'title': 'Home'},
     {'page': ChannelListScreen(), 'title': 'Your channels'},
     {'page': AddChannelScreen(), 'title': 'Add channel'},
-    {'page': ChatListScreen(), 'title': 'Your chats'},
+    {'page': const ChatListScreen(), 'title': 'Your chats'},
     {'page': ProfileScreen(), 'title': 'Your profile'}
   ];
 
