@@ -5,6 +5,7 @@ import 'package:lichee/screens/home_screen.dart';
 import 'package:lichee/screens/tabs_screen.dart';
 
 import 'bloc/provider.dart';
+import 'constants/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,10 +25,7 @@ class LicheeState extends State<Lichee> {
     return Provider(
       key: Key("provider"),
       child: MaterialApp(
-        theme: ThemeData.dark().copyWith(
-          backgroundColor: const Color(0xFF1A1A1A),
-          scaffoldBackgroundColor: const Color(0xFF1A1A1A),
-        ),
+        theme: CustomTheme.darkTheme,
         home: const TabsScreen(),
         routes: {
           HomeScreen.id: (context) => HomeScreen(),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/components/details_table.dart';
-import 'package:lichee/constants.dart';
-import '../channel_constants.dart';
+import 'package:lichee/constants/constants.dart';
+import '../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
   static String id = 'channel_screen';

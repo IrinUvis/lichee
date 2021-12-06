@@ -4,7 +4,7 @@ import 'package:lichee/bloc/provider.dart';
 import 'package:lichee/screens/profile_screen.dart';
 import 'package:lichee/screens/tabs_screen.dart';
 
-import '../constants.dart';
+import '../constants/constants.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override

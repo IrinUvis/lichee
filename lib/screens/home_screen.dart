@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:lichee/screens/channel_screen.dart';
-import '../constants.dart';
+import '../constants/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   static String id = 'home_screen';
@@ -58,12 +58,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: kSearchBarInputDecoration,
                       ),
                     ),
-                    SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                     const Text(
                       'Promoted channels',
                       style: kBannerTextStyle,
                     ),
-                    SizedBox(height: 20.0),
+                    const SizedBox(height: 20.0),
                     CarouselSlider(
                       options: CarouselOptions(
                         viewportFraction: 0.5,
@@ -105,8 +105,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ))
                           .toList(),
                     ),
-                    SizedBox(height: 20.0),
-                    Text(
+                    const SizedBox(height: 20.0),
+                    const Text(
                       'Selected for you',
                       style: kBannerTextStyle,
                     ),

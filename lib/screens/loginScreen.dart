@@ -3,7 +3,7 @@ import 'package:lichee/bloc/bloc.dart';
 import 'package:lichee/bloc/provider.dart';
 import 'package:lichee/screens/registerScreen.dart';
 
-import '../constants.dart';
+import '../constants/constants.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
