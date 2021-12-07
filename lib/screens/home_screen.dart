@@ -28,18 +28,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return recommendedChannels;
   }
 
-  final List<String> recommendationList = [
-    "https://www.fivb.org/Vis2009/Images/GetImage.asmx?No=202004911&width=920&height=588&stretch=uniformtofill",
-    "https://photoresources.wtatennis.com/photo-resources/2019/08/15/dbb59626-9254-4426-915e-57397b6d6635/tennis-origins-e1444901660593.jpg?width=1200&height=630",
-    "https://images.chesscomfiles.com/uploads/v1/article/27319.746c2259.668x375o.c6cf8543e2d5@2x.png",
-  ];
-
-  final List<String> channelNames = [
-    'Volleyball',
-    'Tennis',
-    'Chess',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,16 +90,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   ChannelScreen(
-                                                channelName:
+                                                channel:
                                                     recommendedChannels[
                                                             recommendedChannels
-                                                                .indexOf(e)]
-                                                        .channelName,
-                                                imageSource:
-                                                    recommendedChannels[
-                                                            recommendedChannels
-                                                                .indexOf(e)]
-                                                        .channelImageUrl,
+                                                                .indexOf(e)],
                                               ),
                                             ),
                                           );

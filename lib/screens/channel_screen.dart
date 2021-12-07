@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/components/details_table.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
@@ -6,10 +7,10 @@ import '../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
   static String id = 'channel_screen';
-  final String channelName;
-  final String imageSource;
 
-  ChannelScreen({this.channelName = '', this.imageSource = ''});
+  final ReadChannelDto channel;
+
+  ChannelScreen({required this.channel});
 
   @override
   State<ChannelScreen> createState() => _ChannelScreenState();
@@ -29,27 +30,29 @@ class _ChannelScreenState extends State<ChannelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String description =
-        'owner\'s description about sport and people they are looking for etc etc.';
-    List<TableRow> aboutRows = const [
+    String owner = widget.channel.ownerId;
+    String membersNumber = widget.channel.userIds.length.toString();
+    String city = widget.channel.city;
+
+    List<TableRow> aboutRows = [
       TableRow(children: [
         Icon(Icons.access_time_outlined),
-        Text('Created on 1.1.2020'),
+        Text(widget.channel.createdOn.toString()),
       ]),
       TableRow(children: [
         Icon(Icons.groups_rounded),
-        Text('100 members'),
+        Text('$membersNumber members'),
       ]),
       TableRow(children: [
         Icon(Icons.person),
-        Text('Created by: '),
+        Text('Created by: $owner'),
       ])
     ];
 
-    List<TableRow> descriptionRows = const [
+    List<TableRow> descriptionRows =  [
       TableRow(children: [
         Icon(Icons.near_me),
-        Text('City, Country'),
+        Text(city),
       ]),
       TableRow(children: [
         Icon(Icons.trending_up_outlined),
@@ -78,7 +81,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
             },
           ),
         ],
-        title: Text(widget.channelName, style: kAppBarTitleTextStyle),
+        title: Text(widget.channel.channelName, style: kAppBarTitleTextStyle),
       ),
       body: SafeArea(
           child: Column(
@@ -96,7 +99,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               fit: BoxFit.cover,
-                              image: NetworkImage(widget.imageSource),
+                              image: NetworkImage(widget.channel.channelImageUrl),
                             ),
                           ),
                         ),
@@ -115,7 +118,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             ),
                           ),
                         ),
-                        Text(widget.channelName,
+                        Text(widget.channel.channelName,
                             style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
                       ],
                     ),
@@ -152,7 +155,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           Container(
                             padding: const EdgeInsets.only(
                                 left: 16.0, top: 16.0, right: 16.0, bottom: 0.0),
-                            child: Text(description),
+                            child: Text(widget.channel.description),
                           ),
                           DetailsTable(rows: descriptionRows),
                           const Text('About this channel',

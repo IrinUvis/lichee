@@ -29,7 +29,6 @@ class LicheeState extends State<Lichee> {
         home: const TabsScreen(),
         routes: {
           HomeScreen.id: (context) => HomeScreen(),
-          ChannelScreen.id: (context) => ChannelScreen(),
         },
       ),
     );
