@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/auth/auth_type.dart';
 
-import '../../../constants.dart';
 
 class Logo extends StatelessWidget {
   const Logo({
