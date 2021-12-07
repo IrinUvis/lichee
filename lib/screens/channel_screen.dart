@@ -135,7 +135,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                         setState(() {
                           isLogged
                               ? hasBeenPressed = !hasBeenPressed
-                              : print('please log in');
+                              : print('please log in or sth');
                         });
                       },
                       label: hasBeenPressed

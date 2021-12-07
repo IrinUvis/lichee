@@ -4,7 +4,7 @@ import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/read/read_channel_service.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/screens/channel_screen.dart';
-import '../constants/constants.dart';
+import 'package:lichee/constants/constants.dart';
 
 class HomeScreen extends StatefulWidget {
   static String id = 'home_screen';
@@ -31,18 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 60.0,
-        elevation: 0.0,
-        backgroundColor: LicheeColors.backgroundColor,
-        title: const Center(
-          child: Text(
-            //ofc we should put logo here but for now...
-            'Lichee',
-            style: kLicheeTextStyle,
-          ),
-        ),
-      ),
       body: FutureBuilder(
         future: getPromotedChannels(),
         builder: (BuildContext context,
@@ -65,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             child: const TextField(
-                              decoration: kSearchBarInputDecoration,
+                              decoration: kHomeSearchBarInputDecoration,
                             ),
                           ),
                           const SizedBox(height: 20.0),
@@ -90,10 +78,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   ChannelScreen(
-                                                channel:
-                                                    recommendedChannels[
-                                                            recommendedChannels
-                                                                .indexOf(e)],
+                                                channel: recommendedChannels[
+                                                    recommendedChannels
+                                                        .indexOf(e)],
                                               ),
                                             ),
                                           );

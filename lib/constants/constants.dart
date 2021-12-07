@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
-const kSearchBarInputDecoration = InputDecoration(
+const kHomeSearchBarInputDecoration = InputDecoration(
   contentPadding: EdgeInsets.all(20.0),
   hintText: 'Search channels...',
+  border: InputBorder.none,
+  suffixIcon: Icon(Icons.search),
+);
+
+const kChatsSearchBarInputDecoration = InputDecoration(
+  contentPadding: EdgeInsets.all(20.0),
+  hintText: 'Search chats...',
   border: InputBorder.none,
   suffixIcon: Icon(Icons.search),
 );
@@ -10,6 +17,21 @@ const kSearchBarInputDecoration = InputDecoration(
 const kBannerTextStyle = TextStyle(
   fontSize: 30.0,
   fontWeight: FontWeight.bold,
+);
+
+const kCardChannelNameTextStyle = TextStyle(
+  fontSize: 24.0,
+  fontWeight: FontWeight.w400,
+);
+
+const kCardLatestMessageTextStyle = TextStyle(
+  fontSize: 15.5,
+  fontWeight: FontWeight.w300
+);
+
+const kCardLatestMessageTimeTextStyle = TextStyle(
+  fontSize: 12.0,
+  fontWeight: FontWeight.w200,
 );
 
 const kLicheeTextStyle = TextStyle(
