@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lichee/channels/domain/channel.dart';
 
@@ -25,11 +27,16 @@ class ChannelRepository {
   }
 
   Future<List<Channel>> getAllChannels() async {
-    final channelReference = await _channels.get();
-    return channelReference.docs
-        .map((channel) =>
-            _toChannel((channel.id), channel.data() as Map<String, dynamic>))
-        .toList();
+    List<Channel> channels = [];
+
+    await _channels.get().then((value) {
+      for (var element in value.docs) {
+        channels.add(
+            _toChannel(element.id, element.data() as Map<String, dynamic>));
+      }
+      return channels;
+    });
+    return channels;
   }
 
   Future<List<Channel>> getByName({required String name}) async {
@@ -61,10 +68,10 @@ class ChannelRepository {
 
   Future<List<Channel>> getPromoted() async {
     final channelReference =
-    await _channels.where('isPromoted', isEqualTo: true).get();
+        await _channels.where('isPromoted', isEqualTo: true).get();
     return channelReference.docs
         .map((channel) =>
-        _toChannel((channel.id), channel.data() as Map<String, dynamic>))
+            _toChannel((channel.id), channel.data() as Map<String, dynamic>))
         .toList();
   }
 
@@ -82,14 +89,14 @@ class ChannelRepository {
   }
 
   Channel _toChannel(String id, Map<String, dynamic> data) {
-    String name = data['channelName'];
-    String image = data['channelImageURL'];
-    String city = data['city'];
+    String name = data['channelName'].toString();
+    String image = data['channelImageURL'].toString();
+    String city = data['city'].toString();
     Timestamp co = data['createdOn'];
-    String desc = data['description'];
-    String owner = data['ownerId'];
+    String desc = data['description'].toString();
+    String owner = data['ownerId'].toString();
     List<String> members = List.from(data['userIds']);
-    bool isPromoted = data['isPromoted'];
+    bool isPromoted = data['isPromoted'] ?? false;
 
     return Channel(
       channelId: id,

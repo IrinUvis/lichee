@@ -29,4 +29,8 @@ class ReadChannelService {
     return channels.map((channel) => channel.toDto()).toList();
   }
 
+  Future<List<ReadChannelDto>> getPromoted() async {
+    final channels = await _repository.getPromoted();
+    return channels.map((channel) => channel.toDto()).toList();
+  }
 }
