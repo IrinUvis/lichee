@@ -10,11 +10,11 @@ class ChannelTreeNode {
 
   ChannelTreeNode(
       {required this.id,
-        required this.name,
-        required this.icon,
-        required this.type,
-        required this.parentId,
-        required this.childrenIds});
+      required this.name,
+      required this.icon,
+      required this.type,
+      required this.parentId,
+      required this.childrenIds});
 }
 
 List<String> filtersList = [
