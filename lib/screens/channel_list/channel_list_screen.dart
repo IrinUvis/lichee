@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:filter_list/filter_list.dart';
-import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/channel_list/sample_channel_data.dart';
 import 'package:lichee/screens/channel_list/tree_node_card.dart';
-import 'lichee_button.dart';
 
 class ChannelListScreen extends StatefulWidget {
   const ChannelListScreen({Key? key}) : super(key: key);
@@ -58,17 +56,6 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              const Center(
-                child: Text(
-                  'Channels',
-                  style: kLicheeTextStyle,
-                ),
-              ),
-              LicheeButton(
-                text: 'Filters',
-                callback: _openFilterDialog,
-                textSize: 25.0,
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -80,8 +67,26 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                     child: const Icon(
                       Icons.home,
                       color: Colors.white,
+                      size: 40.0,
                     ),
-                    style: ElevatedButton.styleFrom(primary: Colors.pinkAccent),
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.pinkAccent,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0))),
+                  ),
+                  ElevatedButton(
+                    onPressed: _openFilterDialog,
+                    child: const Padding(
+                      padding: EdgeInsets.all(7.0),
+                      child: Text(
+                        'Filters',
+                        style: TextStyle(color: Colors.white, fontSize: 20.0),
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.pinkAccent,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0))),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -90,8 +95,12 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                     child: const Icon(
                       Icons.undo,
                       color: Colors.white,
+                      size: 40.0,
                     ),
-                    style: ElevatedButton.styleFrom(primary: Colors.pinkAccent),
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.pinkAccent,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20.0))),
                   ),
                 ],
               ),

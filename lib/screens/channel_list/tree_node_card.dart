@@ -17,6 +17,9 @@ class TreeNodeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: const Color(0xFF363636),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
@@ -26,17 +29,16 @@ class TreeNodeCard extends StatelessWidget {
               children: [
                 Text(
                   nodeName,
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 20.0),
+                  style: const TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
                 const SizedBox(
                   width: 5.0,
                 ),
                 nodes[index].childrenIds != null
                     ? const Icon(
-                  Icons.arrow_right,
-                  color: Colors.white,
-                )
+                        Icons.arrow_right,
+                        color: Colors.white,
+                      )
                     : Container(),
               ],
             ),
@@ -44,10 +46,9 @@ class TreeNodeCard extends StatelessWidget {
               children: [
                 nodes[index].childrenIds == null
                     ? const Text(
-                  'empty',
-                  style:
-                  TextStyle(color: Colors.grey),
-                )
+                        'empty',
+                        style: TextStyle(color: Colors.grey),
+                      )
                     : Container(),
                 const SizedBox(
                   width: 5.0,
