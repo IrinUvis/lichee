@@ -102,7 +102,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
               isGreaterThanOrEqualTo: textFieldQuery.toLowerCase().trim())
           .where('channelNameLower',
               isLessThanOrEqualTo: textFieldQuery.toLowerCase().trim() + '~')
-          .where('userIds', arrayContains: '2bGoqMTi4URGrGT9foi67zDqT6B3')
+          .where('userIds',
+              arrayContains:
+                  '2bGoqMTi4URGrGT9foi67zDqT6B3')
+      // TODO: should be changed once channels and chats can be created normally
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
