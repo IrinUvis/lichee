@@ -149,14 +149,14 @@ class MessageBubble extends StatelessWidget {
                     topRight: Radius.circular(30.0),
                   ),
             elevation: 5.0,
-            color: isMe ? Colors.pinkAccent : Colors.white,
+            color: isMe ? Colors.pinkAccent : const Color(0xFF444444),
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: Text(
                 text,
-                style: TextStyle(
-                  color: isMe ? Colors.white : Colors.black87,
+                style: const TextStyle(
+                  color: Colors.white,
                   fontSize: 15.0,
                 ),
               ),

@@ -84,30 +84,35 @@ class _TabsScreenState extends State<TabsScreen> {
               Icons.home_outlined,
               size: 30.0,
             ),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.group_outlined,
               size: 30.0,
             ),
+            label: 'Find groups',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.add_circle_outline_rounded,
               size: 30.0,
             ),
+            label: 'Add channel',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.chat_outlined,
               size: 30.0,
             ),
+            label: 'Your chats',
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person_outline_rounded,
               size: 30.0,
             ),
+            label: 'Profile',
           )
         ],
       ),
