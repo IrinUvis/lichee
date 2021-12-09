@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:lichee/constants.dart';
+import 'package:lichee/screens/channel_list/sample_channel_data.dart';
+import 'lichee_button.dart';
 
 class ChannelListScreen extends StatefulWidget {
   const ChannelListScreen({Key? key}) : super(key: key);
@@ -11,18 +13,9 @@ class ChannelListScreen extends StatefulWidget {
 
 class _ChannelListScreenState extends State<ChannelListScreen> {
   List<ChannelTreeNode> nodes = [];
-  List<ChannelTreeNode> temp = [];
   String? parentId;
 
-  void feedCategoriesList() {
-    for (var element in nodesList) {
-      if (element.parentId == null) {
-        nodes.add(element);
-      }
-    }
-  }
-
-  void feedNodesListByParentId(List<ChannelTreeNode> table, String parentId) {
+  void feedNodesListByParentId(List<ChannelTreeNode> table, String? parentId) {
     for (var element in nodesList) {
       if (element.parentId == parentId) {
         table.add(element);
@@ -31,27 +24,25 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
   }
 
   void feedNodesListWithParentLevelNodes() {
-    String? idOfParentOfParent;
     for (var element in nodesList) {
       if (element.id == parentId) {
-        idOfParentOfParent = element.parentId;
         parentId = element.parentId;
         break;
       }
     }
-    if (idOfParentOfParent != null) {
+    if (parentId != null) {
       nodes.clear();
-      feedNodesListByParentId(nodes, idOfParentOfParent);
+      feedNodesListByParentId(nodes, parentId);
     } else {
       nodes.clear();
-      feedCategoriesList();
+      feedNodesListByParentId(nodes, null);
     }
   }
 
   @override
   void initState() {
     super.initState();
-    feedCategoriesList();
+    feedNodesListByParentId(nodes, null);
   }
 
   @override
@@ -71,6 +62,7 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
               LicheeButton(
                 text: 'Filters',
                 callback: _openFilterDialog,
+                textSize: 25.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -78,7 +70,7 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                   ElevatedButton(
                     onPressed: () {
                       nodes.clear();
-                      feedCategoriesList();
+                      feedNodesListByParentId(nodes, null);
                       setState(() {});
                     },
                     child: const Icon(
@@ -114,10 +106,8 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                             : () {
                                 this.parentId = nodes[index].id;
                                 String parentId = nodes[index].id;
-                                temp.clear();
                                 nodes.clear();
-                                feedNodesListByParentId(temp, parentId);
-                                nodes = temp;
+                                feedNodesListByParentId(nodes, parentId);
                                 setState(() {});
                               },
                         child: Card(
@@ -234,137 +224,4 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
       },
     );
   }
-}
-
-class LicheeButton extends StatelessWidget {
-  const LicheeButton({
-    Key? key,
-    required this.text,
-    required this.callback,
-  }) : super(key: key);
-
-  final String text;
-  final VoidCallback callback;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        height: 60,
-        margin: const EdgeInsets.all(15),
-        child: ElevatedButton(
-          onPressed: callback,
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.pinkAccent),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50),
-              ),
-            ),
-          ),
-          child: Container(
-            constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width,
-              minHeight: MediaQuery.of(context).size.height / 16,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              text,
-              style: const TextStyle(color: Colors.white, fontSize: 25.0),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-List<ChannelTreeNode> nodesList = [
-  ChannelTreeNode(
-      id: '1',
-      name: 'Football',
-      icon: const Icon(
-        Icons.category,
-        color: Colors.white,
-      ),
-      type: 'Category',
-      parentId: null,
-      childrenIds: ['4', '5', '6']),
-  ChannelTreeNode(
-      id: '2',
-      name: 'Basketball',
-      icon: const Icon(
-        Icons.category,
-        color: Colors.white,
-      ),
-      type: 'Category',
-      parentId: null,
-      childrenIds: null),
-  ChannelTreeNode(
-      id: '3',
-      name: 'Volleyball',
-      icon: const Icon(
-        Icons.category,
-        color: Colors.white,
-      ),
-      type: 'Category',
-      parentId: null,
-      childrenIds: null),
-  ChannelTreeNode(
-      id: '4',
-      name: 'matchPlaying',
-      icon: const Icon(
-        Icons.category,
-        color: Colors.white,
-      ),
-      type: 'Category',
-      parentId: '1',
-      childrenIds: ['7']),
-  ChannelTreeNode(
-      id: '5',
-      name: 'fanMeetings',
-      icon: const Icon(
-        Icons.category,
-        color: Colors.white,
-      ),
-      type: 'Category',
-      parentId: '1',
-      childrenIds: null),
-  ChannelTreeNode(
-      id: '6',
-      name: 'matchWatching',
-      icon: const Icon(
-        Icons.category,
-        color: Colors.white,
-      ),
-      type: 'Category',
-      parentId: '1',
-      childrenIds: null),
-  ChannelTreeNode(
-      id: '7',
-      name: 'Match 3x3',
-      icon: const Icon(
-        Icons.chat,
-        color: Colors.white,
-      ),
-      type: 'Channel',
-      parentId: '4',
-      childrenIds: null),
-];
-
-class ChannelTreeNode {
-  String id;
-  String name;
-  Icon icon;
-  String type;
-  String? parentId;
-  List<String>? childrenIds;
-
-  ChannelTreeNode(
-      {required this.id,
-      required this.name,
-      required this.icon,
-      required this.type,
-      required this.parentId,
-      required this.childrenIds});
 }
