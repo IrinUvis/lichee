@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:filter_list/filter_list.dart';
-import 'package:lichee/constants.dart';
+import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/channel_list/sample_channel_data.dart';
 import 'package:lichee/screens/channel_list/tree_node_card.dart';
 import 'lichee_button.dart';
