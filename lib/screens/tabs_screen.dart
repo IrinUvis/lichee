@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/add_channel_screen.dart';
-import 'package:lichee/screens/channel_list_screen.dart';
+import 'package:lichee/screens/channel_list/channel_list_screen.dart';
 import 'package:lichee/screens/chat_list_screen.dart';
 import 'package:lichee/screens/home_screen.dart';
 import 'package:lichee/screens/profile_screen.dart';
