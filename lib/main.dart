@@ -1,10 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:lichee/screens/channel_screen.dart';
+import 'package:lichee/authentication_provider.dart';
 import 'package:lichee/screens/home_screen.dart';
 import 'package:lichee/screens/tabs_screen.dart';
-
-import 'bloc/provider.dart';
+import 'package:provider/provider.dart';
+import 'constants/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +15,7 @@ Future<void> main() async {
 
 class Lichee extends StatefulWidget {
   const Lichee({Key? key}) : super(key: key);
+
   @override
   LicheeState createState() => LicheeState();
 }
@@ -21,17 +23,21 @@ class Lichee extends StatefulWidget {
 class LicheeState extends State<Lichee> {
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      key: Key("provider"),
-      child: MaterialApp(
-        theme: ThemeData.dark().copyWith(
-          backgroundColor: const Color(0xFF1A1A1A),
-          scaffoldBackgroundColor: const Color(0xFF1A1A1A),
+    return MultiProvider(
+      providers: [
+        Provider<AuthenticationProvider>(
+          create: (_) => AuthenticationProvider(FirebaseAuth.instance),
         ),
+        StreamProvider(
+          create: (context) => context.read<AuthenticationProvider>().authState,
+          initialData: null,
+        )
+      ],
+      child: MaterialApp(
+        theme: CustomTheme.darkTheme,
         home: const TabsScreen(),
         routes: {
           HomeScreen.id: (context) => HomeScreen(),
-          ChannelScreen.id: (context) => ChannelScreen(),
         },
       ),
     );

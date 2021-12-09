@@ -1,106 +1,45 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lichee/bloc/bloc.dart';
-import 'package:lichee/bloc/provider.dart';
-import 'package:lichee/screens/registerScreen.dart';
-
-import 'loginScreen.dart';
+import 'package:lichee/authentication_provider.dart';
+import 'package:lichee/screens/auth/screens/auth_screen.dart';
+import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({Key? key}) : super(key: key);
+
   @override
   ProfileScreenState createState() => ProfileScreenState();
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
-  Bloc bloc = Bloc();
-
+  @override
   Widget build(context) {
-    bloc = Provider.of(context);
-
-    double deviceHeight = MediaQuery.of(context).size.height;
-    double deviceWidth = MediaQuery.of(context).size.width;
-    bool isLoggedIn = false;
-    try {
-      isLoggedIn = bloc.isLoggedIn;
-    } catch (e) {}
-
+    final user = Provider.of<User?>(context);
     return Scaffold(
       body: SafeArea(
-        child: isLoggedIn
-            ? Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                height: deviceHeight,
-                width: deviceWidth,
-                child: Column(
+        child: user != null
+            ? Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(bloc.email),
-                      Text(bloc.userCredential.user!.uid)
-                    ]))
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [buildLoginButton(), buildRegisterButton()]),
-      ),
-    );
-  }
-
-  buildLoginButton() {
-    return Center(
-      child: Container(
-        height: 60,
-        margin: EdgeInsets.all(15),
-        child: ElevatedButton(
-            onPressed: () async {
-              Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginScreen()))
-                  .then((value) => setState(() {}));
-            },
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.pinkAccent),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ))),
-            child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width,
-                  minHeight: MediaQuery.of(context).size.height / 16,
+                      Text(user.email!),
+                      Text(user.uid),
+                      TextButton(
+                        onPressed: () async {
+                          await Provider.of<AuthenticationProvider>(context,
+                                  listen: false)
+                              .signOut();
+                        },
+                        child: const Text('Sign out'),
+                      ),
+                    ],
+                  ),
                 ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Login",
-                  style: TextStyle(color: Colors.white),
-                ))),
-      ),
-    );
-  }
-
-  buildRegisterButton() {
-    return Center(
-      child: Container(
-        height: 60,
-        margin: EdgeInsets.all(15),
-        child: ElevatedButton(
-            onPressed: () async {
-              Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen()))
-                  .then((value) => setState(() {}));
-            },
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.grey[850]),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ))),
-            child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width,
-                  minHeight: MediaQuery.of(context).size.height / 16,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Register",
-                  style: TextStyle(color: Colors.white),
-                ))),
+              )
+            : const AuthScreen(),
       ),
     );
   }
