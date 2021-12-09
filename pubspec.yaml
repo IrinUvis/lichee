@@ -23,6 +23,7 @@ dependencies:
   datetime_picker_formfield: ^2.0.0
   intl: ^0.17.0
   rxdart: ^0.27.3
+  filter_list: ^1.0.0
 
 dev_dependencies:
   flutter_test:
