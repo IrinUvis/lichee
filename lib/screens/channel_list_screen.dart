@@ -11,6 +11,37 @@ class ChannelListScreen extends StatefulWidget {
 }
 
 class _ChannelListScreenState extends State<ChannelListScreen> {
+  List<ChannelTreeNode> nodes = [];
+  List<ChannelTreeNode> temp = [];
+  String? parentId;
+
+  void feedCategoriesList() {
+    for (var element in nodesList) {
+      if (element.parentId == null) {
+        nodes.add(element);
+      }
+    }
+  }
+
+  void feedNodesListByParentId(List<ChannelTreeNode> table, String parentId) {
+    for (var element in nodesList) {
+      print(element.name);
+      print(element.parentId);
+      print(parentId);
+      print('');
+      if (element.parentId == parentId) {
+        table.add(element);
+      }
+    }
+    print(temp);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    feedCategoriesList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,6 +59,31 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
               LicheeButton(
                 text: 'Filters',
                 callback: _openFilterDialog,
+              ),
+              Expanded(
+                child: Container(
+                  color: const Color(0xFF1A1A1A),
+                  child: ListView.builder(
+                    itemCount: nodes.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      String nodeName;
+                        nodeName = nodes[index].name;
+                        return TextButton(
+                            onPressed: nodes[index].childrenIds == null ? null : () {
+                              String parentId = nodes[index].id;
+                              //nodes.clear();
+                              temp.clear();
+                              nodes.clear();
+                              feedNodesListByParentId(temp, parentId);
+                              nodes = temp;
+                              print(nodes);
+                              setState(() {
+
+                              });
+                            }, child: Text(nodeName, style: const TextStyle(color: Colors.white),));
+                    },
+                  ),
+                ),
               ),
             ],
           ),
@@ -86,7 +142,6 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
         }
         return [];
       },
-
       onApplyButtonClick: (list) {
         setState(() {
           selectedFiltersList = List.from(list!);
@@ -138,4 +193,73 @@ class LicheeButton extends StatelessWidget {
       ),
     );
   }
+}
+
+List<ChannelTreeNode> nodesList = [
+  ChannelTreeNode(
+      id: '1',
+      name: 'Football',
+      icon: const Icon(Icons.sports_soccer),
+      type: 'Category',
+      parentId: null,
+      childrenIds: ['4', '5', '6']),
+  ChannelTreeNode(
+      id: '2',
+      name: 'Basketball',
+      icon: const Icon(Icons.sports_soccer),
+      type: 'Category',
+      parentId: null,
+      childrenIds: null),
+  ChannelTreeNode(
+      id: '3',
+      name: 'Volleyball',
+      icon: const Icon(Icons.sports_soccer),
+      type: 'Category',
+      parentId: null,
+      childrenIds: null),
+  ChannelTreeNode(
+      id: '4',
+      name: 'matchPlaying',
+      icon: const Icon(Icons.sports_soccer),
+      type: 'Category',
+      parentId: '1',
+      childrenIds: ['7']),
+  ChannelTreeNode(
+      id: '5',
+      name: 'fanMeetings',
+      icon: const Icon(Icons.sports_soccer),
+      type: 'Category',
+      parentId: '1',
+      childrenIds: null),
+  ChannelTreeNode(
+      id: '6',
+      name: 'matchWatching',
+      icon: const Icon(Icons.sports_soccer),
+      type: 'Category',
+      parentId: '1',
+      childrenIds: null),
+  ChannelTreeNode(
+      id: '7',
+      name: 'Match 3x3',
+      icon: const Icon(Icons.sports_soccer),
+      type: 'Channel',
+      parentId: '4',
+      childrenIds: null),
+];
+
+class ChannelTreeNode {
+  String id;
+  String name;
+  Icon icon;
+  String type;
+  String? parentId;
+  List<String>? childrenIds;
+
+  ChannelTreeNode(
+      {required this.id,
+      required this.name,
+      required this.icon,
+      required this.type,
+      required this.parentId,
+      required this.childrenIds});
 }
