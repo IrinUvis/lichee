@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:lichee/constants.dart';
 import 'package:lichee/screens/channel_list/sample_channel_data.dart';
+import 'package:lichee/screens/channel_list/tree_node_card.dart';
 import 'lichee_button.dart';
 
 class ChannelListScreen extends StatefulWidget {
@@ -12,15 +13,19 @@ class ChannelListScreen extends StatefulWidget {
 }
 
 class _ChannelListScreenState extends State<ChannelListScreen> {
+  List<String>? selectedFiltersList = [];
   List<ChannelTreeNode> nodes = [];
   String? parentId;
 
   void feedNodesListByParentId(List<ChannelTreeNode> table, String? parentId) {
+    this.parentId = parentId;
+    nodes.clear();
     for (var element in nodesList) {
       if (element.parentId == parentId) {
         table.add(element);
       }
     }
+    setState(() {});
   }
 
   void feedNodesListWithParentLevelNodes() {
@@ -30,13 +35,13 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
         break;
       }
     }
+    nodes.clear();
     if (parentId != null) {
-      nodes.clear();
       feedNodesListByParentId(nodes, parentId);
     } else {
-      nodes.clear();
       feedNodesListByParentId(nodes, null);
     }
+    setState(() {});
   }
 
   @override
@@ -71,7 +76,6 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                     onPressed: () {
                       nodes.clear();
                       feedNodesListByParentId(nodes, null);
-                      setState(() {});
                     },
                     child: const Icon(
                       Icons.home,
@@ -82,7 +86,6 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                   ElevatedButton(
                     onPressed: () {
                       feedNodesListWithParentLevelNodes();
-                      setState(() {});
                     },
                     child: const Icon(
                       Icons.undo,
@@ -98,61 +101,16 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                   child: ListView.builder(
                     itemCount: nodes.length,
                     itemBuilder: (BuildContext context, int index) {
-                      String nodeName;
-                      nodeName = nodes[index].name;
                       return TextButton(
                         onPressed: nodes[index].childrenIds == null
                             ? null
                             : () {
-                                this.parentId = nodes[index].id;
-                                String parentId = nodes[index].id;
-                                nodes.clear();
-                                feedNodesListByParentId(nodes, parentId);
-                                setState(() {});
+                                feedNodesListByParentId(nodes, nodes[index].id);
                               },
-                        child: Card(
-                          color: const Color(0xFF363636),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      nodeName,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 20.0),
-                                    ),
-                                    const SizedBox(
-                                      width: 5.0,
-                                    ),
-                                    nodes[index].childrenIds != null
-                                        ? const Icon(
-                                            Icons.arrow_right,
-                                            color: Colors.white,
-                                          )
-                                        : Container(),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    nodes[index].childrenIds == null
-                                        ? const Text(
-                                            'empty',
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          )
-                                        : Container(),
-                                    const SizedBox(
-                                      width: 5.0,
-                                    ),
-                                    nodes[index].icon
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                        child: TreeNodeCard(
+                          nodeName: nodes[index].name,
+                          nodes: nodes,
+                          index: index,
                         ),
                       );
                     },
@@ -165,20 +123,6 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
       ),
     );
   }
-
-  List<String> filtersList = [
-    'one',
-    'two',
-    'three',
-    'four',
-    'five',
-    'six',
-    'seven',
-    'eight',
-    'nine',
-    'ten'
-  ];
-  List<String>? selectedFiltersList = [];
 
   void _openFilterDialog() async {
     await FilterListDialog.display<String>(

@@ -17,6 +17,19 @@ class ChannelTreeNode {
         required this.childrenIds});
 }
 
+List<String> filtersList = [
+  'one',
+  'two',
+  'three',
+  'four',
+  'five',
+  'six',
+  'seven',
+  'eight',
+  'nine',
+  'ten'
+];
+
 List<ChannelTreeNode> nodesList = [
   ChannelTreeNode(
       id: '1',
