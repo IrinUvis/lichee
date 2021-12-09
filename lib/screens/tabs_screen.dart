@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/add_channel_screen.dart';
@@ -6,7 +5,6 @@ import 'package:lichee/screens/channel_list/channel_list_screen.dart';
 import 'package:lichee/screens/chat_list_screen.dart';
 import 'package:lichee/screens/home_screen.dart';
 import 'package:lichee/screens/profile_screen.dart';
-
 
 class TabsScreen extends StatefulWidget {
   static const String id = 'tabs_screen';
@@ -43,7 +41,6 @@ class _TabsScreenState extends State<TabsScreen> {
   @override
   void initState() {
     super.initState();
-    FirebaseAuth.instance.signInWithEmailAndPassword(email: 'test@gmail.com', password: 'test123');
     _pageController = PageController();
   }
 
@@ -55,7 +52,6 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 60.0,
@@ -63,7 +59,6 @@ class _TabsScreenState extends State<TabsScreen> {
         backgroundColor: const Color(0xFF1A1A1A),
         title: const Center(
           child: Text(
-            //ofc we should put logo here but for now...
             'Lichee',
             style: kLicheeTextStyle,
           ),
@@ -96,7 +91,7 @@ class _TabsScreenState extends State<TabsScreen> {
               Icons.group_outlined,
               size: 30.0,
             ),
-            label: 'Your channels',
+            label: 'Find groups',
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -117,7 +112,7 @@ class _TabsScreenState extends State<TabsScreen> {
               Icons.person_outline_rounded,
               size: 30.0,
             ),
-            label: 'Your profile',
+            label: 'Profile',
           )
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lichee/screens/channel_chat_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'package:lichee/constants/constants.dart';
@@ -76,6 +77,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
               minWidth: MediaQuery.of(context).size.width,
               onPressed: () {},
+              // TODO: change page to the profile page
               child: const Text(
                 'Log in to see your chat list!',
                 textAlign: TextAlign.center,
@@ -100,7 +102,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
               isGreaterThanOrEqualTo: textFieldQuery.toLowerCase().trim())
           .where('channelNameLower',
               isLessThanOrEqualTo: textFieldQuery.toLowerCase().trim() + '~')
-          .where('userIds', arrayContains: '2bGoqMTi4URGrGT9foi67zDqT6B3')
+          .where('userIds',
+              arrayContains:
+                  '2bGoqMTi4URGrGT9foi67zDqT6B3')
+      // TODO: should be changed once channels and chats can be created normally
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -149,6 +154,71 @@ class ChatListCard extends StatelessWidget {
   const ChatListCard({Key? key, required this.channelChatData})
       : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          ChannelChatScreen.id,
+          arguments: ChannelChatNavigationParams(
+            channelId: channelChatData['channelId'],
+            channelName: channelChatData['channelName'],
+          ),
+        );
+      },
+      child: Card(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadiusDirectional.horizontal(
+          start: Radius.circular(30),
+          end: Radius.circular(10),
+        )),
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: 30,
+                backgroundImage:
+                    NetworkImage(channelChatData['photoStoragePath']),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Text(
+                        channelChatData['channelName'],
+                        style: kCardChannelNameTextStyle,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: getRecentMessageDetails(),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 5,
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   List<Text> getRecentMessageDetails() {
     final List<Text> widgets = [];
     final String? text = channelChatData['recentMessageText'];
@@ -193,58 +263,5 @@ class ChatListCard extends StatelessWidget {
     return date1.day == date2.day &&
         date1.month == date2.month &&
         date1.year == date2.year;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadiusDirectional.horizontal(
-        start: Radius.circular(30),
-        end: Radius.circular(10),
-      )),
-      child: Padding(
-        padding: const EdgeInsets.all(5),
-        child: Row(
-          children: <Widget>[
-            CircleAvatar(
-              radius: 30,
-              backgroundImage:
-                  NetworkImage(channelChatData['photoStoragePath']),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Text(
-                      channelChatData['channelName'],
-                      style: kCardChannelNameTextStyle,
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: getRecentMessageDetails(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 5,
-            )
-          ],
-        ),
-      ),
-    );
   }
 }

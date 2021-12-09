@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserData {
   final String? id;
   final String username;
@@ -29,13 +31,14 @@ class UserData {
     );
   }
 
-  mapToUserInfo(Map<String, dynamic> map) {
+  static UserData mapToUserInfo(Map<String, dynamic> map) {
+    Timestamp dob = map['dateOfBirth'];
     UserData userInfo = UserData(
       id: map['id'],
       username: map['username'],
       email: map['email'],
       photoUrl: map['photoUrl'],
-      dateOfBirth: map['dateOfBirth'],
+      dateOfBirth: dob.toDate(),
     );
     return userInfo;
   }

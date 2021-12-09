@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lichee/authentication_provider.dart';
+import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/screens/auth/screens/auth_screen.dart';
 import 'package:provider/provider.dart';
 

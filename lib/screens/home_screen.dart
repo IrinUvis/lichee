@@ -7,7 +7,7 @@ import 'package:lichee/screens/channel_screen.dart';
 import 'package:lichee/constants/constants.dart';
 
 class HomeScreen extends StatefulWidget {
-  static String id = 'home_screen';
+  static const String id = 'home_screen';
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();

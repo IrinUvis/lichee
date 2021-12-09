@@ -24,14 +24,18 @@ const kCardChannelNameTextStyle = TextStyle(
   fontWeight: FontWeight.w400,
 );
 
-const kCardLatestMessageTextStyle = TextStyle(
-  fontSize: 15.5,
-  fontWeight: FontWeight.w300
-);
+const kCardLatestMessageTextStyle =
+    TextStyle(fontSize: 15.5, fontWeight: FontWeight.w300);
 
 const kCardLatestMessageTimeTextStyle = TextStyle(
   fontSize: 12.0,
   fontWeight: FontWeight.w200,
+);
+
+const kMessageTextFieldDecoration = InputDecoration(
+  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+  hintText: 'Type your message here...',
+  border: InputBorder.none,
 );
 
 const kLicheeTextStyle = TextStyle(

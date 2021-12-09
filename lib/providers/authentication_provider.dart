@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lichee/screens/auth/user_data.dart';
+import 'package:lichee/models/user_data.dart';
 
 class AuthenticationProvider {
   final FirebaseAuth _firebaseAuth;
@@ -14,6 +14,9 @@ class AuthenticationProvider {
     required String password,
   }) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: userData.email, password: password);
+    await userCredential.user!.updateDisplayName(userData.username);
+    _firebaseAuth.signInWithEmailAndPassword(
         email: userData.email, password: password);
     FirebaseFirestore.instance.collection('users').add(
           userData
