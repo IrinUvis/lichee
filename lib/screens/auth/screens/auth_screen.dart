@@ -3,12 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:lichee/screens/auth/user_data.dart';
-import 'package:lichee/screens/auth/widgets/logo.dart';
+import 'package:lichee/models/user_data.dart';
+import 'package:lichee/components/logo.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
-import '../../../authentication_provider.dart';
+import '../../../providers/authentication_provider.dart';
 import '../auth_type.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -321,9 +321,8 @@ class _AuthScreenState extends State<AuthScreen> {
             errorMessage = 'An undefined error has occurred.';
         }
         Fluttertoast.showToast(msg: errorMessage!);
-      } finally {
-        setState(() => toggleInAsyncCall());
       }
+      setState(() => toggleInAsyncCall());
     }
   }
 
@@ -360,9 +359,8 @@ class _AuthScreenState extends State<AuthScreen> {
             errorMessage = 'An undefined error has occurred.';
         }
         Fluttertoast.showToast(msg: errorMessage!);
-      } finally {
-        setState(() => toggleInAsyncCall());
       }
+      setState(() => toggleInAsyncCall());
     }
   }
 

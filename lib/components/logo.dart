@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/auth/auth_type.dart';
 
-
 class Logo extends StatelessWidget {
-  const Logo({
-    Key? key,
-    required this.padding,
-    required this.radius,
-    required this.authType
-  }) : super(key: key);
+  const Logo(
+      {Key? key,
+      required this.padding,
+      required this.radius,
+      required this.authType})
+      : super(key: key);
 
   final EdgeInsetsGeometry padding;
   final double radius;
@@ -19,7 +18,7 @@ class Logo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: padding,
-        child: Center(
+      child: Center(
         child: Text(
           authType.getName().capitalize(),
           style: kLicheeTextStyle,

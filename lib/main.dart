@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:lichee/authentication_provider.dart';
-import 'package:lichee/screens/home_screen.dart';
+import 'package:lichee/providers/authentication_provider.dart';
+import 'package:lichee/routes/route_generator.dart';
 import 'package:lichee/screens/tabs_screen.dart';
 import 'package:provider/provider.dart';
 import 'constants/theme.dart';
@@ -36,9 +36,7 @@ class LicheeState extends State<Lichee> {
       child: MaterialApp(
         theme: CustomTheme.darkTheme,
         home: const TabsScreen(),
-        routes: {
-          HomeScreen.id: (context) => HomeScreen(),
-        },
+        onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );
   }

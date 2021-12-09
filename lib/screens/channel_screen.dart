@@ -6,7 +6,7 @@ import 'package:lichee/constants/constants.dart';
 import '../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
-  static String id = 'channel_screen';
+  static const String id = 'channel_screen';
 
   final ReadChannelDto channel;
 
@@ -49,7 +49,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
       ])
     ];
 
-    List<TableRow> descriptionRows =  [
+    List<TableRow> descriptionRows = [
       TableRow(children: [
         Icon(Icons.near_me),
         Text(city),
@@ -84,92 +84,93 @@ class _ChannelScreenState extends State<ChannelScreen> {
         title: Text(widget.channel.channelName, style: kAppBarTitleTextStyle),
       ),
       body: SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  children: [
-                    Stack(
-                      alignment: AlignmentDirectional.center,
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: [
+                  Stack(
+                    alignment: AlignmentDirectional.center,
+                    children: [
+                      Container(
+                        //hard coded for now
+                        height: 200.0,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(widget.channel.channelImageUrl),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: 200.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          gradient: LinearGradient(
+                            begin: FractionalOffset.topCenter,
+                            end: FractionalOffset.bottomCenter,
+                            colors: [
+                              Colors.grey.shade800.withOpacity(0.4),
+                              Colors.black,
+                            ],
+                            stops: const [0.0, 1.0],
+                          ),
+                        ),
+                      ),
+                      Text(widget.channel.channelName,
+                          style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+                    ],
+                  ),
+                  ElevatedButton.icon(
+                    icon: hasBeenPressed
+                        ? const Icon(Icons.check, color: LicheeColors.primary)
+                        : const Icon(Icons.group),
+                    style: ButtonStyle(
+                      backgroundColor: hasBeenPressed
+                          ? MaterialStateProperty.all<Color>(Colors.white)
+                          : MaterialStateProperty.all<Color>(
+                              LicheeColors.primary),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isLogged
+                            ? hasBeenPressed = !hasBeenPressed
+                            : print('please log in or sth');
+                      });
+                    },
+                    label: hasBeenPressed
+                        ? const Text(
+                            'Request sent',
+                            style: TextStyle(color: LicheeColors.primary),
+                          )
+                        : const Text('Join'),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Text('Description', style: kBannerTextStyle),
                         Container(
-                          //hard coded for now
-                          height: 200.0,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(widget.channel.channelImageUrl),
-                            ),
-                          ),
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 16.0, right: 16.0, bottom: 0.0),
+                          child: Text(widget.channel.description),
                         ),
-                        Container(
-                          height: 200.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            gradient: LinearGradient(
-                              begin: FractionalOffset.topCenter,
-                              end: FractionalOffset.bottomCenter,
-                              colors: [
-                                Colors.grey.shade800.withOpacity(0.4),
-                                Colors.black,
-                              ],
-                              stops: const [0.0, 1.0],
-                            ),
-                          ),
-                        ),
-                        Text(widget.channel.channelName,
-                            style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+                        DetailsTable(rows: descriptionRows),
+                        const Text('About this channel',
+                            style: kBannerTextStyle),
+                        DetailsTable(rows: aboutRows),
                       ],
                     ),
-                    ElevatedButton.icon(
-                      icon: hasBeenPressed
-                          ? const Icon(Icons.check, color: LicheeColors.primary)
-                          : const Icon(Icons.group),
-                      style: ButtonStyle(
-                        backgroundColor: hasBeenPressed
-                            ? MaterialStateProperty.all<Color>(Colors.white)
-                            : MaterialStateProperty.all<Color>(LicheeColors.primary),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          isLogged
-                              ? hasBeenPressed = !hasBeenPressed
-                              : print('please log in or sth');
-                        });
-                      },
-                      label: hasBeenPressed
-                          ? const Text(
-                              'Request sent',
-                              style: TextStyle(color: LicheeColors.primary),
-                            )
-                          : const Text('Join'),
-                    ),
-                    const SizedBox(height: 10.0),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Description', style: kBannerTextStyle),
-                          Container(
-                            padding: const EdgeInsets.only(
-                                left: 16.0, top: 16.0, right: 16.0, bottom: 0.0),
-                            child: Text(widget.channel.description),
-                          ),
-                          DetailsTable(rows: descriptionRows),
-                          const Text('About this channel',
-                              style: kBannerTextStyle),
-                          DetailsTable(rows: aboutRows),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
     );
   }
 
