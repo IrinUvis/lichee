@@ -30,19 +30,23 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
     }
   }
 
-  // void feedNodesListWithParentLevelNodes() {
-  //   String? idOfParentOfParent;
-  //   for (var element in nodesList) {
-  //     if (element.id == parentId) {
-  //       idOfParentOfParent = element.parentId;
-  //       break;
-  //     }
-  //   }
-  //   if (idOfParentOfParent != null) {
-  //     nodes.clear();
-  //     feedNodesListByParentId(nodes, idOfParentOfParent);
-  //   }
-  // }
+  void feedNodesListWithParentLevelNodes() {
+    String? idOfParentOfParent;
+    for (var element in nodesList) {
+      if (element.id == parentId) {
+        idOfParentOfParent = element.parentId;
+        parentId = element.parentId;
+        break;
+      }
+    }
+    if (idOfParentOfParent != null) {
+      nodes.clear();
+      feedNodesListByParentId(nodes, idOfParentOfParent);
+    } else {
+      nodes.clear();
+      feedCategoriesList();
+    }
+  }
 
   @override
   void initState() {
@@ -85,9 +89,8 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // setState(() {
-                      //   feedNodesListWithParentLevelNodes();
-                      // });
+                      feedNodesListWithParentLevelNodes();
+                      setState(() {});
                     },
                     child: const Icon(
                       Icons.undo,
@@ -109,6 +112,7 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                         onPressed: nodes[index].childrenIds == null
                             ? null
                             : () {
+                                this.parentId = nodes[index].id;
                                 String parentId = nodes[index].id;
                                 temp.clear();
                                 nodes.clear();
