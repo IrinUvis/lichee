@@ -50,7 +50,7 @@ List<ChannelTreeNode> nodesList = [
       ),
       type: 'Category',
       parentId: null,
-      childrenIds: null),
+      childrenIds: ['9']),
   ChannelTreeNode(
       id: '3',
       name: 'Volleyball',
@@ -60,10 +60,10 @@ List<ChannelTreeNode> nodesList = [
       ),
       type: 'Category',
       parentId: null,
-      childrenIds: null),
+      childrenIds: ['10']),
   ChannelTreeNode(
       id: '4',
-      name: 'matchPlaying',
+      name: 'Match Playing',
       icon: const Icon(
         Icons.category,
         color: Colors.white,
@@ -73,7 +73,7 @@ List<ChannelTreeNode> nodesList = [
       childrenIds: ['7']),
   ChannelTreeNode(
       id: '5',
-      name: 'fanMeetings',
+      name: 'Fan Meetings',
       icon: const Icon(
         Icons.category,
         color: Colors.white,
@@ -83,7 +83,7 @@ List<ChannelTreeNode> nodesList = [
       childrenIds: null),
   ChannelTreeNode(
       id: '6',
-      name: 'matchWatching',
+      name: 'Match Watching',
       icon: const Icon(
         Icons.category,
         color: Colors.white,
@@ -101,4 +101,54 @@ List<ChannelTreeNode> nodesList = [
       type: 'Channel',
       parentId: '4',
       childrenIds: null),
+  ChannelTreeNode(
+      id: '8',
+      name: 'Running',
+      icon: const Icon(
+        Icons.category,
+        color: Colors.white,
+      ),
+      type: 'Category',
+      parentId: null,
+      childrenIds: null),
+  ChannelTreeNode(
+      id: '9',
+      name: 'Discussions',
+      icon: const Icon(
+        Icons.category,
+        color: Colors.white,
+      ),
+      type: 'Category',
+      parentId: '2',
+      childrenIds: ['11', '12']),
+  ChannelTreeNode(
+      id: '10',
+      name: 'Net discussions',
+      icon: const Icon(
+        Icons.category,
+        color: Colors.white,
+      ),
+      type: 'Category',
+      parentId: '3',
+      childrenIds: null),
+  ChannelTreeNode(
+      id: '11',
+      name: 'NBA',
+      icon: const Icon(
+        Icons.chat,
+        color: Colors.white,
+      ),
+      type: 'Channel',
+      parentId: '9',
+      childrenIds: null),
+  ChannelTreeNode(
+      id: '12',
+      name: 'Energa Basket Liga',
+      icon: const Icon(
+        Icons.chat,
+        color: Colors.white,
+      ),
+      type: 'Channel',
+      parentId: '9',
+      childrenIds: null)
 ];
