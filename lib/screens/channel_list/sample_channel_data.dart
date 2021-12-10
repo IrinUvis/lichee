@@ -1,5 +1,20 @@
 import 'package:flutter/material.dart';
 
+class ChannelTreeNodeA {
+  String id;
+  String name;
+  String type;
+  String? parentId;
+  List<String>? childrenIds;
+
+  ChannelTreeNodeA(
+      {required this.id,
+        required this.name,
+        required this.type,
+        required this.parentId,
+        required this.childrenIds});
+}
+
 class ChannelTreeNode {
   String id;
   String name;

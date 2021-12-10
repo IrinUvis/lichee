@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:lichee/screens/channel_list/sample_channel_data.dart';
 
 class TreeNodeCard extends StatelessWidget {
   const TreeNodeCard({
     Key? key,
-    required this.nodeName,
-    required this.nodes,
-    required this.index,
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.parentId,
+    required this.childrenIds,
   }) : super(key: key);
 
-  final String nodeName;
-  final List<ChannelTreeNode> nodes;
-  final int index;
+  //final ChannelTreeNodeA node;
+  final String id;
+  final String name;
+  final String type;
+  final String parentId;
+  final List<String>? childrenIds;
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +32,13 @@ class TreeNodeCard extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  nodeName,
+                  name,
                   style: const TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
                 const SizedBox(
                   width: 5.0,
                 ),
-                nodes[index].childrenIds != null
+                childrenIds != null
                     ? const Icon(
                         Icons.arrow_right,
                         color: Colors.white,
@@ -44,7 +48,7 @@ class TreeNodeCard extends StatelessWidget {
             ),
             Row(
               children: [
-                nodes[index].childrenIds == null
+                childrenIds!.isEmpty || childrenIds == null
                     ? const Text(
                         'empty',
                         style: TextStyle(color: Colors.grey),
@@ -53,7 +57,12 @@ class TreeNodeCard extends StatelessWidget {
                 const SizedBox(
                   width: 5.0,
                 ),
-                nodes[index].icon
+                type == 'category'
+                    ? const Icon(
+                        Icons.category,
+                        color: Colors.white,
+                      )
+                    : Container(),
               ],
             ),
           ],
