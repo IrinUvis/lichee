@@ -39,9 +39,11 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                       size: 40.0,
                     ),
                     style: ElevatedButton.styleFrom(
-                        primary: Colors.pinkAccent,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),),),
+                      primary: Colors.pinkAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: _openFilterDialog,
@@ -53,9 +55,11 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                        primary: Colors.pinkAccent,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),),),
+                      primary: Colors.pinkAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
                   ),
                   ElevatedButton(
                     onPressed: () {

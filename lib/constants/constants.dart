@@ -14,6 +14,27 @@ const kChatsSearchBarInputDecoration = InputDecoration(
   suffixIcon: Icon(Icons.search),
 );
 
+const kAddChannelNameBarInputDecoration = InputDecoration(
+  contentPadding: EdgeInsets.all(20.0),
+  hintText: 'Add channel name',
+  border: InputBorder.none,
+  suffixIcon: Icon(Icons.title),
+);
+
+const kAddChannelCityBarInputDecoration = InputDecoration(
+  contentPadding: EdgeInsets.all(20.0),
+  hintText: 'Add channel city',
+  border: InputBorder.none,
+  suffixIcon: Icon(Icons.location_city),
+);
+
+const kAddChannelDescriptionBarInputDecoration = InputDecoration(
+  contentPadding: EdgeInsets.all(20.0),
+  hintText: 'Add channel description',
+  border: InputBorder.none,
+  suffixIcon: Icon(Icons.description),
+);
+
 const kBannerTextStyle = TextStyle(
   fontSize: 30.0,
   fontWeight: FontWeight.bold,
