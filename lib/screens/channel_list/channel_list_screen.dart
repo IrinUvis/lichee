@@ -13,41 +13,8 @@ class ChannelListScreen extends StatefulWidget {
 
 class _ChannelListScreenState extends State<ChannelListScreen> {
   List<String>? selectedFiltersList = [];
-  List<ChannelTreeNode> nodes = [];
-  String? parentId;
-
-  void feedNodesListByParentId(List<ChannelTreeNode> table, String? parentId) {
-    this.parentId = parentId;
-    nodes.clear();
-    for (var element in nodesList) {
-      if (element.parentId == parentId) {
-        table.add(element);
-      }
-    }
-    setState(() {});
-  }
-
-  void feedNodesListWithParentLevelNodes() {
-    for (var element in nodesList) {
-      if (element.id == parentId) {
-        parentId = element.parentId;
-        break;
-      }
-    }
-    nodes.clear();
-    if (parentId != null) {
-      feedNodesListByParentId(nodes, parentId);
-    } else {
-      feedNodesListByParentId(nodes, null);
-    }
-    setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    feedNodesListByParentId(nodes, null);
-  }
+  String parentId = '';
+  List<String> parentIdStack = [];
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +29,9 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      nodes.clear();
-                      feedNodesListByParentId(nodes, null);
+                      setState(() {
+                        parentId = '';
+                      });
                     },
                     child: const Icon(
                       Icons.home,
@@ -73,7 +41,7 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                     style: ElevatedButton.styleFrom(
                         primary: Colors.pinkAccent,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0))),
+                            borderRadius: BorderRadius.circular(20.0),),),
                   ),
                   ElevatedButton(
                     onPressed: _openFilterDialog,
@@ -87,11 +55,15 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                     style: ElevatedButton.styleFrom(
                         primary: Colors.pinkAccent,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0))),
+                            borderRadius: BorderRadius.circular(20.0),),),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      feedNodesListWithParentLevelNodes();
+                      setState(() {
+                        if (parentIdStack.isNotEmpty) {
+                          parentId = parentIdStack.removeLast();
+                        }
+                      });
                     },
                     child: const Icon(
                       Icons.undo,
@@ -99,9 +71,11 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                       size: 40.0,
                     ),
                     style: ElevatedButton.styleFrom(
-                        primary: Colors.pinkAccent,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0))),
+                      primary: Colors.pinkAccent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -109,21 +83,6 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                 child: Container(
                   color: const Color(0xFF1A1A1A),
                   child: getNodesTree(),
-                  // ListView.builder(
-                  //   itemCount: nodes.length,
-                  //   itemBuilder: (BuildContext context, int index) {
-                  //     return TextButton(
-                  //       onPressed: nodes[index].childrenIds == null
-                  //           ? null
-                  //           : () {
-                  //               feedNodesListByParentId(nodes, nodes[index].id);
-                  //             },
-                  //       child: TreeNodeCard(
-                  //         node: nodes[index],
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
                 ),
               ),
             ],
@@ -135,7 +94,10 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
 
   StreamBuilder<QuerySnapshot> getNodesTree() {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('categories').snapshots(),
+      stream: FirebaseFirestore.instance
+          .collection('categories')
+          .where('parentId', isEqualTo: parentId)
+          .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -145,49 +107,25 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
           final nodesList = snapshot.data!.docs
               .map((doc) => doc.data() as Map<String, dynamic>)
               .toList();
-          print(nodesList.toString());
-          print(nodesList[0]['id'].runtimeType);
-          print(nodesList[0]['name'].runtimeType);
-          print(nodesList[0]['type'].runtimeType);
-          print(nodesList[0]['parentId'].runtimeType);
-          print(nodesList[0]['childreIds'].runtimeType);
-          return
-          //   ListView(
-          //   children: nodesList
-          //       .map((nodesList) => Column(
-          //             children: <Widget>[
-          //               Icon(Icons.check),
-          //               TreeNodeCard(
-          //                   id: nodesList['id'],
-          //                   name: nodesList['name'],
-          //                   type: nodesList['type'],
-          //                   parentId: nodesList['parentId'],
-          //                   //childrenIds: nodesList['childrenIds'],
-          //                 ),
-          //               const SizedBox(
-          //                 height: 5.0,
-          //               )
-          //             ],
-          //           ))
-          //       .toList(),
-          // );
-            ListView.builder(
+          return ListView.builder(
             itemCount: nodesList.length,
             itemBuilder: (BuildContext context, int index) {
               return TextButton(
-                onPressed: nodesList[index]['childrenIds'] ==
-                        null //nodes[index].childrenIds == null
+                onPressed: List.from(nodesList[index]['childrenIds']).isEmpty
                     ? null
                     : () {
-                        feedNodesListByParentId(nodes, nodes[index].id);
+                        parentIdStack.add(parentId);
+
+                        parentId = nodesList[index]['id'];
+                        setState(() {});
                       },
                 child: TreeNodeCard(
-                                id: nodesList[index]['id'],
-                                name: nodesList[index]['name'],
-                                type: nodesList[index]['type'],
-                                parentId: nodesList[index]['parentId'],
-                                childrenIds: List.from(nodesList[index]['childrenIds']),
-                              ),
+                  id: nodesList[index]['id'],
+                  name: nodesList[index]['name'],
+                  type: nodesList[index]['type'],
+                  parentId: nodesList[index]['parentId'],
+                  childrenIds: List.from(nodesList[index]['childrenIds']),
+                ),
               );
             },
           );

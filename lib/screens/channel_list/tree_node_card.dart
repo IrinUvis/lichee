@@ -10,7 +10,6 @@ class TreeNodeCard extends StatelessWidget {
     required this.childrenIds,
   }) : super(key: key);
 
-  //final ChannelTreeNodeA node;
   final String id;
   final String name;
   final String type;
@@ -48,7 +47,7 @@ class TreeNodeCard extends StatelessWidget {
             ),
             Row(
               children: [
-                childrenIds!.isEmpty || childrenIds == null
+                (childrenIds!.isEmpty || childrenIds == null) && type == 'category'
                     ? const Text(
                         'empty',
                         style: TextStyle(color: Colors.grey),
@@ -62,7 +61,10 @@ class TreeNodeCard extends StatelessWidget {
                         Icons.category,
                         color: Colors.white,
                       )
-                    : Container(),
+                    : const Icon(
+                        Icons.chat,
+                        color: Colors.white,
+                      ),
               ],
             ),
           ],
