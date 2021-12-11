@@ -184,21 +184,20 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
         setState(() {
           file = null;
         });
-        FirebaseFirestore.instance
-            .collection('channel_messages/' + widget.data.channelId + '/messages')
-            .add(MessageData(
-          idSentBy: Provider.of<User?>(context, listen: false)!.uid,
-          nameSentBy: Provider.of<User?>(context, listen: false)!.displayName!,
-          messageText: messageText,
-          imageUrl: imageUrl,
-          sentAt: now,
-        ).toMap());
       } on FirebaseException catch (e) {
         Fluttertoast.showToast(msg: 'An unexpected error has occurred! Message wasn\'t sent');
-      } finally {
-        messageText = '';
       }
     }
+    FirebaseFirestore.instance
+        .collection('channel_messages/' + widget.data.channelId + '/messages')
+        .add(MessageData(
+      idSentBy: Provider.of<User?>(context, listen: false)!.uid,
+      nameSentBy: Provider.of<User?>(context, listen: false)!.displayName!,
+      messageText: messageText,
+      imageUrl: imageUrl,
+      sentAt: now,
+    ).toMap());
+    messageText = '';
   }
 
   Future<void> _chooseImageFromGallery() async {
