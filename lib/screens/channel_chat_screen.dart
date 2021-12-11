@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/models/message_data.dart';
+import 'package:lichee/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ChannelChatScreen extends StatefulWidget {
@@ -18,6 +24,9 @@ class ChannelChatScreen extends StatefulWidget {
 
 class _ChannelChatScreenState extends State<ChannelChatScreen> {
   final messageTextController = TextEditingController();
+  ImagePicker imagePicker = ImagePicker();
+
+  File? file;
   String messageText = '';
 
   StreamBuilder<QuerySnapshot> getMessagesStream() {
@@ -42,6 +51,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
               MessageBubble(
                 sender: message.nameSentBy,
                 text: message.messageText,
+                imageUrl: message.imageUrl,
                 isMe: Provider.of<User?>(context)!.uid == message.idSentBy,
               ),
             );
@@ -59,6 +69,88 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     );
   }
 
+  Widget getMessageSender() {
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(
+          top: BorderSide(
+            color: Colors.white10,
+          ),
+        ),
+      ),
+      height: 50,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          getImagePicker(),
+          Expanded(
+            child: TextField(
+              decoration: kMessageTextFieldDecoration,
+              controller: messageTextController,
+              onChanged: (value) {
+                messageText = value;
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: () => _sendMessage(),
+            icon: const Icon(
+              Icons.arrow_forward_ios_outlined,
+              color: Colors.pinkAccent,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Row getImagePicker() {
+    if (file == null) {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            padding: const EdgeInsets.only(left: 8.0),
+            onPressed: () => _chooseImageFromGallery(),
+            icon: const Icon(
+              Icons.camera_alt_outlined,
+              color: Colors.pinkAccent,
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconButton(
+            padding: const EdgeInsets.only(left: 10.0),
+            onPressed: () => _clearImage(),
+            icon: const Icon(
+              Icons.close_outlined,
+              color: Colors.pinkAccent,
+            ),
+          ),
+          const SizedBox(
+            width: 5,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 3.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5.0),
+              child: Image.file(
+                file!,
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 5,
+          )
+        ],
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,43 +163,56 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             getMessagesStream(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: TextField(
-                    decoration: kMessageTextFieldDecoration,
-                    controller: messageTextController,
-                    onChanged: (value) {
-                      messageText = value;
-                    },
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => sendMessage(),
-                  child: const Text(
-                    'Send',
-                    //style: ,
-                  ),
-                ),
-              ],
-            ),
+            getMessageSender(),
           ],
         ),
       ),
     );
   }
 
-  void sendMessage() {
+  Future<void> _sendMessage() async {
     messageTextController.clear();
-    FirebaseFirestore.instance
-        .collection('channel_messages/' + widget.data.channelId + '/messages')
-        .add(MessageData(
+    String? imageUrl;
+    if (file == null && messageText.isEmpty) {
+      return;
+    }
+    DateTime now = DateTime.now();
+    if (file != null) {
+      try {
+        imageUrl = await StorageService.uploadFile(
+            path: 'chats/' + widget.data.channelId + '/' + now.millisecondsSinceEpoch.toString(), file: file!);
+        setState(() {
+          file = null;
+        });
+        FirebaseFirestore.instance
+            .collection('channel_messages/' + widget.data.channelId + '/messages')
+            .add(MessageData(
           idSentBy: Provider.of<User?>(context, listen: false)!.uid,
           nameSentBy: Provider.of<User?>(context, listen: false)!.displayName!,
           messageText: messageText,
-          sentAt: DateTime.now(),
+          imageUrl: imageUrl,
+          sentAt: now,
         ).toMap());
+      } on FirebaseException catch (e) {
+        Fluttertoast.showToast(msg: 'An unexpected error has occurred! Message wasn\'t sent');
+      } finally {
+        messageText = '';
+      }
+    }
+  }
+
+  Future<void> _chooseImageFromGallery() async {
+    final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
+    File image = File(pickedFile!.path); //
+    setState(() {
+      file = image;
+    });
+  }
+
+  void _clearImage() {
+    setState(() {
+      file = null;
+    });
   }
 }
 
@@ -115,12 +220,83 @@ class MessageBubble extends StatelessWidget {
   const MessageBubble({
     required this.sender,
     required this.text,
+    this.imageUrl,
     required this.isMe,
   });
 
   final String sender;
   final String text;
+  final String? imageUrl;
   final bool isMe;
+
+  Column getMessageContent() {
+    if (imageUrl != null) {
+      if (text.isNotEmpty) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            ClipRRect(
+              borderRadius: isMe
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(5.0),
+                      bottomRight: Radius.circular(5.0))
+                  : const BorderRadius.only(
+                      bottomLeft: Radius.circular(5.0),
+                      bottomRight: Radius.circular(5.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+              child: Image.network(imageUrl!),
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            Text(
+              text,
+              textAlign: TextAlign.start,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15.0,
+              ),
+            ),
+          ],
+        );
+      } else {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            ClipRRect(
+              borderRadius: isMe
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0))
+                  : const BorderRadius.only(
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+              child: Image.network(imageUrl!),
+            ),
+          ],
+        );
+      }
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            text,
+            textAlign: TextAlign.start,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15.0,
+            ),
+          ),
+        ],
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -137,28 +313,26 @@ class MessageBubble extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          Material(
-            borderRadius: isMe
-                ? const BorderRadius.only(
-                    topLeft: Radius.circular(30.0),
-                    bottomLeft: Radius.circular(30.0),
-                    bottomRight: Radius.circular(30.0))
-                : const BorderRadius.only(
-                    bottomLeft: Radius.circular(30.0),
-                    bottomRight: Radius.circular(30.0),
-                    topRight: Radius.circular(30.0),
-                  ),
-            elevation: 5.0,
-            color: isMe ? Colors.pinkAccent : const Color(0xFF444444),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-              child: Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15.0,
-                ),
+          Container(
+            constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.6),
+            child: Material(
+              borderRadius: isMe
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(20.0),
+                      bottomLeft: Radius.circular(20.0),
+                      bottomRight: Radius.circular(20.0))
+                  : const BorderRadius.only(
+                      bottomLeft: Radius.circular(20.0),
+                      bottomRight: Radius.circular(20.0),
+                      topRight: Radius.circular(20.0),
+                    ),
+              elevation: 5.0,
+              color: isMe ? Colors.pinkAccent : const Color(0xFF444444),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 10.0),
+                child: getMessageContent(),
               ),
             ),
           ),
@@ -172,6 +346,8 @@ class ChannelChatNavigationParams {
   final String channelId;
   final String channelName;
 
-  ChannelChatNavigationParams(
-      {required this.channelId, required this.channelName});
+  ChannelChatNavigationParams({
+    required this.channelId,
+    required this.channelName,
+  });
 }
