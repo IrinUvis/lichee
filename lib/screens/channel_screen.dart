@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
+import 'package:lichee/channels/services/update/update_channel.dart';
 import 'package:lichee/components/details_table.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:provider/provider.dart';
 import '../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
@@ -21,6 +24,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   bool isLogged = true;
   bool hasBeenPressed = false;
 
+
   void handleTap(String value) {
     switch (value) {
       case 'Report':
@@ -30,6 +34,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User?>(context);
     String owner = widget.channel.ownerId;
     String membersNumber = widget.channel.userIds.length.toString();
     String city = widget.channel.city;
@@ -37,7 +42,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
     List<TableRow> aboutRows = [
       TableRow(children: [
         Icon(Icons.access_time_outlined),
-        Text(widget.channel.createdOn.toString()),
+        Text('Created on ${widget.channel.createdOn.day}.${widget.channel.createdOn.month}.${widget.channel.createdOn.year}'),
       ]),
       TableRow(children: [
         Icon(Icons.groups_rounded),
@@ -134,14 +139,18 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     ),
                     onPressed: () {
                       setState(() {
-                        isLogged
-                            ? hasBeenPressed = !hasBeenPressed
-                            : print('please log in or sth');
+                        if (user != null && hasBeenPressed == true) {
+                          hasBeenPressed = !hasBeenPressed;
+                          UpdateChannelService().removeUserFromChannelById(user.uid, widget.channel.channelId);
+                        } else if (user != null && hasBeenPressed == false) {
+                          hasBeenPressed = !hasBeenPressed;
+                          UpdateChannelService().addUserToChannelById(user.uid, widget.channel.channelId);
+                        }
                       });
                     },
                     label: hasBeenPressed
                         ? const Text(
-                            'Request sent',
+                            'Joined',
                             style: TextStyle(color: LicheeColors.primary),
                           )
                         : const Text('Join'),
@@ -172,6 +181,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   Future<void> _reportDialog(BuildContext context) async {
