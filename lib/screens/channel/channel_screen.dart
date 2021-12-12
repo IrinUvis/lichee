@@ -3,7 +3,7 @@ import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/components/details_table.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
-import '../constants/channel_constants.dart';
+import '../../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';
