@@ -2,11 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/update/update_channel.dart';
+import 'package:lichee/components/channel_backgroud_photo.dart';
 import 'package:lichee/components/details_rows.dart';
 import 'package:lichee/components/details_table.dart';
+import 'package:lichee/components/event_tile.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
@@ -25,6 +28,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
   late ReadChannelDto channel;
   late DetailsRows about;
   late DetailsRows description;
+  final PageController _controller = PageController();
+  double currentPage = 0;
 
   void handleTap(String value) {
     switch (value) {
@@ -40,39 +45,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
           Expanded(
             child: ListView(
               children: [
-                Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: [
-                    Container(
-                      //hard coded for now
-                      height: 200.0,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(channel.channelImageUrl),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      height: 200.0,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        gradient: LinearGradient(
-                          begin: FractionalOffset.topCenter,
-                          end: FractionalOffset.bottomCenter,
-                          colors: [
-                            Colors.grey.shade800.withOpacity(0.4),
-                            Colors.black,
-                          ],
-                          stops: const [0.0, 1.0],
-                        ),
-                      ),
-                    ),
-                    Text(channel.channelName,
-                        style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
-                  ],
-                ),
+                ChannelBackgroundPhoto(channel: channel),
                 ElevatedButton.icon(
                   icon: hasBeenInitiallyPressed
                       ? const Icon(Icons.check, color: LicheeColors.primary)
@@ -134,9 +107,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   Widget channelForMember(User? user) {
-    final PageController controller = PageController();
     return PageView(
-      controller: controller,
+      controller: _controller,
       children: [
         SafeArea(
           child: Column(
@@ -144,40 +116,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
               Expanded(
                 child: ListView(
                   children: [
-                    Stack(
-                      alignment: AlignmentDirectional.center,
-                      children: [
-                        Container(
-                          //hard coded for now
-                          height: 200.0,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(channel.channelImageUrl),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          height: 200.0,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            gradient: LinearGradient(
-                              begin: FractionalOffset.topCenter,
-                              end: FractionalOffset.bottomCenter,
-                              colors: [
-                                Colors.grey.shade800.withOpacity(0.4),
-                                Colors.black,
-                              ],
-                              stops: const [0.0, 1.0],
-                            ),
-                          ),
-                        ),
-                        Text(channel.channelName,
-                            style:
-                                kBannerTextStyle.copyWith(letterSpacing: 2.0)),
-                      ],
-                    ),
+                    ChannelBackgroundPhoto(channel: channel),
                     ElevatedButton.icon(
                       icon: hasBeenInitiallyPressed
                           ? const Icon(Icons.check, color: LicheeColors.primary)
@@ -221,19 +160,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('News feed', style: kBannerTextStyle),
+                          const Text('Latest events', style: kBannerTextStyle),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 16.0, horizontal: 30.0),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey[850],
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 30.0, vertical: 10.0),
-                              child: Text('some text'),
-                            ),
+                            child: EventTile(),
                           ),
                         ],
                       ),
@@ -269,6 +200,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           const Text('About this channel',
                               style: kBannerTextStyle),
                           DetailsTable(rows: about.create()),
+                          const Text('Members', style: kBannerTextStyle),
                         ],
                       ),
                     ),
@@ -321,6 +253,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
     channel = widget.channel;
     about = DetailsRows(channel: channel, isAboutTable: true);
     description = DetailsRows(channel: channel, isAboutTable: false);
+    _controller.addListener(() {
+      setState(() {
+        currentPage = _controller.page!;
+      });
+    });
   }
 
   Future<void> _reportDialog(BuildContext context) async {
@@ -364,3 +301,4 @@ class _ChannelScreenState extends State<ChannelScreen> {
     );
   }
 }
+
