@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
+import 'package:lichee/constants/colors.dart';
+import 'package:lichee/constants/constants.dart';
+import 'package:lichee/constants/icons.dart';
 import 'package:lichee/screens/channel_list/sample_channel_data.dart';
 import 'package:lichee/screens/channel_list/tree_node_card.dart';
 
@@ -17,8 +20,8 @@ class CategoriesTreeView extends StatefulWidget {
 
 class _CategoriesTreeViewState extends State<CategoriesTreeView> {
   List<String>? selectedFiltersList = [];
-  String parentId = '';
   List<String> parentIdStack = [];
+  String parentId = '';
   bool isLastCategory = false;
 
   @override
@@ -29,71 +32,25 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  parentId = '';
-                  parentIdStack.clear();
-                  if (widget.isChoosingCategoryForChannelAddingAvailable) {
-                    isLastCategory = false;
-                  }
-                });
-              },
-              child: const Icon(
-                Icons.home,
-                color: Colors.white,
-                size: 40.0,
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.pinkAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
+              onPressed: _resetCategoriesTreeView,
+              child: kResetCategoriesTreeViewIcon,
+              style: kCategoriesTreeViewButtonStyle,
             ),
             ElevatedButton(
               onPressed: _openFilterDialog,
-              child: const Padding(
-                padding: EdgeInsets.all(7.0),
-                child: Text(
-                  'Filters',
-                  style: TextStyle(color: Colors.white, fontSize: 20.0),
-                ),
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.pinkAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
+              child: kCategoriesTreeViewFiltersButtonText,
+              style: kCategoriesTreeViewButtonStyle,
             ),
             ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  if (parentIdStack.isNotEmpty) {
-                    parentId = parentIdStack.removeLast();
-                  }
-                  if (widget.isChoosingCategoryForChannelAddingAvailable) {
-                    isLastCategory = false;
-                  }
-                });
-              },
-              child: const Icon(
-                Icons.undo,
-                color: Colors.white,
-                size: 40.0,
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.pinkAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0),
-                ),
-              ),
+              onPressed: _returnToUpperLevelInCategoriesTreeView,
+              child: kReturnToUpperLevelInTreeViewIcon,
+              style: kCategoriesTreeViewButtonStyle,
             ),
           ],
         ),
         Expanded(
           child: Container(
-            color: const Color(0xFF1A1A1A),
+            color: LicheeColors.backgroundColor,
             child: getNodesTree(),
           ),
         ),
@@ -103,10 +60,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                     onPressed: () {
                       Navigator.pop(context, parentId);
                     },
-                    child: const Text(
-                      'Choose this category',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                    child: kChooseCategoryForAddingChannelButtonText,
                   )
                 : Container()
             : Container(),
@@ -137,34 +91,56 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                       onPressed: nodesList[index]['type'] == 'channel'
                           ? null
                           : () {
-                              if (widget
-                                  .isChoosingCategoryForChannelAddingAvailable) {
-                                isLastCategory =
-                                    nodesList[index]['isLastCategory'];
-                              }
-
-                              parentIdStack.add(parentId);
-
-                              parentId = nodesList[index]['id'];
-                              setState(() {});
+                              _openCategory(nodesList, index);
                             },
                       child: TreeNodeCard(
                         id: nodesList[index]['id'],
                         name: nodesList[index]['name'],
                         type: nodesList[index]['type'],
                         parentId: nodesList[index]['parentId'],
-                        childrenIds: List.from(nodesList[index]['childrenIds']),
+                        childrenIds: List.from(
+                          nodesList[index]['childrenIds'],
+                        ),
                       ),
                     );
                   },
                 )
-              : const Text(
-                  'This category is empty for now',
-                  style: TextStyle(color: Colors.white),
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      kEmptyCategoryText,
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      kEmptyCategoryIcon,
+                    ],
+                  ),
                 );
         }
       },
     );
+  }
+
+  void _resetCategoriesTreeView() {
+    setState(() {
+      parentId = '';
+      parentIdStack.clear();
+      if (widget.isChoosingCategoryForChannelAddingAvailable) {
+        isLastCategory = false;
+      }
+    });
+  }
+
+  void _returnToUpperLevelInCategoriesTreeView() {
+    setState(() {
+      if (parentIdStack.isNotEmpty) {
+        parentId = parentIdStack.removeLast();
+      }
+      if (widget.isChoosingCategoryForChannelAddingAvailable) {
+        isLastCategory = false;
+      }
+    });
   }
 
   void _openFilterDialog() async {
@@ -210,5 +186,15 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
         Navigator.pop(context);
       },
     );
+  }
+
+  void _openCategory(List<Map<String, dynamic>> nodesList, int index) {
+    setState(() {
+      if (widget.isChoosingCategoryForChannelAddingAvailable) {
+        isLastCategory = nodesList[index]['isLastCategory'];
+      }
+      parentIdStack.add(parentId);
+      parentId = nodesList[index]['id'];
+    });
   }
 }

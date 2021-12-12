@@ -70,3 +70,28 @@ const kRegisterTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
   fontSize: 14.0,
 );
+
+final kCategoriesTreeViewButtonStyle = ElevatedButton.styleFrom(
+  primary: Colors.pinkAccent,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(20.0),
+  ),
+);
+
+const kCategoriesTreeViewFiltersButtonText = Padding(
+  padding: EdgeInsets.all(7.0),
+  child: Text(
+    'Filters',
+    style: TextStyle(color: Colors.white, fontSize: 20.0),
+  ),
+);
+
+const kChooseCategoryForAddingChannelButtonText = Text(
+  'Choose this category',
+  style: TextStyle(color: Colors.white),
+);
+
+const kEmptyCategoryText = Text(
+  'This category is empty for now',
+  style: TextStyle(color: Colors.white, fontSize: 20.0),
+);
