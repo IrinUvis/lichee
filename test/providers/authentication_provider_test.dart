@@ -3,9 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/models/user_data.dart';
 import 'package:lichee/providers/authentication_provider.dart';
 
-import '../auth_mock_setup/firebase_auth_mocks_base.dart';
-import '../auth_mock_setup/mock_user.dart';
-import '../auth_mock_setup/mock_user_credential.dart';
+import '../setup/auth_mock_setup/firebase_auth_mocks_base.dart';
+import '../setup/auth_mock_setup/mock_user.dart';
+import '../setup/auth_mock_setup/mock_user_credential.dart';
+
 
 class FakeFirebaseAuth extends MockFirebaseAuth {
   FakeFirebaseAuth({signedIn = false, MockUser? mockUser})
