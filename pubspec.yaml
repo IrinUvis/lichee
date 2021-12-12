@@ -24,6 +24,7 @@ dependencies:
   intl: ^0.17.0
   rxdart: ^0.27.3
   filter_list: ^1.0.0
+  image_picker: ^0.8.4+4
 
 dev_dependencies:
   flutter_test:

@@ -76,8 +76,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             child: MaterialButton(
               padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
               minWidth: MediaQuery.of(context).size.width,
-              onPressed: () {},
-              // TODO: change page to the profile page
+              onPressed: null,
               child: const Text(
                 'Log in to see your chat list!',
                 textAlign: TextAlign.center,
