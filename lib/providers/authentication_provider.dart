@@ -4,8 +4,9 @@ import 'package:lichee/models/user_data.dart';
 
 class AuthenticationProvider {
   final FirebaseAuth _firebaseAuth;
+  final FirebaseFirestore _firebaseFirestore;
 
-  AuthenticationProvider(this._firebaseAuth);
+  AuthenticationProvider(this._firebaseAuth, this._firebaseFirestore);
 
   Stream<User?> get authState => _firebaseAuth.idTokenChanges();
 
@@ -16,9 +17,8 @@ class AuthenticationProvider {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: userData.email, password: password);
     await userCredential.user!.updateDisplayName(userData.username);
-    _firebaseAuth.signInWithEmailAndPassword(
-        email: userData.email, password: password);
-    FirebaseFirestore.instance.collection('users').add(
+    await signIn(email: userData.email, password: password);
+    _firebaseFirestore.collection('users').add(
           userData
               .copyWith(
                 id: userCredential.user!.uid,
