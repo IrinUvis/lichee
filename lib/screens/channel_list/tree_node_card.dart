@@ -47,7 +47,8 @@ class TreeNodeCard extends StatelessWidget {
             ),
             Row(
               children: [
-                (childrenIds!.isEmpty || childrenIds == null) && type == 'category'
+                (childrenIds!.isEmpty || childrenIds == null) &&
+                        type == 'category'
                     ? const Text(
                         'empty',
                         style: TextStyle(color: Colors.grey),
