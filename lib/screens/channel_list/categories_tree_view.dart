@@ -56,11 +56,12 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
         ),
         widget.isChoosingCategoryForChannelAddingAvailable
             ? isLastCategory
-                ? TextButton(
+                ? ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context, parentId);
                     },
                     child: kChooseCategoryForAddingChannelButtonText,
+                    style: kCategoriesTreeViewButtonStyle,
                   )
                 : Container()
             : Container(),

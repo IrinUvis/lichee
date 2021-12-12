@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/constants/colors.dart';
 
 const kHomeSearchBarInputDecoration = InputDecoration(
   contentPadding: EdgeInsets.all(20.0),
@@ -78,6 +79,13 @@ final kCategoriesTreeViewButtonStyle = ElevatedButton.styleFrom(
   ),
 );
 
+final kCategoriesTreeViewInactiveButtonStyle = ElevatedButton.styleFrom(
+  primary: LicheeColors.greyColor,
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(20.0),
+  ),
+);
+
 const kCategoriesTreeViewFiltersButtonText = Padding(
   padding: EdgeInsets.all(7.0),
   child: Text(
@@ -95,3 +103,25 @@ const kEmptyCategoryText = Text(
   'This category is empty for now',
   style: TextStyle(color: Colors.white, fontSize: 20.0),
 );
+
+const kAddChannelButtonText = Text(
+  'Add channel',
+  style: TextStyle(color: Colors.white, fontSize: 20.0),
+);
+
+const kAddEventButtonText = Text(
+  'Add event',
+  style: TextStyle(color: Colors.white, fontSize: 20.0),
+);
+
+const kChooseCategoryButtonText = Text(
+  'Choose category',
+  style: TextStyle(color: Colors.white, fontSize: 20.0),
+);
+
+const kCategoryNodeEmptyText = Text(
+  'empty',
+  style: TextStyle(color: Colors.grey),
+);
+
+const kCategoryNodeTestStyle = TextStyle(color: Colors.white, fontSize: 20.0);

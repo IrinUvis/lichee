@@ -17,3 +17,18 @@ const kEmptyCategoryIcon = Icon(
   color: Colors.white,
   size: 100.0,
 );
+
+const kCategoryNodeArrow = Icon(
+  Icons.arrow_right,
+  color: Colors.white,
+);
+
+const kCategoryNodeCategoryIcon = Icon(
+  Icons.category,
+  color: Colors.white,
+);
+
+const kCategoryNodeChannelIcon = Icon(
+  Icons.chat,
+  color: Colors.white,
+);
