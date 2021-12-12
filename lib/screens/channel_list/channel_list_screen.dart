@@ -31,6 +31,7 @@ class _ChannelListScreenState extends State<ChannelListScreen> {
                     onPressed: () {
                       setState(() {
                         parentId = '';
+                        parentIdStack.clear();
                       });
                     },
                     child: const Icon(

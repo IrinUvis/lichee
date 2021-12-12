@@ -37,7 +37,7 @@ class TreeNodeCard extends StatelessWidget {
                 const SizedBox(
                   width: 5.0,
                 ),
-                childrenIds != null
+                childrenIds!.isNotEmpty
                     ? const Icon(
                         Icons.arrow_right,
                         color: Colors.white,
