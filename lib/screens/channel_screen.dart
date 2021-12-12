@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/update/update_channel.dart';
+import 'package:lichee/components/details_rows.dart';
 import 'package:lichee/components/details_table.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
@@ -10,7 +11,6 @@ import '../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';
-
   final ReadChannelDto channel;
 
   ChannelScreen({required this.channel});
@@ -21,9 +21,10 @@ class ChannelScreen extends StatefulWidget {
 
 class _ChannelScreenState extends State<ChannelScreen> {
   String? report;
-  bool isLogged = true;
-  bool hasBeenPressed = false;
-
+  late bool hasBeenInitiallyPressed;
+  late ReadChannelDto channel;
+  late DetailsRows about;
+  late DetailsRows description;
 
   void handleTap(String value) {
     switch (value) {
@@ -32,39 +33,259 @@ class _ChannelScreenState extends State<ChannelScreen> {
     }
   }
 
+  Widget channelForNonMember(User? user) {
+    return SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: [
+                Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    Container(
+                      //hard coded for now
+                      height: 200.0,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(channel.channelImageUrl),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 200.0,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        gradient: LinearGradient(
+                          begin: FractionalOffset.topCenter,
+                          end: FractionalOffset.bottomCenter,
+                          colors: [
+                            Colors.grey.shade800.withOpacity(0.4),
+                            Colors.black,
+                          ],
+                          stops: const [0.0, 1.0],
+                        ),
+                      ),
+                    ),
+                    Text(channel.channelName,
+                        style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+                  ],
+                ),
+                ElevatedButton.icon(
+                  icon: hasBeenInitiallyPressed
+                      ? const Icon(Icons.check, color: LicheeColors.primary)
+                      : const Icon(Icons.group),
+                  style: ButtonStyle(
+                    backgroundColor: hasBeenInitiallyPressed
+                        ? MaterialStateProperty.all<Color>(Colors.white)
+                        : MaterialStateProperty.all<Color>(
+                            LicheeColors.primary),
+                  ),
+                  onPressed: () {
+                    setState(
+                      () {
+                        if (user != null && hasBeenInitiallyPressed) {
+                          hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
+                          UpdateChannelService().removeUserFromChannelById(
+                              user.uid, channel.channelId);
+                          channel.userIds.remove(user.uid);
+                        } else if (user != null && !hasBeenInitiallyPressed) {
+                          hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
+                          UpdateChannelService().addUserToChannelById(
+                              user.uid, channel.channelId);
+                          channel.userIds.add(user.uid);
+                        }
+                      },
+                    );
+                  },
+                  label: hasBeenInitiallyPressed
+                      ? const Text(
+                          'Joined',
+                          style: TextStyle(color: LicheeColors.primary),
+                        )
+                      : const Text('Join'),
+                ),
+                const SizedBox(height: 10.0),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Description', style: kBannerTextStyle),
+                      Container(
+                        padding: const EdgeInsets.only(
+                            left: 16.0, top: 16.0, right: 16.0, bottom: 0.0),
+                        child: Text(channel.description),
+                      ),
+                      DetailsTable(rows: description.create()),
+                      const Text('About this channel', style: kBannerTextStyle),
+                      DetailsTable(rows: about.create()),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget channelForMember(User? user) {
+    final PageController controller = PageController();
+    return PageView(
+      controller: controller,
+      children: [
+        SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: [
+                        Container(
+                          //hard coded for now
+                          height: 200.0,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(channel.channelImageUrl),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: 200.0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            gradient: LinearGradient(
+                              begin: FractionalOffset.topCenter,
+                              end: FractionalOffset.bottomCenter,
+                              colors: [
+                                Colors.grey.shade800.withOpacity(0.4),
+                                Colors.black,
+                              ],
+                              stops: const [0.0, 1.0],
+                            ),
+                          ),
+                        ),
+                        Text(channel.channelName,
+                            style:
+                                kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+                      ],
+                    ),
+                    ElevatedButton.icon(
+                      icon: hasBeenInitiallyPressed
+                          ? const Icon(Icons.check, color: LicheeColors.primary)
+                          : const Icon(Icons.group),
+                      style: ButtonStyle(
+                        backgroundColor: hasBeenInitiallyPressed
+                            ? MaterialStateProperty.all<Color>(Colors.white)
+                            : MaterialStateProperty.all<Color>(
+                                LicheeColors.primary),
+                      ),
+                      onPressed: () {
+                        setState(
+                          () {
+                            if (user != null && hasBeenInitiallyPressed) {
+                              hasBeenInitiallyPressed =
+                                  !hasBeenInitiallyPressed;
+                              UpdateChannelService().removeUserFromChannelById(
+                                  user.uid, channel.channelId);
+                              channel.userIds.remove(user.uid);
+                            } else if (user != null &&
+                                !hasBeenInitiallyPressed) {
+                              hasBeenInitiallyPressed =
+                                  !hasBeenInitiallyPressed;
+                              UpdateChannelService().addUserToChannelById(
+                                  user.uid, channel.channelId);
+                              channel.userIds.add(user.uid);
+                            }
+                          },
+                        );
+                      },
+                      label: hasBeenInitiallyPressed
+                          ? const Text(
+                              'Joined',
+                              style: TextStyle(color: LicheeColors.primary),
+                            )
+                          : const Text('Join'),
+                    ),
+                    const SizedBox(height: 10.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('News feed', style: kBannerTextStyle),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16.0, horizontal: 30.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.grey[850],
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 30.0, vertical: 10.0),
+                              child: Text('some text'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    const SizedBox(height: 10.0),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Description', style: kBannerTextStyle),
+                          Container(
+                            padding: const EdgeInsets.only(
+                                left: 16.0,
+                                top: 16.0,
+                                right: 16.0,
+                                bottom: 0.0),
+                            child: Text(channel.description),
+                          ),
+                          DetailsTable(rows: description.create()),
+                          const Text('About this channel',
+                              style: kBannerTextStyle),
+                          DetailsTable(rows: about.create()),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-    String owner = widget.channel.ownerId;
-    String membersNumber = widget.channel.userIds.length.toString();
-    String city = widget.channel.city;
-
-    List<TableRow> aboutRows = [
-      TableRow(children: [
-        Icon(Icons.access_time_outlined),
-        Text('Created on ${widget.channel.createdOn.day}.${widget.channel.createdOn.month}.${widget.channel.createdOn.year}'),
-      ]),
-      TableRow(children: [
-        Icon(Icons.groups_rounded),
-        Text('$membersNumber members'),
-      ]),
-      TableRow(children: [
-        Icon(Icons.person),
-        Text('Created by: $owner'),
-      ])
-    ];
-
-    List<TableRow> descriptionRows = [
-      TableRow(children: [
-        Icon(Icons.near_me),
-        Text(city),
-      ]),
-      TableRow(children: [
-        Icon(Icons.trending_up_outlined),
-        Text('Level'),
-      ]),
-    ];
-
+    hasBeenInitiallyPressed = channel.userIds.contains(user?.uid);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -86,106 +307,20 @@ class _ChannelScreenState extends State<ChannelScreen> {
             },
           ),
         ],
-        title: Text(widget.channel.channelName, style: kAppBarTitleTextStyle),
+        title: Text(channel.channelName, style: kAppBarTitleTextStyle),
       ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: [
-                  Stack(
-                    alignment: AlignmentDirectional.center,
-                    children: [
-                      Container(
-                        //hard coded for now
-                        height: 200.0,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(widget.channel.channelImageUrl),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 200.0,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          gradient: LinearGradient(
-                            begin: FractionalOffset.topCenter,
-                            end: FractionalOffset.bottomCenter,
-                            colors: [
-                              Colors.grey.shade800.withOpacity(0.4),
-                              Colors.black,
-                            ],
-                            stops: const [0.0, 1.0],
-                          ),
-                        ),
-                      ),
-                      Text(widget.channel.channelName,
-                          style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
-                    ],
-                  ),
-                  ElevatedButton.icon(
-                    icon: hasBeenPressed
-                        ? const Icon(Icons.check, color: LicheeColors.primary)
-                        : const Icon(Icons.group),
-                    style: ButtonStyle(
-                      backgroundColor: hasBeenPressed
-                          ? MaterialStateProperty.all<Color>(Colors.white)
-                          : MaterialStateProperty.all<Color>(
-                              LicheeColors.primary),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        if (user != null && hasBeenPressed == true) {
-                          hasBeenPressed = !hasBeenPressed;
-                          UpdateChannelService().removeUserFromChannelById(user.uid, widget.channel.channelId);
-                        } else if (user != null && hasBeenPressed == false) {
-                          hasBeenPressed = !hasBeenPressed;
-                          UpdateChannelService().addUserToChannelById(user.uid, widget.channel.channelId);
-                        }
-                      });
-                    },
-                    label: hasBeenPressed
-                        ? const Text(
-                            'Joined',
-                            style: TextStyle(color: LicheeColors.primary),
-                          )
-                        : const Text('Join'),
-                  ),
-                  const SizedBox(height: 10.0),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Description', style: kBannerTextStyle),
-                        Container(
-                          padding: const EdgeInsets.only(
-                              left: 16.0, top: 16.0, right: 16.0, bottom: 0.0),
-                          child: Text(widget.channel.description),
-                        ),
-                        DetailsTable(rows: descriptionRows),
-                        const Text('About this channel',
-                            style: kBannerTextStyle),
-                        DetailsTable(rows: aboutRows),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+      body: channel.userIds.contains(user?.uid)
+          ? channelForMember(user)
+          : channelForNonMember(user),
     );
   }
 
   @override
   void initState() {
     super.initState();
+    channel = widget.channel;
+    about = DetailsRows(channel: channel, isAboutTable: true);
+    description = DetailsRows(channel: channel, isAboutTable: false);
   }
 
   Future<void> _reportDialog(BuildContext context) async {
