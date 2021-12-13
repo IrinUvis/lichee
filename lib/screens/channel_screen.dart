@@ -117,42 +117,62 @@ class _ChannelScreenState extends State<ChannelScreen> {
                 child: ListView(
                   children: [
                     ChannelBackgroundPhoto(channel: channel),
-                    ElevatedButton.icon(
-                      icon: hasBeenInitiallyPressed
-                          ? const Icon(Icons.check, color: LicheeColors.primary)
-                          : const Icon(Icons.group),
-                      style: ButtonStyle(
-                        backgroundColor: hasBeenInitiallyPressed
-                            ? MaterialStateProperty.all<Color>(Colors.white)
-                            : MaterialStateProperty.all<Color>(
-                                LicheeColors.primary),
-                      ),
-                      onPressed: () {
-                        setState(
-                          () {
-                            if (user != null && hasBeenInitiallyPressed) {
-                              hasBeenInitiallyPressed =
-                                  !hasBeenInitiallyPressed;
-                              UpdateChannelService().removeUserFromChannelById(
-                                  user.uid, channel.channelId);
-                              channel.userIds.remove(user.uid);
-                            } else if (user != null &&
-                                !hasBeenInitiallyPressed) {
-                              hasBeenInitiallyPressed =
-                                  !hasBeenInitiallyPressed;
-                              UpdateChannelService().addUserToChannelById(
-                                  user.uid, channel.channelId);
-                              channel.userIds.add(user.uid);
-                            }
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton.icon(
+                          icon: hasBeenInitiallyPressed
+                              ? const Icon(Icons.check,
+                                  color: LicheeColors.primary)
+                              : const Icon(Icons.group),
+                          style: ButtonStyle(
+                            backgroundColor: hasBeenInitiallyPressed
+                                ? MaterialStateProperty.all<Color>(Colors.white)
+                                : MaterialStateProperty.all<Color>(
+                                    LicheeColors.primary),
+                          ),
+                          onPressed: () {
+                            setState(
+                              () {
+                                if (user != null && hasBeenInitiallyPressed) {
+                                  hasBeenInitiallyPressed =
+                                      !hasBeenInitiallyPressed;
+                                  UpdateChannelService()
+                                      .removeUserFromChannelById(
+                                          user.uid, channel.channelId);
+                                  channel.userIds.remove(user.uid);
+                                } else if (user != null &&
+                                    !hasBeenInitiallyPressed) {
+                                  hasBeenInitiallyPressed =
+                                      !hasBeenInitiallyPressed;
+                                  UpdateChannelService().addUserToChannelById(
+                                      user.uid, channel.channelId);
+                                  channel.userIds.add(user.uid);
+                                }
+                              },
+                            );
                           },
-                        );
-                      },
-                      label: hasBeenInitiallyPressed
-                          ? const Text(
-                              'Joined',
-                              style: TextStyle(color: LicheeColors.primary),
-                            )
-                          : const Text('Join'),
+                          label: hasBeenInitiallyPressed
+                              ? const Text(
+                                  '    Joined    ',
+                                  style: TextStyle(color: LicheeColors.primary),
+                                )
+                              : const Text('Join'),
+                        ),
+                        ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  LicheeColors.primary),
+                            ),
+                            onPressed: () {},
+                            child: Row(
+                              children: [
+                                Icon(Icons.chat_bubble_outlined),
+                                SizedBox(width: 5.0),
+                                Text('Go to chat'),
+                              ],
+                            ))
+                      ],
                     ),
                     const SizedBox(height: 10.0),
                     Padding(
@@ -201,6 +221,26 @@ class _ChannelScreenState extends State<ChannelScreen> {
                               style: kBannerTextStyle),
                           DetailsTable(rows: about.create()),
                           const Text('Members', style: kBannerTextStyle),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16.0, horizontal: 30.0),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[850],
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20.0, vertical: 15.0),
+                              child: Row(
+                                children: [
+                                  Text('User1 '),
+                                  Text('User2 '),
+                                  Text('User3 '),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -301,4 +341,3 @@ class _ChannelScreenState extends State<ChannelScreen> {
     );
   }
 }
-

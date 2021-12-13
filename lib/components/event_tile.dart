@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lichee/constants/colors.dart';
-import 'package:lichee/constants/constants.dart';
 
 class EventTile extends StatelessWidget {
   const EventTile({
