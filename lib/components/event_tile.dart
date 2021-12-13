@@ -8,14 +8,12 @@ class EventTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PhysicalModel(
+      elevation: 5.0,
+      shadowColor: Colors.black54,
       borderRadius: BorderRadius.circular(8.0),
-      color: Colors.grey.shade800,
+      color: const Color(0xFF303030),
       child: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey[850],
-          borderRadius: BorderRadius.circular(8.0),
-        ),
         padding: const EdgeInsets.symmetric(
             horizontal: 30.0, vertical: 20.0),
         child: const Text(
