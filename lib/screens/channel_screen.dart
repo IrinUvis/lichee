@@ -160,10 +160,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Latest events', style: kBannerTextStyle),
+                          const Text('Events', style: kBannerTextStyle),
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 30.0),
+                                vertical: 16.0, horizontal: 10.0),
                             child: EventTile(),
                           ),
                         ],
