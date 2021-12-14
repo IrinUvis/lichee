@@ -327,4 +327,5 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       channelDescriptionEditingController.clear();
     }
   }
+
 }

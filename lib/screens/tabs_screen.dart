@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/add_channel/add_channel_screen.dart';
 import 'package:lichee/screens/channel_list/channel_list_screen.dart';
-import 'package:lichee/screens/chat_list_screen.dart';
-import 'package:lichee/screens/home_screen.dart';
-import 'package:lichee/screens/profile_screen.dart';
+import 'package:lichee/screens/chat_list/chat_list_screen.dart';
+import 'package:lichee/screens/home/home_screen.dart';
+import 'package:lichee/screens/profile/profile_screen.dart';
 
 class TabsScreen extends StatefulWidget {
   static const String id = 'tabs_screen';

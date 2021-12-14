@@ -4,12 +4,14 @@ class MessageData {
   final String idSentBy;
   final String nameSentBy;
   final String messageText;
+  final String? imageUrl;
   final DateTime sentAt;
 
   MessageData({
     required this.idSentBy,
     required this.nameSentBy,
     required this.messageText,
+    this.imageUrl,
     required this.sentAt,
   });
 
@@ -17,12 +19,14 @@ class MessageData {
     String? idSentBy,
     String? nameSentBy,
     String? messageText,
+    String? imageUrl,
     DateTime? sentAt,
   }) {
     return MessageData(
       idSentBy: idSentBy ?? this.idSentBy,
       nameSentBy: nameSentBy ?? this.nameSentBy,
       messageText: messageText ?? this.messageText,
+      imageUrl: imageUrl ?? this.imageUrl,
       sentAt: sentAt ?? this.sentAt,
     );
   }
@@ -33,6 +37,7 @@ class MessageData {
       idSentBy: map['idSentBy'],
       nameSentBy: map['nameSentBy'],
       messageText: map['messageText'],
+      imageUrl: map['imageUrl'],
       sentAt: sentAt.toDate(),
     );
     return messageData;
@@ -43,6 +48,7 @@ class MessageData {
       'idSentBy': idSentBy,
       'nameSentBy': nameSentBy,
       'messageText': messageText,
+      'imageUrl': imageUrl,
       'sentAt': sentAt,
     };
   }
