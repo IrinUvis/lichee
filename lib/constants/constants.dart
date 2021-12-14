@@ -15,25 +15,31 @@ const kChatsSearchBarInputDecoration = InputDecoration(
   suffixIcon: Icon(Icons.search),
 );
 
-const kAddChannelNameBarInputDecoration = InputDecoration(
-  contentPadding: EdgeInsets.all(20.0),
+final kAddChannelNameBarInputDecoration = InputDecoration(
+  filled: true,
+  fillColor: LicheeColors.greyColor,
+  contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel name',
-  border: InputBorder.none,
-  suffixIcon: Icon(Icons.title),
+  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
+  suffixIcon: const Icon(Icons.title),
 );
 
-const kAddChannelCityBarInputDecoration = InputDecoration(
-  contentPadding: EdgeInsets.all(20.0),
+final kAddChannelCityBarInputDecoration = InputDecoration(
+  filled: true,
+  fillColor: LicheeColors.greyColor,
+  contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel city',
-  border: InputBorder.none,
-  suffixIcon: Icon(Icons.location_city),
+  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
+  suffixIcon: const Icon(Icons.location_city),
 );
 
-const kAddChannelDescriptionBarInputDecoration = InputDecoration(
-  contentPadding: EdgeInsets.all(20.0),
+final kAddChannelDescriptionBarInputDecoration = InputDecoration(
+  filled: true,
+  fillColor: LicheeColors.greyColor,
+  contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel description',
-  border: InputBorder.none,
-  suffixIcon: Icon(Icons.description),
+  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
+  suffixIcon: const Icon(Icons.description),
 );
 
 const kBannerTextStyle = TextStyle(
@@ -152,4 +158,11 @@ const kChosenCategoryInvalidTextStyle = TextStyle(
   color: Colors.red,
   fontSize: 16.0,
   fontWeight: FontWeight.bold,
+);
+
+const kChannelAddedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(milliseconds: 1000),
+  content: Text('Channel added'),
 );

@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
-import 'package:provider/provider.dart';
 import 'channel_list/categories_tree_view.dart';
 
 class AddChannelScreen extends StatefulWidget {
@@ -24,64 +23,75 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   final channelNameEditingController = TextEditingController();
   final cityEditingController = TextEditingController();
   final channelDescriptionEditingController = TextEditingController();
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    print(Provider.of<User?>(context, listen: false)!.uid);
     return Scaffold(
-      body: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: _addChannelView,
-                child: kAddChannelButtonText,
-                style: isAddChannelPressed
-                    ? kCategoriesTreeViewButtonStyle
-                    : kCategoriesTreeViewInactiveButtonStyle,
-              ),
-              ElevatedButton(
-                onPressed: _addEventView,
-                child: kAddEventButtonText,
-                style: isAddEventPressed
-                    ? kCategoriesTreeViewButtonStyle
-                    : kCategoriesTreeViewInactiveButtonStyle,
-              ),
-            ],
-          ),
-          isAddChannelPressed
-              ? Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        getChannelData(),
-                        ElevatedButton(
-                          onPressed: _createChannel,
-                          child: kCreateChannelButtonText,
-                          style: kCategoriesTreeViewButtonStyle,
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              : Container(),
-          isAddEventPressed
-              ? const Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Center(
-                      child: Text(
-                        'add an event',
-                        style: TextStyle(color: Colors.white),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: _addChannelView,
+                  child: kAddChannelButtonText,
+                  style: isAddChannelPressed
+                      ? kCategoriesTreeViewButtonStyle
+                      : kCategoriesTreeViewInactiveButtonStyle,
+                ),
+                ElevatedButton(
+                  onPressed: _addEventView,
+                  child: kAddEventButtonText,
+                  style: isAddEventPressed
+                      ? kCategoriesTreeViewButtonStyle
+                      : kCategoriesTreeViewInactiveButtonStyle,
+                ),
+              ],
+            ),
+            isAddChannelPressed
+                    ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          getChannelData(),
+                          const SizedBox(height: 50),
+                          ElevatedButton(
+                            onPressed: _createChannel,
+                            child: kCreateChannelButtonText,
+                            style: kCategoriesTreeViewButtonStyle,
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                )
-              : Container(),
-        ],
+                    )
+                    : Container(),
+            isAddEventPressed
+                    ? const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      child: Center(
+                        child: Text(
+                          'add an event',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    )
+                    : Container(),
+          ],
+        ),
       ),
     );
   }
@@ -158,13 +168,13 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const SizedBox(height: 30),
+              const SizedBox(height: 50),
               channelNameField,
-              const SizedBox(height: 30),
+              const SizedBox(height: 50),
               cityField,
-              const SizedBox(height: 30),
+              const SizedBox(height: 50),
               channelDescriptionField,
-              const SizedBox(height: 30),
+              const SizedBox(height: 50),
             ],
           ),
         ),
@@ -216,6 +226,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   }
 
   void _chooseCategoryView() {
+    FocusScope.of(context).unfocus();
     setState(() {
       _getCategoryForNewChannelDialog();
     });
@@ -239,17 +250,22 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       },
     );
 
-    CollectionReference categories =
-        FirebaseFirestore.instance.collection('categories');
-    final parentCategory = await categories.doc(channelParentId).get();
-    Map<String, dynamic> parentCategoryMap =
-        parentCategory.data() as Map<String, dynamic>;
-    String channelParentName = parentCategoryMap['name'];
+    channelParentId ??= '';
+
+    if (channelParentId != '') {
+      CollectionReference categories =
+      FirebaseFirestore.instance.collection('categories');
+      final parentCategory = await categories.doc(channelParentId).get();
+      Map<String, dynamic> parentCategoryMap =
+      parentCategory.data() as Map<String, dynamic>;
+      String channelParentName = parentCategoryMap['name'];
+
+      chosenCategoryName = channelParentName;
+    }
 
     setState(() {
       isCategoryEmpty = false;
       chosenCategoryId = channelParentId;
-      chosenCategoryName = channelParentName;
     });
   }
 
@@ -275,7 +291,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         'createdOn': DateTime(now.year, now.month, now.day),
         'description': channelDescriptionEditingController.text,
         'userIds': usersIds,
-        'ownerId': Provider.of<User?>(context, listen: false)!.uid,
+        'ownerId': FirebaseAuth.instance.currentUser!.uid,
         'parentCategoryId': chosenCategoryId,
       });
 
@@ -302,6 +318,13 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       await categories.doc(chosenCategoryId).update({
         'childrenIds': childrenIdList,
       });
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(kChannelAddedSnackBar);
+
+      channelNameEditingController.clear();
+      cityEditingController.clear();
+      channelDescriptionEditingController.clear();
     }
   }
 }
