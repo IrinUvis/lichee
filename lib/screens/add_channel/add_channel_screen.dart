@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
-import 'channel_list/categories_tree_view.dart';
+import '../channel_list/categories_tree_view.dart';
 
 class AddChannelScreen extends StatefulWidget {
   const AddChannelScreen({Key? key}) : super(key: key);
