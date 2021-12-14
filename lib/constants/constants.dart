@@ -75,7 +75,7 @@ const kRegisterTextStyle = TextStyle(
 final kCategoriesTreeViewButtonStyle = ElevatedButton.styleFrom(
   primary: Colors.pinkAccent,
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(20.0),
+    borderRadius: BorderRadius.circular(40.0),
   ),
 );
 
@@ -119,9 +119,12 @@ const kChooseCategoryButtonText = Text(
   style: TextStyle(color: Colors.white, fontSize: 20.0),
 );
 
-const kCreateChannelButtonText = Text(
-  'Create channel',
-  style: TextStyle(color: Colors.white, fontSize: 20.0),
+const kCreateChannelButtonText = Padding(
+  padding: EdgeInsets.all(8.0),
+  child: Text(
+    'Create channel',
+    style: TextStyle(color: Colors.white, fontSize: 30.0),
+  ),
 );
 
 const kCategoryNodeEmptyText = Text(
@@ -130,3 +133,23 @@ const kCategoryNodeEmptyText = Text(
 );
 
 const kCategoryNodeTestStyle = TextStyle(color: Colors.white, fontSize: 20.0);
+
+const kCategoryChoosingCategoryText = Text(
+  'Category:',
+  style: TextStyle(
+    color: Colors.white,
+    fontSize: 16.0,
+  ),
+);
+
+const kChosenCategoryValidTextStyle = TextStyle(
+  color: Colors.white,
+  fontSize: 16.0,
+  fontWeight: FontWeight.bold,
+);
+
+const kChosenCategoryInvalidTextStyle = TextStyle(
+  color: Colors.red,
+  fontSize: 16.0,
+  fontWeight: FontWeight.bold,
+);
