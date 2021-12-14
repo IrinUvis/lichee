@@ -6,14 +6,12 @@ import 'package:lichee/constants/icons.dart';
 class TreeNodeCard extends StatelessWidget {
   const TreeNodeCard({
     Key? key,
-    required this.id,
     required this.name,
     required this.type,
     required this.parentId,
     required this.childrenIds,
   }) : super(key: key);
 
-  final String id;
   final String name;
   final String type;
   final String parentId;

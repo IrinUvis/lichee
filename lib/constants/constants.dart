@@ -119,6 +119,11 @@ const kChooseCategoryButtonText = Text(
   style: TextStyle(color: Colors.white, fontSize: 20.0),
 );
 
+const kCreateChannelButtonText = Text(
+  'Create channel',
+  style: TextStyle(color: Colors.white, fontSize: 20.0),
+);
+
 const kCategoryNodeEmptyText = Text(
   'empty',
   style: TextStyle(color: Colors.grey),

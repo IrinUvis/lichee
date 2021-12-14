@@ -51,7 +51,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
         Expanded(
           child: Container(
             color: LicheeColors.backgroundColor,
-            child: getNodesTree(),
+            child: _getNodesTree(),
           ),
         ),
         widget.isChoosingCategoryForChannelAddingAvailable
@@ -69,7 +69,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
     );
   }
 
-  StreamBuilder<QuerySnapshot> getNodesTree() {
+  StreamBuilder<QuerySnapshot> _getNodesTree() {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
           .collection('categories')
@@ -84,6 +84,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
           final nodesList = snapshot.data!.docs
               .map((doc) => doc.data() as Map<String, dynamic>)
               .toList();
+          final nodesArray = snapshot.data!.docs;
           return nodesList.isNotEmpty
               ? ListView.builder(
                   itemCount: nodesList.length,
@@ -92,10 +93,9 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                       onPressed: nodesList[index]['type'] == 'channel'
                           ? null
                           : () {
-                              _openCategory(nodesList, index);
+                              _openCategory(nodesList, nodesArray, index);
                             },
                       child: TreeNodeCard(
-                        id: nodesList[index]['id'],
                         name: nodesList[index]['name'],
                         type: nodesList[index]['type'],
                         parentId: nodesList[index]['parentId'],
@@ -189,13 +189,14 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
     );
   }
 
-  void _openCategory(List<Map<String, dynamic>> nodesList, int index) {
+  void _openCategory(List<Map<String, dynamic>> nodesList,
+      List<QueryDocumentSnapshot<Object?>> nodesArray, int index) {
     setState(() {
       if (widget.isChoosingCategoryForChannelAddingAvailable) {
         isLastCategory = nodesList[index]['isLastCategory'];
       }
       parentIdStack.add(parentId);
-      parentId = nodesList[index]['id'];
+      parentId = nodesArray[index].id;
     });
   }
 }
