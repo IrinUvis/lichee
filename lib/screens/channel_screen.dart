@@ -11,6 +11,7 @@ import 'package:lichee/constants/constants.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../constants/channel_constants.dart';
+import 'channel_chat_screen.dart';
 
 class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';
@@ -107,6 +108,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   Widget channelForMember(User? user) {
+    List members = channel.userIds.toList();
     return PageView(
       controller: _controller,
       children: [
@@ -164,7 +166,16 @@ class _ChannelScreenState extends State<ChannelScreen> {
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   LicheeColors.primary),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                ChannelChatScreen.id,
+                                arguments: ChannelChatNavigationParams(
+                                  channelId: channel.channelId,
+                                  channelName: channel.channelName,
+                                ),
+                              );
+                            },
                             child: Row(
                               children: [
                                 Icon(Icons.chat_bubble_outlined),
@@ -184,7 +195,12 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 16.0, horizontal: 10.0),
-                            child: EventTile(),
+                            child: EventTile(
+                              date: 'Tuesday, 15.11.2022 at 18:00',
+                              place:
+                                  'Zgierz, ul. Wschodnia 2, sala sportowa MOSiR',
+                              title: '2nd match!',
+                            ),
                           ),
                         ],
                       ),
@@ -234,9 +250,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                   horizontal: 20.0, vertical: 15.0),
                               child: Row(
                                 children: [
-                                  Text('User1 '),
-                                  Text('User2 '),
-                                  Text('User3 '),
+                                  for (var item in members) Text('$item '),
                                 ],
                               ),
                             ),

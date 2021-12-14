@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 
 class EventTile extends StatelessWidget {
+  final String date;
+  final String place;
+  final String title;
+
   const EventTile({
     Key? key,
+    required this.date,
+    required this.place,
+    required this.title,
   }) : super(key: key);
 
   @override
@@ -18,20 +25,18 @@ class EventTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(date),
+            const SizedBox(height: 3.0),
             Text(
-              'Tuesday, 15.11.2022 at 18:00',
-            ),
-            SizedBox(height: 3.0),
-            Text(
-              '2nd match!',
-              style: TextStyle(
+              title,
+              style: const TextStyle(
                 fontSize: 25.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 5.0),
-            Text('Zgierz, ul. Wschodnia 2, sala sportowa MOSiR'),
-            SizedBox(height: 5.0),
+            const SizedBox(height: 5.0),
+            Text(place),
+            const SizedBox(height: 5.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -43,20 +48,18 @@ class EventTile extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(
-              height: 15.0,
-            ),
+            const SizedBox(height: 15.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 TextButton.icon(
                     onPressed: () {},
-                    icon: Icon(Icons.star),
-                    label: Text('Interested')),
+                    icon: const Icon(Icons.star),
+                    label: const Text('Interested')),
                 TextButton.icon(
                     onPressed: () {},
-                    icon: Icon(Icons.check),
-                    label: Text('Going')),
+                    icon: const Icon(Icons.check),
+                    label: const Text('Going')),
               ],
             ),
           ],
