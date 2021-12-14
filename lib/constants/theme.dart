@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/colors.dart';
-import 'package:lichee/main.dart';
 
 CustomTheme currentTheme = CustomTheme();
 
