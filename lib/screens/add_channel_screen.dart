@@ -16,11 +16,7 @@ class AddChannelScreen extends StatefulWidget {
 class _AddChannelScreenState extends State<AddChannelScreen> {
   bool isAddChannelPressed = false;
   bool isAddEventPressed = false;
-  bool isChooseCategoryPressed = false;
   bool isCategoryEmpty = true;
-  late String newChannelName;
-  late String newChannelCity;
-  late String newChannelDescription;
   String chosenCategoryId = '';
   String chosenCategoryName = '';
 
@@ -31,6 +27,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print(Provider.of<User?>(context, listen: false)!.uid);
     return Scaffold(
       body: Column(
         children: [
@@ -278,7 +275,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         'createdOn': DateTime(now.year, now.month, now.day),
         'description': channelDescriptionEditingController.text,
         'userIds': usersIds,
-        'ownerId': '1', //Provider.of<User?>(context, listen: false)!.uid,
+        'ownerId': Provider.of<User?>(context, listen: false)!.uid,
         'parentCategoryId': chosenCategoryId,
       });
 
