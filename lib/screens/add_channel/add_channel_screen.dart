@@ -11,7 +11,7 @@ class AddChannelScreen extends StatefulWidget {
   @override
   _AddChannelScreenState createState() => _AddChannelScreenState();
 }
-
+//TODO limit access to the screen for logged in users
 class _AddChannelScreenState extends State<AddChannelScreen> {
   bool isAddChannelPressed = false;
   bool isAddEventPressed = false;
@@ -36,7 +36,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
     _focusNode.dispose();
     super.dispose();
   }
-
+//TODO add possibility to upload channel image
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -279,6 +279,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         return;
       }
 
+      //TODO make porządek with city String
       CollectionReference channels =
           FirebaseFirestore.instance.collection('channels');
       DateTime now = DateTime.now();
