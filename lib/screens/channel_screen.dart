@@ -48,24 +48,15 @@ class _ChannelScreenState extends State<ChannelScreen> {
               children: [
                 ChannelBackgroundPhoto(channel: channel),
                 ElevatedButton.icon(
-                  icon: hasBeenInitiallyPressed
-                      ? const Icon(Icons.check, color: LicheeColors.primary)
-                      : const Icon(Icons.group),
+                  icon: const Icon(Icons.group_add),
                   style: ButtonStyle(
-                    backgroundColor: hasBeenInitiallyPressed
-                        ? MaterialStateProperty.all<Color>(Colors.white)
-                        : MaterialStateProperty.all<Color>(
-                            LicheeColors.primary),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(LicheeColors.primary),
                   ),
                   onPressed: () {
                     setState(
                       () {
-                        if (user != null && hasBeenInitiallyPressed) {
-                          hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
-                          UpdateChannelService().removeUserFromChannelById(
-                              user.uid, channel.channelId);
-                          channel.userIds.remove(user.uid);
-                        } else if (user != null && !hasBeenInitiallyPressed) {
+                        if (user != null) {
                           hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
                           UpdateChannelService().addUserToChannelById(
                               user.uid, channel.channelId);
@@ -74,12 +65,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                       },
                     );
                   },
-                  label: hasBeenInitiallyPressed
-                      ? const Text(
-                          'Joined',
-                          style: TextStyle(color: LicheeColors.primary),
-                        )
-                      : const Text('Join'),
+                  label: const Text('Join'),
                 ),
                 const SizedBox(height: 10.0),
                 Padding(
@@ -122,67 +108,44 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        ElevatedButton.icon(
-                          icon: hasBeenInitiallyPressed
-                              ? const Icon(Icons.check,
-                                  color: LicheeColors.primary)
-                              : const Icon(Icons.group),
-                          style: ButtonStyle(
-                            backgroundColor: hasBeenInitiallyPressed
-                                ? MaterialStateProperty.all<Color>(Colors.white)
-                                : MaterialStateProperty.all<Color>(
-                                    LicheeColors.primary),
+                        TextButton.icon(
+                          icon: const Icon(
+                            Icons.check_circle_outline,
+                            color: LicheeColors.primary,
                           ),
                           onPressed: () {
                             setState(
                               () {
-                                if (user != null && hasBeenInitiallyPressed) {
+                                if (user != null) {
                                   hasBeenInitiallyPressed =
                                       !hasBeenInitiallyPressed;
                                   UpdateChannelService()
                                       .removeUserFromChannelById(
                                           user.uid, channel.channelId);
                                   channel.userIds.remove(user.uid);
-                                } else if (user != null &&
-                                    !hasBeenInitiallyPressed) {
-                                  hasBeenInitiallyPressed =
-                                      !hasBeenInitiallyPressed;
-                                  UpdateChannelService().addUserToChannelById(
-                                      user.uid, channel.channelId);
-                                  channel.userIds.add(user.uid);
                                 }
                               },
                             );
                           },
-                          label: hasBeenInitiallyPressed
-                              ? const Text(
-                                  '    Joined    ',
-                                  style: TextStyle(color: LicheeColors.primary),
-                                )
-                              : const Text('Join'),
+                          label: const Text(
+                            'Joined',
+                            style: TextStyle(color: LicheeColors.primary),
+                          ),
                         ),
-                        ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  LicheeColors.primary),
-                            ),
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                ChannelChatScreen.id,
-                                arguments: ChannelChatNavigationParams(
-                                  channelId: channel.channelId,
-                                  channelName: channel.channelName,
-                                ),
-                              );
-                            },
-                            child: Row(
-                              children: [
-                                Icon(Icons.chat_bubble_outlined),
-                                SizedBox(width: 5.0),
-                                Text('Go to chat'),
-                              ],
-                            ))
+                        IconButton(
+                          color: LicheeColors.primary,
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              ChannelChatScreen.id,
+                              arguments: ChannelChatNavigationParams(
+                                channelId: channel.channelId,
+                                channelName: channel.channelName,
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.chat_bubble_outline),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10.0),
@@ -247,10 +210,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 20.0, vertical: 15.0),
-                              child: Row(
+                                  horizontal: 25.0, vertical: 15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  for (var item in members) Text('$item '),
+                                  for (var item in members) Text('$item'),
                                 ],
                               ),
                             ),
@@ -273,6 +237,21 @@ class _ChannelScreenState extends State<ChannelScreen> {
     final user = Provider.of<User?>(context);
     hasBeenInitiallyPressed = channel.userIds.contains(user?.uid);
     return Scaffold(
+      bottomSheet: Container(
+        height: 15.0,
+        child: Center(
+          child: SmoothPageIndicator(
+            controller: _controller,
+            count: channel.userIds.contains(user?.uid) ? 2 : 1,
+            effect: const JumpingDotEffect(
+              dotColor: Colors.grey,
+              activeDotColor: LicheeColors.primary,
+              dotHeight: 10.0,
+              dotWidth: 10.0,
+            ),
+          ),
+        ),
+      ),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         foregroundColor: LicheeColors.primary,

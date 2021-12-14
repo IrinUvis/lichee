@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/constants/colors.dart';
 
 class EventTile extends StatelessWidget {
   final String date;
@@ -54,12 +55,14 @@ class EventTile extends StatelessWidget {
               children: [
                 TextButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.star),
-                    label: const Text('Interested')),
+                    icon: Icon(Icons.star_outline, color: LicheeColors.accentColor),
+                    label: Text('Interested',
+                        style: TextStyle(color: LicheeColors.accentColor))),
                 TextButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.check),
-                    label: const Text('Going')),
+                    icon: Icon(Icons.check, color: LicheeColors.accentColor),
+                    label: Text('Going',
+                        style: TextStyle(color: LicheeColors.accentColor))),
               ],
             ),
           ],

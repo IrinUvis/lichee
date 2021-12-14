@@ -18,6 +18,9 @@ class CustomTheme with ChangeNotifier {
       primaryColor: LicheeColors.primary,
       backgroundColor: LicheeColors.backgroundColor,
       scaffoldBackgroundColor: LicheeColors.backgroundColor,
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: LicheeColors.backgroundColor.withOpacity(0.1),
+      ),
     );
   }
 }
