@@ -8,6 +8,7 @@ import 'package:lichee/components/details_table.dart';
 import 'package:lichee/components/event_tile.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/models/event.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../constants/channel_constants.dart';
@@ -159,10 +160,14 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             padding: const EdgeInsets.symmetric(
                                 vertical: 16.0, horizontal: 10.0),
                             child: EventTile(
-                              date: 'Tuesday, 15.11.2022 at 18:00',
-                              place:
-                                  'Zgierz, ul. Wschodnia 2, sala sportowa MOSiR',
-                              title: '2nd match!',
+                              event: Event(
+                                localization:
+                                    'Zgierz, ul. Wschodnia 2, sala sportowa MOSiR',
+                                date: DateTime.now(),
+                                title: '2nd match!',
+                                interestedUsers: [],
+                                goingUsers: [],
+                              ),
                             ),
                           ),
                         ],
