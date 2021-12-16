@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'categories_tree_view.dart';
 

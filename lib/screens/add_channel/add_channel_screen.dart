@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/screens/auth/auth_type.dart';
 import '../channel_list/categories_tree_view.dart';
+import 'package:diacritic/diacritic.dart';
 
 class AddChannelScreen extends StatefulWidget {
   const AddChannelScreen({Key? key}) : super(key: key);
@@ -279,16 +281,17 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         return;
       }
 
-      //TODO make porządek with city String
       CollectionReference channels =
           FirebaseFirestore.instance.collection('channels');
+      String city = cityEditingController.text.capitalize();
+      city = removeDiacritics(city);
       DateTime now = DateTime.now();
       List<String> usersIds = List.empty();
       final newChannel = await channels.add({
         'channelName': channelNameEditingController.text,
         'channelImageURL':
             'https://www.fivb.org/Vis2009/Images/GetImage.asmx?No=202004911&width=920&height=588&stretch=uniformtofill',
-        'city': cityEditingController.text,
+        'city': city,
         'createdOn': DateTime(now.year, now.month, now.day),
         'description': channelDescriptionEditingController.text,
         'userIds': usersIds,
