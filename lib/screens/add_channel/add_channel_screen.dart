@@ -4,8 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/auth/auth_type.dart';
+import 'package:provider/provider.dart';
 import '../channel_list/categories_tree_view.dart';
 import 'package:diacritic/diacritic.dart';
+
+import '../not_logged_in_view.dart';
 
 class AddChannelScreen extends StatefulWidget {
   const AddChannelScreen({Key? key}) : super(key: key);
@@ -13,6 +16,7 @@ class AddChannelScreen extends StatefulWidget {
   @override
   _AddChannelScreenState createState() => _AddChannelScreenState();
 }
+
 //TODO limit access to the screen for logged in users
 class _AddChannelScreenState extends State<AddChannelScreen> {
   bool isAddChannelPressed = false;
@@ -38,9 +42,21 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
     _focusNode.dispose();
     super.dispose();
   }
+
 //TODO add possibility to upload channel image
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User?>(context);
+    return user != null
+        ? getAddThingView()
+        : NotLoggedInView(
+            context: context,
+            titleText: kAddingChannelsOrEventsUnavailable,
+            buttonText: kLogInToAddChannelOrList,
+          );
+  }
+
+  Scaffold getAddThingView() {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -65,33 +81,33 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
               ],
             ),
             isAddChannelPressed
-                    ? Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          getChannelData(),
-                          const SizedBox(height: 50),
-                          ElevatedButton(
-                            onPressed: _createChannel,
-                            child: kCreateChannelButtonText,
-                            style: kCategoriesTreeViewButtonStyle,
-                          ),
-                        ],
-                      ),
-                    )
-                    : Container(),
-            isAddEventPressed
-                    ? const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      child: Center(
-                        child: Text(
-                          'add an event',
-                          style: TextStyle(color: Colors.white),
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        getChannelData(),
+                        const SizedBox(height: 50),
+                        ElevatedButton(
+                          onPressed: _createChannel,
+                          child: kCreateChannelButtonText,
+                          style: kCategoriesTreeViewButtonStyle,
                         ),
+                      ],
+                    ),
+                  )
+                : Container(),
+            isAddEventPressed
+                ? const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Center(
+                      child: Text(
+                        'add an event',
+                        style: TextStyle(color: Colors.white),
                       ),
-                    )
-                    : Container(),
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ),
@@ -256,10 +272,10 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
 
     if (channelParentId != '') {
       CollectionReference categories =
-      FirebaseFirestore.instance.collection('categories');
+          FirebaseFirestore.instance.collection('categories');
       final parentCategory = await categories.doc(channelParentId).get();
       Map<String, dynamic> parentCategoryMap =
-      parentCategory.data() as Map<String, dynamic>;
+          parentCategory.data() as Map<String, dynamic>;
       String channelParentName = parentCategoryMap['name'];
 
       chosenCategoryName = channelParentName;
@@ -323,13 +339,11 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         'childrenIds': childrenIdList,
       });
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(kChannelAddedSnackBar);
+      ScaffoldMessenger.of(context).showSnackBar(kChannelAddedSnackBar);
 
       channelNameEditingController.clear();
       cityEditingController.clear();
       channelDescriptionEditingController.clear();
     }
   }
-
 }

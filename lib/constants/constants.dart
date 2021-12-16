@@ -166,3 +166,35 @@ const kChannelAddedSnackBar = SnackBar(
   duration: Duration(milliseconds: 1000),
   content: Text('Channel added'),
 );
+
+const kChatListUnavailable = Text(
+  'Chat list unavailable',
+  textAlign: TextAlign.center,
+  style: kLicheeTextStyle,
+);
+
+const kLogInToSeeChatList = Text(
+  'Log in to see your chat list!',
+  textAlign: TextAlign.center,
+  style: TextStyle(
+    fontSize: 20,
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+  ),
+);
+
+const kAddingChannelsOrEventsUnavailable = Text(
+  'Adding channels or events unavailable',
+  textAlign: TextAlign.center,
+  style: kLicheeTextStyle,
+);
+
+const kLogInToAddChannelOrList = Text(
+  'Log in to add channel or event',
+  textAlign: TextAlign.center,
+  style: TextStyle(
+    fontSize: 20,
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+  ),
+);

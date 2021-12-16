@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'package:lichee/constants/constants.dart';
 
+import '../not_logged_in_view.dart';
 import 'chat_list_card.dart';
 
 class ChatListScreen extends StatefulWidget {
@@ -55,45 +56,6 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  Widget getEmptyChatListScreen() {
-    return Padding(
-      padding: const EdgeInsets.all(30),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Text(
-            'Chat list unavailable',
-            textAlign: TextAlign.center,
-            style: kLicheeTextStyle,
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          Material(
-            elevation: 5,
-            borderRadius: BorderRadius.circular(30),
-            color: Colors.pinkAccent,
-            child: MaterialButton(
-              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
-              minWidth: MediaQuery.of(context).size.width,
-              onPressed: null,
-              child: const Text(
-                'Log in to see your chat list!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   StreamBuilder<QuerySnapshot> getChatListStream() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -102,10 +64,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
               isGreaterThanOrEqualTo: textFieldQuery.toLowerCase().trim())
           .where('channelNameLower',
               isLessThanOrEqualTo: textFieldQuery.toLowerCase().trim() + '~')
-          .where('userIds',
-              arrayContains:
-                  '2bGoqMTi4URGrGT9foi67zDqT6B3')
-      // TODO: should be changed once channels and chats can be created normally
+          .where('userIds', arrayContains: '2bGoqMTi4URGrGT9foi67zDqT6B3')
+          // TODO: should be changed once channels and chats can be created normally
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -144,6 +104,12 @@ class _ChatListScreenState extends State<ChatListScreen> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
-    return user != null ? getChatListScreen() : getEmptyChatListScreen();
+    return user != null
+        ? getChatListScreen()
+        : NotLoggedInView(
+            context: context,
+            titleText: kChatListUnavailable,
+            buttonText: kLogInToSeeChatList,
+          );
   }
 }
