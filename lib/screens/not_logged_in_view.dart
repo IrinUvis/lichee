@@ -12,6 +12,7 @@ class NotLoggedInView extends StatelessWidget {
   final Text titleText;
   final Text buttonText;
 
+  //TODO Define function for button to switch user to login screen
   @override
   Widget build(BuildContext context) {
     return Padding(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/constants/icons.dart';
-import 'package:lichee/screens/channel_list/sample_channel_data.dart';
 import 'package:lichee/screens/channel_list/tree_node_card.dart';
 
 class CategoriesTreeView extends StatefulWidget {
@@ -23,6 +22,28 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
   List<String> parentIdStack = [];
   String parentId = '';
   bool isLastCategory = false;
+  List<String> citiesList = [];
+  String chosenCity = '';
+  List<String> idsOfChannelsFromCity = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getCitiesFromChannels();
+  }
+
+  void getCitiesFromChannels() async {
+    await FirebaseFirestore.instance
+        .collection('channels')
+        .get()
+        .then((querySnapshot) => {
+              for (var element in querySnapshot.docs)
+                {
+                  if (!citiesList.contains(element.get('city')))
+                    {citiesList.add(element.get('city'))}
+                }
+            });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -89,21 +110,28 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
               ? ListView.builder(
                   itemCount: nodesList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return TextButton(
-                      onPressed: nodesList[index]['type'] == 'channel'
-                          ? null
-                          : () {
-                              _openCategory(nodesList, nodesArray, index);
-                            },
-                      child: TreeNodeCard(
-                        name: nodesList[index]['name'],
-                        type: nodesList[index]['type'],
-                        parentId: nodesList[index]['parentId'],
-                        childrenIds: List.from(
-                          nodesList[index]['childrenIds'],
+                    if (idsOfChannelsFromCity.isEmpty ||
+                        nodesList[index]['type'] == 'category' ||
+                        (nodesList[index]['type'] == 'channel' &&
+                            idsOfChannelsFromCity
+                                .contains(nodesArray[index].id))) {
+                      return TextButton(
+                        onPressed: nodesList[index]['type'] == 'channel'
+                            ? null
+                            : () {
+                                _openCategory(nodesList, nodesArray, index);
+                              },
+                        child: TreeNodeCard(
+                          name: nodesList[index]['name'],
+                          type: nodesList[index]['type'],
+                          parentId: nodesList[index]['parentId'],
+                          childrenIds:
+                              List.from(nodesList[index]['childrenIds']),
                         ),
-                      ),
-                    );
+                      );
+                    } else {
+                      return Container();
+                    }
                   },
                 )
               : Center(
@@ -111,9 +139,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: const [
                       kEmptyCategoryText,
-                      SizedBox(
-                        height: 10.0,
-                      ),
+                      SizedBox(height: 10.0),
                       kEmptyCategoryIcon,
                     ],
                   ),
@@ -147,8 +173,10 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
   void _openFilterDialog() async {
     await FilterListDialog.display<String>(
       context,
-      listData: filtersList,
+      listData: citiesList,
       selectedListData: selectedFiltersList,
+      enableOnlySingleSelection: true,
+      hideSelectedTextCount: true,
       backgroundColor: const Color(0xFF1A1A1A),
       searchFieldBackgroundColor: Colors.pinkAccent,
       selectedTextBackgroundColor: Colors.pinkAccent,
@@ -158,7 +186,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
       applyButtonTextStyle: const TextStyle(color: Colors.white),
       searchFieldTextStyle: const TextStyle(color: Colors.white),
       controlButtonTextStyle: const TextStyle(color: Colors.black),
-      headlineText: 'Select Filters',
+      headlineText: 'Select city',
       searchFieldHintText: 'Search Here',
       selectedItemsText: 'selected filters',
       choiceChipLabel: (item) {
@@ -180,10 +208,23 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
         }
         return [];
       },
-      onApplyButtonClick: (list) {
-        setState(() {
-          selectedFiltersList = List.from(list!);
-        });
+      onApplyButtonClick: (list) async {
+        selectedFiltersList = List.from(list!);
+
+        idsOfChannelsFromCity.clear();
+        await FirebaseFirestore.instance
+            .collection('channels')
+            .get()
+            .then((querySnapshot) => {
+                  for (var element in querySnapshot.docs)
+                    {
+                      if (selectedFiltersList!.isNotEmpty &&
+                          element.get('city') == selectedFiltersList!.first)
+                        {idsOfChannelsFromCity.add(element.id)}
+                    }
+                });
+
+        setState(() {});
         Navigator.pop(context);
       },
     );
