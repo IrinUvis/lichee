@@ -17,7 +17,6 @@ class AddChannelScreen extends StatefulWidget {
   _AddChannelScreenState createState() => _AddChannelScreenState();
 }
 
-//TODO limit access to the screen for logged in users
 class _AddChannelScreenState extends State<AddChannelScreen> {
   bool isAddChannelPressed = false;
   bool isAddEventPressed = false;

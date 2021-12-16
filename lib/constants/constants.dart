@@ -95,7 +95,7 @@ final kCategoriesTreeViewInactiveButtonStyle = ElevatedButton.styleFrom(
 const kCategoriesTreeViewFiltersButtonText = Padding(
   padding: EdgeInsets.all(7.0),
   child: Text(
-    'Filters',
+    'Cities',
     style: TextStyle(color: Colors.white, fontSize: 20.0),
   ),
 );
