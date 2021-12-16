@@ -12,5 +12,13 @@ class Event {
       required this.interestedUsers,
       required this.goingUsers});
 
-
+  Map<String, dynamic> toMap() {
+    return {
+      'localization': localization,
+      'title': title,
+      'date': date,
+      'interestedUsers': interestedUsers,
+      'goingUsers': goingUsers,
+    };
+  }
 }

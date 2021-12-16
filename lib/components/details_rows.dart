@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
+import 'package:intl/intl.dart';
 
 class DetailsRows {
   final bool isAboutTable;
@@ -14,7 +15,7 @@ class DetailsRows {
         TableRow(children: [
           const Icon(Icons.access_time_outlined),
           Text(
-              'Created on ${channel.createdOn.day}.${channel.createdOn.month}.${channel.createdOn.year}'),
+              'Created on ${DateFormat('d MMM yyyy').format(channel.createdOn)}'),
         ]),
         TableRow(children: [
           const Icon(Icons.groups_rounded),
