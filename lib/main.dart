@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,8 @@ class LicheeState extends State<Lichee> {
     return MultiProvider(
       providers: [
         Provider<AuthenticationProvider>(
-          create: (_) => AuthenticationProvider(FirebaseAuth.instance),
+          create: (_) => AuthenticationProvider(
+              FirebaseAuth.instance, FirebaseFirestore.instance),
         ),
         StreamProvider(
           create: (context) => context.read<AuthenticationProvider>().authState,

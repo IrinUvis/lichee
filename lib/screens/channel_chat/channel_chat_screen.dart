@@ -25,6 +25,8 @@ class ChannelChatScreen extends StatefulWidget {
 }
 
 class _ChannelChatScreenState extends State<ChannelChatScreen> {
+  final storageService = StorageService(FirebaseStorage.instance);
+
   final messageTextController = TextEditingController();
   ImagePicker imagePicker = ImagePicker();
 
@@ -181,7 +183,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     DateTime now = DateTime.now();
     if (file != null) {
       try {
-        imageUrl = await StorageService.uploadFile(
+        imageUrl = await storageService.uploadFile(
             path: 'chats/' + widget.data.channelId + '/' + now.millisecondsSinceEpoch.toString(), file: file!);
         setState(() {
           file = null;
