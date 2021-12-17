@@ -23,7 +23,6 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
   String parentId = '';
   bool isLastCategory = false;
   List<String> citiesList = [];
-  String chosenCity = '';
   List<String> idsOfChannelsFromCity = [];
 
   @override
@@ -78,9 +77,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
         widget.isChoosingCategoryForChannelAddingAvailable
             ? isLastCategory
                 ? ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context, parentId);
-                    },
+                    onPressed: () => Navigator.pop(context, parentId),
                     child: kChooseCategoryForAddingChannelButtonText,
                     style: kCategoriesTreeViewButtonStyle,
                   )
@@ -124,7 +121,6 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                         child: TreeNodeCard(
                           name: nodesList[index]['name'],
                           type: nodesList[index]['type'],
-                          parentId: nodesList[index]['parentId'],
                           childrenIds:
                               List.from(nodesList[index]['childrenIds']),
                         ),
@@ -199,7 +195,6 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
         if (list != null) {
           if (list.any((element) =>
               element.toLowerCase().contains(text.toLowerCase()))) {
-            /// return list which contains matches
             return list
                 .where((element) =>
                     element.toLowerCase().contains(text.toLowerCase()))
