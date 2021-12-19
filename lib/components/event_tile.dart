@@ -1,15 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lichee/constants/channel_constants.dart';
 import 'package:lichee/constants/colors.dart';
-import 'package:lichee/models/event.dart';
 import 'package:provider/provider.dart';
 
 class EventTile extends StatefulWidget {
   final Map<String, dynamic> event;
+  final String channelId;
 
-  const EventTile({Key? key, required this.event}) : super(key: key);
+  const EventTile({Key? key, required this.event, required this.channelId})
+      : super(key: key);
 
   @override
   State<EventTile> createState() => _EventTileState();
@@ -18,8 +20,13 @@ class EventTile extends StatefulWidget {
 class _EventTileState extends State<EventTile> {
   @override
   Widget build(BuildContext context) {
-    bool isInterestedPressed = false;
-    bool isGoingPressed = false;
+    List going = widget.event['goingUsers'];
+    List interested = widget.event['interestedUsers'];
+
+    bool isInterestedPressed = widget.event['interestedUsers']
+        .contains(Provider.of<User?>(context, listen: false)!.uid);
+    bool isGoingPressed = widget.event['goingUsers']
+        .contains(Provider.of<User?>(context, listen: false)!.uid);
 
     return PhysicalModel(
       elevation: 5.0,
@@ -61,11 +68,17 @@ class _EventTileState extends State<EventTile> {
                 TextButton.icon(
                     onPressed: () {
                       isInterestedPressed
-                          ? widget.event['interestedUsers'].remove(
+                          ? interested.remove(
                               Provider.of<User?>(context, listen: false)!.uid)
-                          : widget.event['interestedUsers'].add(
+                          : interested.add(
                               Provider.of<User?>(context, listen: false)!.uid);
                       isInterestedPressed = !isInterestedPressed;
+                      FirebaseFirestore.instance
+                          .collection('events/${widget.channelId}/events')
+                          .doc(widget.event['id'])
+                          .update({
+                        'interestedUsers': interested,
+                      });
                     },
                     icon: Icon(Icons.star_outline,
                         color: LicheeColors.accentColor),
@@ -73,11 +86,18 @@ class _EventTileState extends State<EventTile> {
                         style: TextStyle(color: LicheeColors.accentColor))),
                 TextButton.icon(
                     onPressed: () {
-                      isGoingPressed ? widget.event['goingUsers'].remove(
-                          Provider.of<User?>(context, listen: false)!.uid)
-                          : widget.event['goingUsers'].add(
-                          Provider.of<User?>(context, listen: false)!.uid);
+                      isGoingPressed
+                          ? going.remove(
+                              Provider.of<User?>(context, listen: false)!.uid)
+                          : going.add(
+                              Provider.of<User?>(context, listen: false)!.uid);
                       isGoingPressed = !isGoingPressed;
+                      FirebaseFirestore.instance
+                          .collection('events/${widget.channelId}/events')
+                          .doc(widget.event['id'])
+                          .update({
+                        'goingUsers': going,
+                      });
                     },
                     icon: Icon(Icons.check, color: LicheeColors.accentColor),
                     label: Text('Going',

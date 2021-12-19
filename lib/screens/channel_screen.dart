@@ -98,14 +98,17 @@ class _ChannelScreenState extends State<ChannelScreen> {
     List members = channel.userIds.toList();
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
-          .collection('events')
-          .where('channelId', isEqualTo: channel.channelId)
+          .collection('events/${channel.channelId}/events')
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final events = snapshot.data!.docs
               .map((e) => e.data() as Map<String, dynamic>)
               .toList();
+          final ids = snapshot.data!.docs.map((e) => e.id).toList();
+          events.forEach((element) {
+            element.putIfAbsent('id', () => ids[events.indexOf(element)]);
+          });
           return PageView(
             controller: _controller,
             children: [
@@ -181,7 +184,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 16.0, horizontal: 10.0),
-                                    child: EventTile(event: e),
+                                    child: EventTile(event: e, channelId: channel.channelId),
                                   ),
                               ],
                             ),
