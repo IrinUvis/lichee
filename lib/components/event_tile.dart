@@ -1,12 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lichee/constants/channel_constants.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/models/event.dart';
 import 'package:provider/provider.dart';
 
 class EventTile extends StatefulWidget {
-  final Event event;
+  final Map<String, dynamic> event;
 
   const EventTile({Key? key, required this.event}) : super(key: key);
 
@@ -32,26 +33,24 @@ class _EventTileState extends State<EventTile> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(DateFormat('EEEE, d MMM yyyy h:mm a')
-                .format(widget.event.date)),
+                .format(widget.event['date'].toDate())),
             const SizedBox(height: 3.0),
             Text(
-              widget.event.title,
+              widget.event['title'],
               style: const TextStyle(
                 fontSize: 25.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 5.0),
-            Text(widget.event.localization),
+            Text(widget.event['localization']),
             const SizedBox(height: 5.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${widget.event.interestedUsers.length} interested   |   ${widget.event.goingUsers.length} going',
-                  style: TextStyle(
-                    color: Colors.grey,
-                  ),
+                  '${widget.event['interestedUsers'].length} interested   |   ${widget.event['goingUsers'].length} going',
+                  style: kDescriptiveText,
                 ),
               ],
             ),
@@ -62,9 +61,9 @@ class _EventTileState extends State<EventTile> {
                 TextButton.icon(
                     onPressed: () {
                       isInterestedPressed
-                          ? widget.event.interestedUsers.remove(
+                          ? widget.event['interestedUsers'].remove(
                               Provider.of<User?>(context, listen: false)!.uid)
-                          : widget.event.interestedUsers.add(
+                          : widget.event['interestedUsers'].add(
                               Provider.of<User?>(context, listen: false)!.uid);
                       isInterestedPressed = !isInterestedPressed;
                     },
@@ -74,9 +73,9 @@ class _EventTileState extends State<EventTile> {
                         style: TextStyle(color: LicheeColors.accentColor))),
                 TextButton.icon(
                     onPressed: () {
-                      isGoingPressed ? widget.event.goingUsers.remove(
+                      isGoingPressed ? widget.event['goingUsers'].remove(
                           Provider.of<User?>(context, listen: false)!.uid)
-                          : widget.event.goingUsers.add(
+                          : widget.event['goingUsers'].add(
                           Provider.of<User?>(context, listen: false)!.uid);
                       isGoingPressed = !isGoingPressed;
                     },

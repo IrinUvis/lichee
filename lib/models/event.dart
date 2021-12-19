@@ -4,13 +4,15 @@ class Event {
   final DateTime date;
   List<String> interestedUsers;
   List<String> goingUsers;
+  final String channelId;
 
   Event(
       {required this.localization,
       required this.title,
       required this.date,
       required this.interestedUsers,
-      required this.goingUsers});
+      required this.goingUsers,
+      required this.channelId});
 
   Map<String, dynamic> toMap() {
     return {
@@ -19,6 +21,8 @@ class Event {
       'date': date,
       'interestedUsers': interestedUsers,
       'goingUsers': goingUsers,
+      'channelId': channelId,
     };
   }
+
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
@@ -8,7 +9,6 @@ import 'package:lichee/components/details_table.dart';
 import 'package:lichee/components/event_tile.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
-import 'package:lichee/models/event.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../constants/channel_constants.dart';
@@ -96,78 +96,150 @@ class _ChannelScreenState extends State<ChannelScreen> {
 
   Widget channelForMember(User? user) {
     List members = channel.userIds.toList();
-    return PageView(
-      controller: _controller,
-      children: [
-        SafeArea(
-          child: Column(
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('events')
+          .where('channelId', isEqualTo: channel.channelId)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final events = snapshot.data!.docs
+              .map((e) => e.data() as Map<String, dynamic>)
+              .toList();
+          return PageView(
+            controller: _controller,
             children: [
-              Expanded(
-                child: ListView(
+              SafeArea(
+                child: Column(
                   children: [
-                    ChannelBackgroundPhoto(channel: channel),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        TextButton.icon(
-                          icon: const Icon(
-                            Icons.check_circle_outline,
-                            color: LicheeColors.primary,
-                          ),
-                          onPressed: () {
-                            setState(
-                              () {
-                                if (user != null) {
-                                  hasBeenInitiallyPressed =
-                                      !hasBeenInitiallyPressed;
-                                  UpdateChannelService()
-                                      .removeUserFromChannelById(
-                                          user.uid, channel.channelId);
-                                  channel.userIds.remove(user.uid);
-                                }
-                              },
-                            );
-                          },
-                          label: const Text(
-                            'Joined',
-                            style: TextStyle(color: LicheeColors.primary),
-                          ),
-                        ),
-                        IconButton(
-                          color: LicheeColors.primary,
-                          onPressed: () {
-                            Navigator.pushNamed(
-                              context,
-                              ChannelChatScreen.id,
-                              arguments: ChannelChatNavigationParams(
-                                channelId: channel.channelId,
-                                channelName: channel.channelName,
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.chat_bubble_outline),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10.0),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    Expanded(
+                      child: ListView(
                         children: [
-                          const Text('Events', style: kBannerTextStyle),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 10.0),
-                            child: EventTile(
-                              event: Event(
-                                localization:
-                                    'Zgierz, ul. Wschodnia 2, sala sportowa MOSiR',
-                                date: DateTime.now(),
-                                title: '2nd match!',
-                                interestedUsers: [],
-                                goingUsers: [],
+                          ChannelBackgroundPhoto(channel: channel),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              TextButton.icon(
+                                icon: const Icon(
+                                  Icons.check_circle_outline,
+                                  color: LicheeColors.primary,
+                                ),
+                                onPressed: () {
+                                  setState(
+                                    () {
+                                      if (user != null) {
+                                        hasBeenInitiallyPressed =
+                                            !hasBeenInitiallyPressed;
+                                        UpdateChannelService()
+                                            .removeUserFromChannelById(
+                                                user.uid, channel.channelId);
+                                        channel.userIds.remove(user.uid);
+                                      }
+                                    },
+                                  );
+                                },
+                                label: const Text(
+                                  'Joined',
+                                  style: TextStyle(color: LicheeColors.primary),
+                                ),
                               ),
+                              IconButton(
+                                color: LicheeColors.primary,
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    ChannelChatScreen.id,
+                                    arguments: ChannelChatNavigationParams(
+                                      channelId: channel.channelId,
+                                      channelName: channel.channelName,
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.chat_bubble_outline),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10.0),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Events', style: kBannerTextStyle),
+                                events.isEmpty
+                                    ? const Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                                          child: Text(
+                                            'It seems that no events are planned yet!',
+                                            style: kDescriptiveText,
+                                          ),
+                                        ),
+                                      )
+                                    : Container(),
+                                for (var e in events)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16.0, horizontal: 10.0),
+                                    child: EventTile(event: e),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SafeArea(
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        children: [
+                          const SizedBox(height: 10.0),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('Description',
+                                    style: kBannerTextStyle),
+                                Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 16.0,
+                                      top: 16.0,
+                                      right: 16.0,
+                                      bottom: 0.0),
+                                  child: Text(channel.description),
+                                ),
+                                DetailsTable(rows: description.create()),
+                                const Text('About this channel',
+                                    style: kBannerTextStyle),
+                                DetailsTable(rows: about.create()),
+                                const Text('Members', style: kBannerTextStyle),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 16.0, horizontal: 30.0),
+                                  child: Container(
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[850],
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 25.0, vertical: 15.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        for (var item in members) Text('$item'),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -177,63 +249,15 @@ class _ChannelScreenState extends State<ChannelScreen> {
                 ),
               ),
             ],
-          ),
-        ),
-        SafeArea(
-          child: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  children: [
-                    const SizedBox(height: 10.0),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Description', style: kBannerTextStyle),
-                          Container(
-                            padding: const EdgeInsets.only(
-                                left: 16.0,
-                                top: 16.0,
-                                right: 16.0,
-                                bottom: 0.0),
-                            child: Text(channel.description),
-                          ),
-                          DetailsTable(rows: description.create()),
-                          const Text('About this channel',
-                              style: kBannerTextStyle),
-                          DetailsTable(rows: about.create()),
-                          const Text('Members', style: kBannerTextStyle),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 16.0, horizontal: 30.0),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[850],
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 25.0, vertical: 15.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  for (var item in members) Text('$item'),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: LicheeColors.primary,
+            ),
+          );
+        }
+      },
     );
   }
 
