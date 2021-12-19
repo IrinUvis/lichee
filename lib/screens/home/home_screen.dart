@@ -14,14 +14,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late List<ReadChannelDto> recommendedChannels;
-
-  late ReadChannelDto channel;
-
-  Future<ReadChannelDto> getChannel() async {
-    channel = await ReadChannelService().getById(id: 'testChannel');
-    return channel;
-  }
+  List<ReadChannelDto> recommendedChannels = [];
 
   Future<List<ReadChannelDto>> getPromotedChannels() async {
     recommendedChannels = await ReadChannelService().getPromoted();
@@ -72,16 +65,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .map((e) => ClipRRect(
                                       borderRadius: BorderRadius.circular(20.0),
                                       child: InkWell(
-                                        onTap: () {
+                                        onTap: () async {
+                                          final channel =
+                                              await ReadChannelService().getById(
+                                                  id: recommendedChannels[
+                                                          recommendedChannels
+                                                              .indexOf(e)]
+                                                      .channelId);
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   ChannelScreen(
-                                                channel: recommendedChannels[
-                                                    recommendedChannels
-                                                        .indexOf(e)],
-                                              ),
+                                                      channel: channel),
                                             ),
                                           );
                                         },

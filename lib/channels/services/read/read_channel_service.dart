@@ -33,4 +33,9 @@ class ReadChannelService {
     final channels = await _repository.getPromoted();
     return channels.map((channel) => channel.toDto()).toList();
   }
+
+  Future<bool> getIfUserIsInTheChannelById(String id, String user) async {
+    final channel = await _repository.getById(id: id);
+    return channel.userIds!.contains(user);
+  }
 }
