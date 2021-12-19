@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/models/channel_chat_data.dart';
 
 import '../channel_chat/channel_chat_screen.dart';
 
 class ChatListCard extends StatelessWidget {
-  final Map<String, dynamic> channelChatData;
+  final ChannelChatData channelChatData;
 
   const ChatListCard({Key? key, required this.channelChatData})
       : super(key: key);
@@ -18,8 +18,8 @@ class ChatListCard extends StatelessWidget {
           context,
           ChannelChatScreen.id,
           arguments: ChannelChatNavigationParams(
-            channelId: channelChatData['channelId'],
-            channelName: channelChatData['channelName'],
+            channelId: channelChatData.channelId,
+            channelName: channelChatData.channelName,
           ),
         );
       },
@@ -35,8 +35,7 @@ class ChatListCard extends StatelessWidget {
             children: <Widget>[
               CircleAvatar(
                 radius: 30,
-                backgroundImage:
-                NetworkImage(channelChatData['photoStoragePath']),
+                backgroundImage: NetworkImage(channelChatData.photoUrl),
               ),
               const SizedBox(
                 width: 10,
@@ -49,7 +48,7 @@ class ChatListCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
                       Text(
-                        channelChatData['channelName'],
+                        channelChatData.channelName,
                         style: kCardChannelNameTextStyle,
                       ),
                       const SizedBox(
@@ -77,24 +76,35 @@ class ChatListCard extends StatelessWidget {
 
   List<Text> getRecentMessageDetails() {
     final List<Text> widgets = [];
-    final String? text = channelChatData['recentMessageText'];
-    if (text == null || text.isEmpty) {
+    final DateTime? date = channelChatData.recentMessageSentAt;
+    if (date == null) {
       widgets.add(const Text(
         'No messages present yet!',
         style: kCardLatestMessageTextStyle,
       ));
     } else {
+      final String text = channelChatData.recentMessageText!;
+      if (text.isNotEmpty) {
+        widgets.add(
+          Text(
+            channelChatData.recentMessageSentBy!.toString() +
+                ': ' +
+                channelChatData.recentMessageText!,
+            style: kCardLatestMessageTextStyle,
+          ),
+        );
+      } else {
+        widgets.add(
+          Text(
+            channelChatData.recentMessageSentBy!.toString() +
+                ' shared file',
+            style: kCardLatestMessageTextStyle,
+          ),
+        );
+      }
       widgets.add(
         Text(
-          channelChatData['recentMessageSentBy'] +
-              ': ' +
-              channelChatData['recentMessageText'],
-          style: kCardLatestMessageTextStyle,
-        ),
-      );
-      widgets.add(
-        Text(
-          _getFormattedDate(channelChatData['recentMessageSentAt']),
+          getFormattedDate(channelChatData.recentMessageSentAt!),
           style: kCardLatestMessageTimeTextStyle,
         ),
       );
@@ -102,8 +112,8 @@ class ChatListCard extends StatelessWidget {
     return widgets;
   }
 
-  String _getFormattedDate(Timestamp timestamp) {
-    final date = timestamp.toDate();
+  @visibleForTesting
+  String getFormattedDate(DateTime date) {
     final currentDate = DateTime.now();
     if (_isDateTheSame(date, currentDate)) {
       return 'Today';

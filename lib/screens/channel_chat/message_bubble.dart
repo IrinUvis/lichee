@@ -22,14 +22,14 @@ class MessageBubble extends StatelessWidget {
             ClipRRect(
               borderRadius: isMe
                   ? const BorderRadius.only(
-                  topLeft: Radius.circular(10.0),
-                  bottomLeft: Radius.circular(5.0),
-                  bottomRight: Radius.circular(5.0))
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(5.0),
+                      bottomRight: Radius.circular(5.0))
                   : const BorderRadius.only(
-                bottomLeft: Radius.circular(5.0),
-                bottomRight: Radius.circular(5.0),
-                topRight: Radius.circular(10.0),
-              ),
+                      bottomLeft: Radius.circular(5.0),
+                      bottomRight: Radius.circular(5.0),
+                      topRight: Radius.circular(10.0),
+                    ),
               child: Image.network(imageUrl!),
             ),
             const SizedBox(
@@ -52,14 +52,14 @@ class MessageBubble extends StatelessWidget {
             ClipRRect(
               borderRadius: isMe
                   ? const BorderRadius.only(
-                  topLeft: Radius.circular(10.0),
-                  bottomLeft: Radius.circular(10.0),
-                  bottomRight: Radius.circular(10.0))
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0))
                   : const BorderRadius.only(
-                bottomLeft: Radius.circular(10.0),
-                bottomRight: Radius.circular(10.0),
-                topRight: Radius.circular(10.0),
-              ),
+                      bottomLeft: Radius.circular(10.0),
+                      bottomRight: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
               child: Image.network(imageUrl!),
             ),
           ],
@@ -88,7 +88,7 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       child: Column(
         crossAxisAlignment:
-        isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             sender,
@@ -103,14 +103,14 @@ class MessageBubble extends StatelessWidget {
             child: Material(
               borderRadius: isMe
                   ? const BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  bottomLeft: Radius.circular(20.0),
-                  bottomRight: Radius.circular(20.0))
+                      topLeft: Radius.circular(20.0),
+                      bottomLeft: Radius.circular(20.0),
+                      bottomRight: Radius.circular(20.0))
                   : const BorderRadius.only(
-                bottomLeft: Radius.circular(20.0),
-                bottomRight: Radius.circular(20.0),
-                topRight: Radius.circular(20.0),
-              ),
+                      bottomLeft: Radius.circular(20.0),
+                      bottomRight: Radius.circular(20.0),
+                      topRight: Radius.circular(20.0),
+                    ),
               elevation: 5.0,
               color: isMe ? Colors.pinkAccent : const Color(0xFF444444),
               child: Padding(

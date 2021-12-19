@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lichee/constants/constants.dart';
-import 'package:lichee/models/message_data.dart';
+import 'package:lichee/models/chat_message_data.dart';
+import 'package:lichee/screens/channel_chat/channel_chat_controller.dart';
 import 'package:lichee/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
@@ -25,20 +26,19 @@ class ChannelChatScreen extends StatefulWidget {
 }
 
 class _ChannelChatScreenState extends State<ChannelChatScreen> {
-  final storageService = StorageService(FirebaseStorage.instance);
+  final _channelChatController = ChannelChatController(
+      FirebaseFirestore.instance,
+      StorageService(FirebaseStorage.instance));
 
   final messageTextController = TextEditingController();
-  ImagePicker imagePicker = ImagePicker();
+  final imagePicker = ImagePicker();
 
   File? file;
   String messageText = '';
 
   StreamBuilder<QuerySnapshot> getMessagesStream() {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('channel_messages/' + widget.data.channelId + '/messages')
-          .orderBy('sentAt', descending: true)
-          .snapshots(),
+      stream: _channelChatController.getMessagesStream(widget.data.channelId),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -47,7 +47,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
         } else {
           final messages = snapshot.data!.docs
               .map((doc) => doc.data() as Map<String, dynamic>)
-              .map((map) => MessageData.mapToMessageData(map))
+              .map((map) => ChatMessageData.mapToChatMessageData(map))
               .toList();
           List<MessageBubble> messageBubbles = [];
           for (var message in messages) {
@@ -183,24 +183,29 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     DateTime now = DateTime.now();
     if (file != null) {
       try {
-        imageUrl = await storageService.uploadFile(
-            path: 'chats/' + widget.data.channelId + '/' + now.millisecondsSinceEpoch.toString(), file: file!);
+        imageUrl = await _channelChatController.uploadPhoto(
+            channelId: widget.data.channelId, currentTime: now, file: file!);
         setState(() {
           file = null;
         });
       } on FirebaseException catch (e) {
-        Fluttertoast.showToast(msg: 'An unexpected error has occurred! Message wasn\'t sent');
+        Fluttertoast.showToast(
+            msg: 'An unexpected error has occurred! Message wasn\'t sent');
       }
     }
-    FirebaseFirestore.instance
-        .collection('channel_messages/' + widget.data.channelId + '/messages')
-        .add(MessageData(
-      idSentBy: Provider.of<User?>(context, listen: false)!.uid,
-      nameSentBy: Provider.of<User?>(context, listen: false)!.displayName!,
-      messageText: messageText,
-      imageUrl: imageUrl,
-      sentAt: now,
-    ).toMap());
+    _channelChatController.sendMessage(
+        channelId: widget.data.channelId,
+        userId: Provider.of<User?>(context, listen: false)!.uid,
+        username: Provider.of<User?>(context, listen: false)!.displayName!,
+        messageText: messageText,
+        imageUrl: imageUrl,
+        currentTime: now);
+    _channelChatController.updateChatListWithMostRecentMessage(
+        channelId: widget.data.channelId,
+        messageText: messageText,
+        username: Provider.of<User?>(context, listen: false)!.displayName!,
+        currentTime: now);
+
     messageText = '';
   }
 
