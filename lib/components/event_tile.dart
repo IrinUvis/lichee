@@ -29,7 +29,6 @@ class _EventTileState extends State<EventTile> {
         .contains(Provider.of<User?>(context, listen: false)!.uid);
 
     return PhysicalModel(
-      elevation: 5.0,
       shadowColor: Colors.black54,
       borderRadius: BorderRadius.circular(8.0),
       color: const Color(0xFF303030),
@@ -67,37 +66,45 @@ class _EventTileState extends State<EventTile> {
               children: [
                 TextButton.icon(
                     onPressed: () {
-                      isInterestedPressed
-                          ? interested.remove(
-                              Provider.of<User?>(context, listen: false)!.uid)
-                          : interested.add(
-                              Provider.of<User?>(context, listen: false)!.uid);
-                      isInterestedPressed = !isInterestedPressed;
-                      FirebaseFirestore.instance
-                          .collection('events/${widget.channelId}/events')
-                          .doc(widget.event['id'])
-                          .update({
-                        'interestedUsers': interested,
-                      });
+                      if (!isGoingPressed) {
+                        isInterestedPressed
+                            ? interested.remove(
+                                Provider.of<User?>(context, listen: false)!.uid)
+                            : interested.add(
+                                Provider.of<User?>(context, listen: false)!
+                                    .uid);
+                        isInterestedPressed = !isInterestedPressed;
+                        FirebaseFirestore.instance
+                            .collection('events/${widget.channelId}/events')
+                            .doc(widget.event['id'])
+                            .update({
+                          'interestedUsers': interested,
+                        });
+                      }
                     },
-                    icon: Icon(Icons.star_outline,
-                        color: LicheeColors.accentColor),
+                    icon: isInterestedPressed
+                        ? Icon(Icons.star, color: LicheeColors.accentColor)
+                        : Icon(Icons.star_outline,
+                            color: LicheeColors.accentColor),
                     label: Text('Interested',
                         style: TextStyle(color: LicheeColors.accentColor))),
                 TextButton.icon(
                     onPressed: () {
-                      isGoingPressed
-                          ? going.remove(
-                              Provider.of<User?>(context, listen: false)!.uid)
-                          : going.add(
-                              Provider.of<User?>(context, listen: false)!.uid);
-                      isGoingPressed = !isGoingPressed;
-                      FirebaseFirestore.instance
-                          .collection('events/${widget.channelId}/events')
-                          .doc(widget.event['id'])
-                          .update({
-                        'goingUsers': going,
-                      });
+                      if (!isInterestedPressed) {
+                        isGoingPressed
+                            ? going.remove(
+                                Provider.of<User?>(context, listen: false)!.uid)
+                            : going.add(
+                                Provider.of<User?>(context, listen: false)!
+                                    .uid);
+                        isGoingPressed = !isGoingPressed;
+                        FirebaseFirestore.instance
+                            .collection('events/${widget.channelId}/events')
+                            .doc(widget.event['id'])
+                            .update({
+                          'goingUsers': going,
+                        });
+                      }
                     },
                     icon: Icon(Icons.check, color: LicheeColors.accentColor),
                     label: Text('Going',

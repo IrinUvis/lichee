@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/update/update_channel.dart';
 import 'package:lichee/components/channel_backgroud_photo.dart';
+import 'package:lichee/components/details_list_view.dart';
 import 'package:lichee/components/details_rows.dart';
 import 'package:lichee/components/details_table.dart';
 import 'package:lichee/components/event_tile.dart';
@@ -172,9 +173,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                 events.isEmpty
                                     ? const Center(
                                         child: Padding(
-                                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 16.0),
                                           child: Text(
-                                            'It seems that no events are planned yet!',
+                                            'It seems that no events has been planned yet!',
                                             style: kDescriptiveText,
                                           ),
                                         ),
@@ -184,7 +186,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 16.0, horizontal: 10.0),
-                                    child: EventTile(event: e, channelId: channel.channelId),
+                                    child: EventTile(
+                                        event: e, channelId: channel.channelId),
                                   ),
                               ],
                             ),
@@ -199,54 +202,12 @@ class _ChannelScreenState extends State<ChannelScreen> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: ListView(
-                        children: [
-                          const SizedBox(height: 10.0),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Description',
-                                    style: kBannerTextStyle),
-                                Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 16.0,
-                                      top: 16.0,
-                                      right: 16.0,
-                                      bottom: 0.0),
-                                  child: Text(channel.description),
-                                ),
-                                DetailsTable(rows: description.create()),
-                                const Text('About this channel',
-                                    style: kBannerTextStyle),
-                                DetailsTable(rows: about.create()),
-                                const Text('Members', style: kBannerTextStyle),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16.0, horizontal: 30.0),
-                                  child: Container(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[850],
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 25.0, vertical: 15.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        for (var item in members) Text('$item'),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                      child: DetailsListView(
+                          channel: channel,
+                          description: description,
+                          about: about,
+                          isMember: true,
+                          members: members),
                     ),
                   ],
                 ),
