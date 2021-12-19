@@ -30,7 +30,7 @@ List<String> filtersList = [
   'ten'
 ];
 
-List<ChannelTreeNode> nodesList = [
+List<ChannelTreeNode> sampleNodesList = [
   ChannelTreeNode(
       id: '1',
       name: 'Football',

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lichee/screens/channel_chat_screen.dart';
+import 'package:lichee/screens/channel_chat/channel_chat_screen.dart';
 import 'package:lichee/screens/tabs_screen.dart';
 
 class RouteGenerator {

@@ -7,9 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lichee/constants/constants.dart';
-import 'package:lichee/models/message_data.dart';
+import 'package:lichee/models/chat_message_data.dart';
+import 'package:lichee/screens/channel_chat/channel_chat_controller.dart';
 import 'package:lichee/services/storage_service.dart';
 import 'package:provider/provider.dart';
+
+import 'message_bubble.dart';
 
 class ChannelChatScreen extends StatefulWidget {
   static const String id = 'channel_chat_screen';
@@ -23,18 +26,19 @@ class ChannelChatScreen extends StatefulWidget {
 }
 
 class _ChannelChatScreenState extends State<ChannelChatScreen> {
+  final _channelChatController = ChannelChatController(
+      FirebaseFirestore.instance,
+      StorageService(FirebaseStorage.instance));
+
   final messageTextController = TextEditingController();
-  ImagePicker imagePicker = ImagePicker();
+  final imagePicker = ImagePicker();
 
   File? file;
   String messageText = '';
 
   StreamBuilder<QuerySnapshot> getMessagesStream() {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('channel_messages/' + widget.data.channelId + '/messages')
-          .orderBy('sentAt', descending: true)
-          .snapshots(),
+      stream: _channelChatController.getMessagesStream(widget.data.channelId),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -43,7 +47,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
         } else {
           final messages = snapshot.data!.docs
               .map((doc) => doc.data() as Map<String, dynamic>)
-              .map((map) => MessageData.mapToMessageData(map))
+              .map((map) => ChatMessageData.mapToChatMessageData(map))
               .toList();
           List<MessageBubble> messageBubbles = [];
           for (var message in messages) {
@@ -179,24 +183,29 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     DateTime now = DateTime.now();
     if (file != null) {
       try {
-        imageUrl = await StorageService.uploadFile(
-            path: 'chats/' + widget.data.channelId + '/' + now.millisecondsSinceEpoch.toString(), file: file!);
+        imageUrl = await _channelChatController.uploadPhoto(
+            channelId: widget.data.channelId, currentTime: now, file: file!);
         setState(() {
           file = null;
         });
       } on FirebaseException catch (e) {
-        Fluttertoast.showToast(msg: 'An unexpected error has occurred! Message wasn\'t sent');
+        Fluttertoast.showToast(
+            msg: 'An unexpected error has occurred! Message wasn\'t sent');
       }
     }
-    FirebaseFirestore.instance
-        .collection('channel_messages/' + widget.data.channelId + '/messages')
-        .add(MessageData(
-      idSentBy: Provider.of<User?>(context, listen: false)!.uid,
-      nameSentBy: Provider.of<User?>(context, listen: false)!.displayName!,
-      messageText: messageText,
-      imageUrl: imageUrl,
-      sentAt: now,
-    ).toMap());
+    _channelChatController.sendMessage(
+        channelId: widget.data.channelId,
+        userId: Provider.of<User?>(context, listen: false)!.uid,
+        username: Provider.of<User?>(context, listen: false)!.displayName!,
+        messageText: messageText,
+        imageUrl: imageUrl,
+        currentTime: now);
+    _channelChatController.updateChatListWithMostRecentMessage(
+        channelId: widget.data.channelId,
+        messageText: messageText,
+        username: Provider.of<User?>(context, listen: false)!.displayName!,
+        currentTime: now);
+
     messageText = '';
   }
 
@@ -212,132 +221,6 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     setState(() {
       file = null;
     });
-  }
-}
-
-class MessageBubble extends StatelessWidget {
-  const MessageBubble({
-    required this.sender,
-    required this.text,
-    this.imageUrl,
-    required this.isMe,
-  });
-
-  final String sender;
-  final String text;
-  final String? imageUrl;
-  final bool isMe;
-
-  Column getMessageContent() {
-    if (imageUrl != null) {
-      if (text.isNotEmpty) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            ClipRRect(
-              borderRadius: isMe
-                  ? const BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      bottomLeft: Radius.circular(5.0),
-                      bottomRight: Radius.circular(5.0))
-                  : const BorderRadius.only(
-                      bottomLeft: Radius.circular(5.0),
-                      bottomRight: Radius.circular(5.0),
-                      topRight: Radius.circular(10.0),
-                    ),
-              child: Image.network(imageUrl!),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Text(
-              text,
-              textAlign: TextAlign.start,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15.0,
-              ),
-            ),
-          ],
-        );
-      } else {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            ClipRRect(
-              borderRadius: isMe
-                  ? const BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      bottomLeft: Radius.circular(10.0),
-                      bottomRight: Radius.circular(10.0))
-                  : const BorderRadius.only(
-                      bottomLeft: Radius.circular(10.0),
-                      bottomRight: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0),
-                    ),
-              child: Image.network(imageUrl!),
-            ),
-          ],
-        );
-      }
-    } else {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            text,
-            textAlign: TextAlign.start,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 15.0,
-            ),
-          ),
-        ],
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            sender,
-            style: const TextStyle(
-              fontSize: 12.0,
-              color: Colors.white,
-            ),
-          ),
-          Container(
-            constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.6),
-            child: Material(
-              borderRadius: isMe
-                  ? const BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      bottomLeft: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0))
-                  : const BorderRadius.only(
-                      bottomLeft: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
-                    ),
-              elevation: 5.0,
-              color: isMe ? Colors.pinkAccent : const Color(0xFF444444),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10.0, horizontal: 10.0),
-                child: getMessageContent(),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

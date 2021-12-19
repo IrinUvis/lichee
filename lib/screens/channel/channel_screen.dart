@@ -10,10 +10,10 @@ import 'package:lichee/components/details_table.dart';
 import 'package:lichee/components/event_tile.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/screens/channel_chat/channel_chat_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../constants/channel_constants.dart';
-import 'channel_chat_screen.dart';
+import '../../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';

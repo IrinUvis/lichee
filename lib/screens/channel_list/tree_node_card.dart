@@ -1,59 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:lichee/screens/channel_list/sample_channel_data.dart';
+import 'package:lichee/constants/colors.dart';
+import 'package:lichee/constants/constants.dart';
+import 'package:lichee/constants/icons.dart';
 
 class TreeNodeCard extends StatelessWidget {
   const TreeNodeCard({
     Key? key,
-    required this.nodeName,
-    required this.nodes,
-    required this.index,
+    required this.name,
+    required this.type,
+    required this.parentId,
+    required this.childrenIds,
   }) : super(key: key);
 
-  final String nodeName;
-  final List<ChannelTreeNode> nodes;
-  final int index;
+  final String name;
+  final String type;
+  final String parentId;
+  final List<String>? childrenIds;
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: const Color(0xFF363636),
+      color: LicheeColors.greyColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Text(
-                  nodeName,
-                  style: const TextStyle(color: Colors.white, fontSize: 20.0),
-                ),
-                const SizedBox(
-                  width: 5.0,
-                ),
-                nodes[index].childrenIds != null
-                    ? const Icon(
-                        Icons.arrow_right,
-                        color: Colors.white,
-                      )
-                    : Container(),
+                Text(name, style: kCategoryNodeTestStyle),
+                const SizedBox(width: 5.0),
+                kCategoryNodeArrow,
               ],
             ),
             Row(
               children: [
-                nodes[index].childrenIds == null
-                    ? const Text(
-                        'empty',
-                        style: TextStyle(color: Colors.grey),
-                      )
+                (childrenIds!.isEmpty || childrenIds == null) &&
+                        type == 'category'
+                    ? kCategoryNodeEmptyText
                     : Container(),
-                const SizedBox(
-                  width: 5.0,
-                ),
-                nodes[index].icon
+                const SizedBox(width: 5.0),
+                type == 'category'
+                    ? kCategoryNodeCategoryIcon
+                    : kCategoryNodeChannelIcon,
               ],
             ),
           ],

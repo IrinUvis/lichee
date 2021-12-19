@@ -4,14 +4,14 @@ class UserData {
   final String? id;
   final String username;
   final String email;
-  final String photoUrl;
+  final String? photoUrl;
   final DateTime dateOfBirth;
 
   UserData({
     this.id,
     required this.username,
     required this.email,
-    required this.photoUrl,
+    this.photoUrl,
     required this.dateOfBirth,
   });
 

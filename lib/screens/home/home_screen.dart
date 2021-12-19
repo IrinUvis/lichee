@@ -3,7 +3,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/read/read_channel_service.dart';
 import 'package:lichee/constants/colors.dart';
-import 'package:lichee/screens/channel_screen.dart';
+import 'package:lichee/screens/channel/channel_screen.dart';
 import 'package:lichee/constants/constants.dart';
 
 class HomeScreen extends StatefulWidget {
