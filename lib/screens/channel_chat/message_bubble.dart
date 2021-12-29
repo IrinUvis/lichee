@@ -30,7 +30,26 @@ class MessageBubble extends StatelessWidget {
                       bottomRight: Radius.circular(5.0),
                       topRight: Radius.circular(10.0),
                     ),
-              child: Image.network(imageUrl!),
+              child: Image.network(
+                imageUrl!,
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
             const SizedBox(
               height: 5,
