@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lichee/channels/services/read/read_channel_dto.dart';
+import 'package:lichee/channels/services/read/read_channel_service.dart';
 import 'package:lichee/models/chat_message_data.dart';
 import 'package:lichee/services/storage_service.dart';
 
@@ -8,7 +10,10 @@ class ChannelChatController {
   final FirebaseFirestore _firestore;
   final StorageService _storage;
 
-  ChannelChatController(this._firestore, this._storage);
+  final ReadChannelService _readChannelService;
+
+  ChannelChatController(this._firestore, this._storage)
+      : _readChannelService = ReadChannelService(firestore: _firestore);
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getMessagesStream(
       String channelId) {
@@ -40,15 +45,18 @@ class ChannelChatController {
         .add(chatMessageData.toMap());
   }
 
+  Future<ReadChannelDto> getParentChannelByChatId({
+    required String chatId,
+  }) {
+    return _readChannelService.getById(id: chatId);
+  }
+
   void updateChatListWithMostRecentMessage(
       {required String channelId,
       required String messageText,
       required String username,
       required DateTime currentTime}) {
-    _firestore
-        .collection('channel_chats')
-        .doc(channelId)
-        .update({
+    _firestore.collection('channel_chats').doc(channelId).update({
       'recentMessageText': messageText,
       'recentMessageSentBy': username,
       'recentMessageSentAt': currentTime,

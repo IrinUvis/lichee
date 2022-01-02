@@ -42,7 +42,7 @@ void main() {
   final FakeFirebaseAuth _fakeAuth =
       FakeFirebaseAuth(signedIn: false, mockUser: user);
   final FakeFirebaseFirestore _fakeFirestore = FakeFirebaseFirestore();
-  final _authProvider = AuthenticationProvider(_fakeAuth, _fakeFirestore);
+  final _authProvider = AuthenticationProvider(auth: _fakeAuth, firestore: _fakeFirestore);
 
   group('Authentication services', () {
     setUp(() async {

@@ -42,6 +42,7 @@ class ChannelBackgroundPhoto extends StatelessWidget {
             ),
           ),
         ),
+        // TODO EL - bug?: Nie ma overflowów, ale przy dłuższych nazwach kanału, przytulają się do lewej krawędzi
         Text(channel.channelName,
             style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
       ],

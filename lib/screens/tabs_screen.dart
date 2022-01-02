@@ -1,11 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
-import 'package:lichee/screens/add_channel/add_channel_screen.dart';
-import 'package:lichee/screens/channel_list/channel_list_screen.dart';
-import 'package:lichee/screens/chat_list/chat_list_screen.dart';
-import 'package:lichee/screens/home/home_screen.dart';
-import 'package:lichee/screens/profile/profile_screen.dart';
+import 'package:lichee/providers/tabs_screen_controller_provider.dart';
+import 'package:provider/provider.dart';
 
 class TabsScreen extends StatefulWidget {
   static const String id = 'tabs_screen';
@@ -17,45 +13,6 @@ class TabsScreen extends StatefulWidget {
 }
 
 class _TabsScreenState extends State<TabsScreen> {
-  final List<Map<String, Object>> _pages = [
-    {'page': HomeScreen(), 'title': 'Home'},
-    {'page': const ChannelListScreen(), 'title': 'Your channels'},
-    {'page': const AddChannelScreen(), 'title': 'Add channel'},
-    {
-      'page': ChatListScreen(
-        firestore: FirebaseFirestore.instance,
-      ),
-      'title': 'Your chats'
-    },
-    {'page': const ProfileScreen(), 'title': 'Your profile'}
-  ];
-
-  int _selectedPageIndex = 0;
-  late final PageController _pageController;
-
-  void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-      _pageController.animateToPage(
-        index,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.fastLinearToSlowEaseIn,
-      );
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,16 +29,27 @@ class _TabsScreenState extends State<TabsScreen> {
       ),
       body: SizedBox.expand(
         child: PageView(
-            controller: _pageController,
+            controller: Provider.of<TabsScreenControllerProvider>(context)
+                .pageController,
             onPageChanged: (index) {
-              setState(() => _selectedPageIndex = index);
+              setState(() => Provider.of<TabsScreenControllerProvider>(
+                    context,
+                    listen: false,
+                  ).selectedPageIndex = index);
             },
-            children: _pages.map((map) => map['page'] as Widget).toList()),
+            children: Provider.of<TabsScreenControllerProvider>(context)
+                .pages
+                .map((map) => map['page'] as Widget)
+                .toList()),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        onTap: _selectPage,
+        onTap: Provider.of<TabsScreenControllerProvider>(
+          context,
+          listen: false,
+        ).selectPage,
         type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedPageIndex,
+        currentIndex: Provider.of<TabsScreenControllerProvider>(
+          context).selectedPageIndex,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[

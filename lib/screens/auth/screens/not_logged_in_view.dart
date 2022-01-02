@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/providers/tabs_screen_controller_provider.dart';
+import 'package:provider/provider.dart';
 
 class NotLoggedInView extends StatelessWidget {
   const NotLoggedInView({
@@ -12,7 +14,6 @@ class NotLoggedInView extends StatelessWidget {
   final Text titleText;
   final Text buttonText;
 
-  //TODO Define function for button to switch user to login screen
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -30,7 +31,13 @@ class NotLoggedInView extends StatelessWidget {
             child: MaterialButton(
               padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
               minWidth: MediaQuery.of(context).size.width,
-              onPressed: null,
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                Provider.of<TabsScreenControllerProvider>(
+                  context,
+                  listen: false,
+                ).selectProfilePage();
+              },
               child: buttonText,
             ),
           ),

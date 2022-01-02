@@ -10,7 +10,6 @@ class ChannelChatData implements Comparable<ChannelChatData> {
   final String? recentMessageText;
   final List<String> userIds;
 
-  // TODO: Use it where applicable, (probably adding channels)
   ChannelChatData({
     required this.channelId,
     required this.channelName,
