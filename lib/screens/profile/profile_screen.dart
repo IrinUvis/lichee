@@ -16,6 +16,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(context) {
     final user = Provider.of<User?>(context);
+    // TODO VM - requirement: Perhaps a profile screen could see some more functionalities?
     return Scaffold(
       body: SafeArea(
         child: user != null

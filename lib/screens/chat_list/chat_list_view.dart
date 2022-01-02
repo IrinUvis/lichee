@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/models/channel_chat_data.dart';
+import 'package:lichee/providers/firebase_provider.dart';
+import 'package:provider/provider.dart';
 
 import 'chat_list_card.dart';
 import 'chat_list_controller.dart';
 
 class ChatListView extends StatefulWidget {
-  final FirebaseFirestore firestore;
-
-  const ChatListView({required this.firestore});
+  const ChatListView();
 
   @override
   _ChatListViewState createState() => _ChatListViewState();
@@ -21,7 +22,7 @@ class _ChatListViewState extends State<ChatListView> {
   @override
   void initState() {
     super.initState();
-    chatListController = ChatListController(widget.firestore);
+    chatListController = ChatListController(Provider.of<FirebaseProvider>(context, listen: false).firestore);
   }
 
   String textFieldQuery = '';
@@ -66,9 +67,10 @@ class _ChatListViewState extends State<ChatListView> {
 
   StreamBuilder<QuerySnapshot> getChatsStream() {
     return StreamBuilder<QuerySnapshot>(
-      // TODO: userId should be changed once channels and chats can be created normally
       stream: chatListController.getChatsStream(
-          query: textFieldQuery, userId: '2bGoqMTi4URGrGT9foi67zDqT6B3'),
+        query: textFieldQuery,
+        userId: Provider.of<User?>(context)!.uid,
+      ),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -86,14 +88,14 @@ class _ChatListViewState extends State<ChatListView> {
             children: chats
                 .map(
                   (chat) => Column(
-                children: <Widget>[
-                  ChatListCard(channelChatData: chat),
-                  const SizedBox(
-                    height: 5.0,
-                  )
-                ],
-              ),
-            )
+                    children: <Widget>[
+                      ChatListCard(channelChatData: chat),
+                      const SizedBox(
+                        height: 5.0,
+                      )
+                    ],
+                  ),
+                )
                 .toList(),
           );
         }

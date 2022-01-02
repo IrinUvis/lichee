@@ -36,7 +36,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
-  build_runner: ^2.1.7 # use 'flutter pub run build_runner build' in terminal to generate mock classes
+  build_runner: ^2.1.7 # use 'flutter pub run build_runner build --delete-conflicting-outputs' in terminal to generate mock classes
   network_image_mock: ^2.0.1 # use this one to mock the network images (example in message_bubble_test)
 
 flutter:

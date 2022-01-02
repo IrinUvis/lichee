@@ -10,9 +10,11 @@ import 'package:lichee/components/details_table.dart';
 import 'package:lichee/components/event_tile.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/screens/channel_chat/channel_chat_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
 import '../../constants/channel_constants.dart';
 
 class ChannelScreen extends StatefulWidget {
@@ -25,6 +27,7 @@ class ChannelScreen extends StatefulWidget {
   State<ChannelScreen> createState() => _ChannelScreenState();
 }
 
+// TODO EL - bug?: Te kropki na dole co oznaczają stronę, stykają się z ekranem
 class _ChannelScreenState extends State<ChannelScreen> {
   String? report;
   late bool hasBeenInitiallyPressed;
@@ -33,6 +36,24 @@ class _ChannelScreenState extends State<ChannelScreen> {
   late DetailsRows description;
   final PageController _controller = PageController();
   double currentPage = 0;
+
+  late final UpdateChannelService _updateChannelService;
+
+  @override
+  void initState() {
+    super.initState();
+    channel = widget.channel;
+    about = DetailsRows(channel: channel, isAboutTable: true);
+    description = DetailsRows(channel: channel, isAboutTable: false);
+    _controller.addListener(() {
+      setState(() {
+        currentPage = _controller.page!;
+      });
+    });
+    _updateChannelService = UpdateChannelService(
+        firestore:
+            Provider.of<FirebaseProvider>(context, listen: false).firestore);
+  }
 
   void handleTap(String value) {
     switch (value) {
@@ -60,13 +81,15 @@ class _ChannelScreenState extends State<ChannelScreen> {
                       () {
                         if (user != null) {
                           hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
-                          UpdateChannelService().addUserToChannelById(
+                          _updateChannelService.addUserToChannelById(
                               user.uid, channel.channelId);
                           channel.userIds.add(user.uid);
                         }
                       },
                     );
                   },
+                  // TODO EL - sugestia: imo ten przycisk do joinowania kanału powinien być wyszarzony jak ktoś nie jest zalogowany
+                  // bo teraz po prostu można go nacisnąć bez efektu
                   label: const Text('Join'),
                 ),
                 const SizedBox(height: 10.0),
@@ -98,7 +121,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
   Widget channelForMember(User? user) {
     List members = channel.userIds.toList();
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
+      stream: Provider.of<FirebaseProvider>(context, listen: false)
+          .firestore
           .collection('events/${channel.channelId}/events')
           .snapshots(),
       builder: (context, snapshot) {
@@ -134,7 +158,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                       if (user != null) {
                                         hasBeenInitiallyPressed =
                                             !hasBeenInitiallyPressed;
-                                        UpdateChannelService()
+                                        _updateChannelService
                                             .removeUserFromChannelById(
                                                 user.uid, channel.channelId);
                                         channel.userIds.remove(user.uid);
@@ -154,9 +178,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                     context,
                                     ChannelChatScreen.id,
                                     arguments: ChannelChatNavigationParams(
-                                      channelId: channel.channelId,
-                                      channelName: channel.channelName,
-                                    ),
+                                        channelId: channel.channelId,
+                                        channelName: channel.channelName,
+                                        fromRoute: ChannelScreen.id),
                                   );
                                 },
                                 icon: const Icon(Icons.chat_bubble_outline),
@@ -271,19 +295,6 @@ class _ChannelScreenState extends State<ChannelScreen> {
           ? channelForMember(user)
           : channelForNonMember(user),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    channel = widget.channel;
-    about = DetailsRows(channel: channel, isAboutTable: true);
-    description = DetailsRows(channel: channel, isAboutTable: false);
-    _controller.addListener(() {
-      setState(() {
-        currentPage = _controller.page!;
-      });
-    });
   }
 
   Future<void> _reportDialog(BuildContext context) async {
