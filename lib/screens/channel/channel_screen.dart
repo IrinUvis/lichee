@@ -27,7 +27,6 @@ class ChannelScreen extends StatefulWidget {
   State<ChannelScreen> createState() => _ChannelScreenState();
 }
 
-// TODO EL - bug?: Te kropki na dole co oznaczają stronę, stykają się z ekranem
 class _ChannelScreenState extends State<ChannelScreen> {
   String? report;
   late bool hasBeenInitiallyPressed;
@@ -36,6 +35,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   late DetailsRows description;
   final PageController _controller = PageController();
   double currentPage = 0;
+  late bool isLogged;
 
   late final UpdateChannelService _updateChannelService;
 
@@ -73,23 +73,25 @@ class _ChannelScreenState extends State<ChannelScreen> {
                 ElevatedButton.icon(
                   icon: const Icon(Icons.group_add),
                   style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(LicheeColors.primary),
+                    backgroundColor: user != null
+                        ? MaterialStateProperty.all<Color>(LicheeColors.primary)
+                        : MaterialStateProperty.all<Color>(
+                            LicheeColors.disabledButton),
+                    foregroundColor: user != null
+                        ? MaterialStateProperty.all<Color>(Colors.white)
+                        : MaterialStateProperty.all<Color>(
+                            const Color(0xFF424242)),
                   ),
-                  onPressed: () {
-                    setState(
-                      () {
-                        if (user != null) {
-                          hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
-                          _updateChannelService.addUserToChannelById(
-                              user.uid, channel.channelId);
-                          channel.userIds.add(user.uid);
+                  onPressed: isLogged
+                      ? () {
+                          setState(() {
+                            hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
+                            _updateChannelService.addUserToChannelById(
+                                user!.uid, channel.channelId);
+                            channel.userIds.add(user.uid);
+                          });
                         }
-                      },
-                    );
-                  },
-                  // TODO EL - sugestia: imo ten przycisk do joinowania kanału powinien być wyszarzony jak ktoś nie jest zalogowany
-                  // bo teraz po prostu można go nacisnąć bez efektu
+                      : null,
                   label: const Text('Join'),
                 ),
                 const SizedBox(height: 10.0),
@@ -253,9 +255,14 @@ class _ChannelScreenState extends State<ChannelScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
     hasBeenInitiallyPressed = channel.userIds.contains(user?.uid);
+    if (user != null) {
+      isLogged = true;
+    } else {
+      isLogged = false;
+    }
     return Scaffold(
       bottomSheet: Container(
-        height: 15.0,
+        height: 30.0,
         child: Center(
           child: SmoothPageIndicator(
             controller: _controller,
