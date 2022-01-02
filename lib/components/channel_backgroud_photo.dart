@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/constants/constants.dart';
@@ -14,7 +13,7 @@ class ChannelBackgroundPhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: AlignmentDirectional.center,
+      alignment: Alignment.center,
       children: [
         Container(
           //hard coded for now
@@ -42,8 +41,11 @@ class ChannelBackgroundPhoto extends StatelessWidget {
             ),
           ),
         ),
-        Text(channel.channelName,
-            style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+        Text(
+          channel.channelName,
+          style: kBannerTextStyle.copyWith(letterSpacing: 2.0),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
