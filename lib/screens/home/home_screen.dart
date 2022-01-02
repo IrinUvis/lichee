@@ -14,10 +14,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<ReadChannelDto> promotedChannels = [];
   List<ReadChannelDto> recommendedChannels = [];
 
   Future<List<ReadChannelDto>> getPromotedChannels() async {
-    recommendedChannels = await ReadChannelService().getPromoted();
+    promotedChannels = await ReadChannelService().getPromoted();
+    return promotedChannels;
+  }
+
+  Future<List<ReadChannelDto>> getRecommendations() async {
+    recommendedChannels = await ReadChannelService().getByCity(city: "Lodz");
     return recommendedChannels;
   }
 
@@ -61,15 +67,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               enableInfiniteScroll: false,
                               enlargeCenterPage: true,
                             ),
-                            items: recommendedChannels
+                            items: promotedChannels
                                 .map((e) => ClipRRect(
                                       borderRadius: BorderRadius.circular(20.0),
                                       child: InkWell(
                                         onTap: () async {
                                           final channel =
                                               await ReadChannelService().getById(
-                                                  id: recommendedChannels[
-                                                          recommendedChannels
+                                                  id: promotedChannels[
+                                                          promotedChannels
                                                               .indexOf(e)]
                                                       .channelId);
                                           Navigator.push(
@@ -85,16 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                           fit: StackFit.expand,
                                           children: [
                                             Image.network(
-                                              recommendedChannels[
-                                                      recommendedChannels
+                                              promotedChannels[
+                                                      promotedChannels
                                                           .indexOf(e)]
                                                   .channelImageUrl,
                                               fit: BoxFit.cover,
                                             ),
                                             Center(
                                               child: Text(
-                                                recommendedChannels[
-                                                        recommendedChannels
+                                                promotedChannels[
+                                                        promotedChannels
                                                             .indexOf(e)]
                                                     .channelName,
                                                 style: kBannerTextStyle,
@@ -110,6 +116,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Text(
                             'Selected for you',
                             style: kBannerTextStyle,
+                          ),
+                          const SizedBox(height: 20.0),
+                          Container(
+                            height: 120.0,
+                            decoration: BoxDecoration(
+                              color: LicheeColors.greyColor,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
                           ),
                         ],
                       ),
