@@ -8,16 +8,18 @@ class AuthenticationProvider {
 
   AuthenticationProvider(this._firebaseAuth, this._firebaseFirestore);
 
-  Stream<User?> get authState => _firebaseAuth.idTokenChanges();
+  Stream<User?> get authState => _firebaseAuth.authStateChanges();
 
-  Future<void> signUp({
+  User? get currentUser => _firebaseAuth.currentUser;
+
+  Future<UserCredential> signUp({
     required UserData userData,
     required String password,
   }) async {
     final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: userData.email, password: password);
+        email: userData.email!, password: password);
     await userCredential.user!.updateDisplayName(userData.username);
-    await signIn(email: userData.email, password: password);
+    await signIn(email: userData.email!, password: password);
     _firebaseFirestore.collection('users').add(
           userData
               .copyWith(
@@ -25,13 +27,14 @@ class AuthenticationProvider {
               )
               .toMap(),
         );
+    return userCredential;
   }
 
-  Future<void> signIn({
+  Future<UserCredential> signIn({
     required String email,
     required String password,
-  }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
+  }) {
+    return _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
   }
 

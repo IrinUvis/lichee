@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ChannelChatData implements Comparable<ChannelChatData> {
   final String channelId;
   final String channelName;
+  final String channelNameLower;
   final String photoUrl;
   final String? recentMessageSentBy;
   final DateTime? recentMessageSentAt;
@@ -13,6 +14,17 @@ class ChannelChatData implements Comparable<ChannelChatData> {
   ChannelChatData({
     required this.channelId,
     required this.channelName,
+    required this.photoUrl,
+    this.recentMessageSentBy,
+    this.recentMessageSentAt,
+    this.recentMessageText,
+    required this.userIds,
+  }) : channelNameLower = channelName.toLowerCase();
+
+  ChannelChatData._({
+    required this.channelId,
+    required this.channelName,
+    required this.channelNameLower,
     required this.photoUrl,
     this.recentMessageSentBy,
     this.recentMessageSentAt,
@@ -29,9 +41,11 @@ class ChannelChatData implements Comparable<ChannelChatData> {
     String? recentMessageText,
     List<String>? userIds,
   }) {
-    return ChannelChatData(
+    return ChannelChatData._(
       channelId: channelId ?? this.channelId,
       channelName: channelName ?? this.channelName,
+      channelNameLower:
+          channelName != null ? channelName.toLowerCase() : channelNameLower,
       photoUrl: photoUrl ?? this.photoUrl,
       recentMessageSentBy: recentMessageSentBy ?? this.recentMessageSentBy,
       recentMessageSentAt: recentMessageSentAt ?? this.recentMessageSentAt,
@@ -41,13 +55,13 @@ class ChannelChatData implements Comparable<ChannelChatData> {
   }
 
   static ChannelChatData mapToChannelChatData(Map<String, dynamic> map) {
-    Timestamp recentMessageSentAt = map['recentMessageSentAt'];
+    Timestamp? recentMessageSentAt = map['recentMessageSentAt'];
     return ChannelChatData(
       channelId: map['channelId'],
       channelName: map['channelName'],
       photoUrl: map['photoUrl'],
       recentMessageSentBy: map['recentMessageSentBy'],
-      recentMessageSentAt: recentMessageSentAt.toDate(),
+      recentMessageSentAt: recentMessageSentAt?.toDate(),
       recentMessageText: map['recentMessageText'],
       userIds: List.from(map['userIds']),
     );
@@ -57,7 +71,7 @@ class ChannelChatData implements Comparable<ChannelChatData> {
     return {
       'channelId': channelId,
       'channelName': channelName,
-      'channelNameLower': channelName.toLowerCase(),
+      'channelNameLower': channelNameLower,
       'photoUrl': photoUrl,
       'recentMessageSentBy': recentMessageSentBy,
       'recentMessageSentAt': recentMessageSentAt,

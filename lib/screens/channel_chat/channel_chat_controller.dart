@@ -33,21 +33,11 @@ class ChannelChatController {
 
   void sendMessage({
     required String channelId,
-    required String userId,
-    required String username,
-    required String messageText,
-    required String? imageUrl,
-    required DateTime currentTime,
+    required ChatMessageData chatMessageData,
   }) {
     _firestore
         .collection('channel_messages/' + channelId + '/messages')
-        .add(ChatMessageData(
-          idSentBy: userId,
-          nameSentBy: username,
-          messageText: messageText,
-          imageUrl: imageUrl,
-          sentAt: currentTime,
-        ).toMap());
+        .add(chatMessageData.toMap());
   }
 
   void updateChatListWithMostRecentMessage(
@@ -55,7 +45,7 @@ class ChannelChatController {
       required String messageText,
       required String username,
       required DateTime currentTime}) {
-    FirebaseFirestore.instance
+    _firestore
         .collection('channel_chats')
         .doc(channelId)
         .update({

@@ -9,15 +9,19 @@ void main() {
         idSentBy: 'id',
         nameSentBy: 'name',
         messageText: 'messageText',
+        imageUrl: null,
         sentAt: DateTime(2000),
       );
 
       final copiedWith = original.copyWith(
         idSentBy: 'new id',
         nameSentBy: 'new name',
+        messageText: 'new messageText',
         imageUrl: 'new imageUrl',
         sentAt: DateTime(2020),
       );
+
+      final copiedWithAgain = copiedWith.copyWith();
 
       expect('id', equals(original.idSentBy));
       expect('name', equals(original.nameSentBy));
@@ -27,9 +31,15 @@ void main() {
 
       expect('new id', equals(copiedWith.idSentBy));
       expect('new name', equals(copiedWith.nameSentBy));
-      expect('messageText', equals(copiedWith.messageText));
+      expect('new messageText', equals(copiedWith.messageText));
       expect('new imageUrl', equals(copiedWith.imageUrl));
       expect(DateTime(2020), equals(copiedWith.sentAt));
+
+      expect('new id', equals(copiedWithAgain.idSentBy));
+      expect('new name', equals(copiedWithAgain.nameSentBy));
+      expect('new messageText', equals(copiedWithAgain.messageText));
+      expect('new imageUrl', equals(copiedWithAgain.imageUrl));
+      expect(DateTime(2020), equals(copiedWithAgain.sentAt));
     });
 
     test('mapToChatMessageData method works well', () {
@@ -54,6 +64,7 @@ void main() {
         idSentBy: 'id',
         nameSentBy: 'name',
         messageText: 'messageText',
+        imageUrl: null,
         sentAt: DateTime(2000),
       );
 

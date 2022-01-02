@@ -14,26 +14,39 @@ void main() {
 
       final copiedWith = original.copyWith(
         channelId: 'new channelId',
+        channelName: 'new channelName',
+        photoUrl: 'new photoUrl',
         recentMessageSentAt: DateTime(2000),
         recentMessageSentBy: 'new recentMessageSentBy',
         recentMessageText: 'new recentMessageText',
+        userIds: List.of(['userId'])
       );
+
+      final copiedWithAgain = copiedWith.copyWith();
 
       expect('channelId', equals(original.channelId));
       expect('channelName', equals(original.channelName));
       expect('photoUrl', equals(original.photoUrl));
-      expect(List.empty(), equals(original.userIds));
       expect(null, equals(original.recentMessageSentAt));
       expect(null, equals(original.recentMessageSentBy));
       expect(null, equals(original.recentMessageText));
+      expect(List.empty(), equals(original.userIds));
 
       expect('new channelId', equals(copiedWith.channelId));
-      expect('channelName', equals(copiedWith.channelName));
-      expect('photoUrl', equals(copiedWith.photoUrl));
-      expect(List.empty(), equals(copiedWith.userIds));
+      expect('new channelName', equals(copiedWith.channelName));
+      expect('new photoUrl', equals(copiedWith.photoUrl));
       expect(DateTime(2000), equals(copiedWith.recentMessageSentAt));
       expect('new recentMessageSentBy', equals(copiedWith.recentMessageSentBy));
       expect('new recentMessageText', equals(copiedWith.recentMessageText));
+      expect(List.of(['userId']), equals(copiedWith.userIds));
+
+      expect('new channelId', equals(copiedWithAgain.channelId));
+      expect('new channelName', equals(copiedWithAgain.channelName));
+      expect('new photoUrl', equals(copiedWithAgain.photoUrl));
+      expect(DateTime(2000), equals(copiedWithAgain.recentMessageSentAt));
+      expect('new recentMessageSentBy', equals(copiedWithAgain.recentMessageSentBy));
+      expect('new recentMessageText', equals(copiedWith.recentMessageText));
+      expect(List.of(['userId']), equals(copiedWithAgain.userIds));
     });
 
     test('mapToChannelChatData methods works fine', () {

@@ -2,17 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserData {
   final String? id;
-  final String username;
-  final String email;
+  final String? username;
+  final String? email;
   final String? photoUrl;
-  final DateTime dateOfBirth;
+  final DateTime? dateOfBirth;
 
   UserData({
     this.id,
-    required this.username,
-    required this.email,
+    this.username,
+    this.email,
     this.photoUrl,
-    required this.dateOfBirth,
+    this.dateOfBirth,
   });
 
   UserData copyWith({
@@ -52,4 +52,15 @@ class UserData {
       'dateOfBirth': dateOfBirth,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserData &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          username == other.username &&
+          email == other.email &&
+          photoUrl == other.photoUrl &&
+          dateOfBirth == other.dateOfBirth;
 }

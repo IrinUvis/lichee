@@ -15,9 +15,13 @@ void main() {
 
       final copiedWith = original.copyWith(
         id: 'new id',
+        email: 'new email',
         username: 'new username',
         photoUrl: 'new photoUrl',
+        dateOfBirth: DateTime(2020),
       );
+
+      final copiedWithAgain = copiedWith.copyWith();
 
       expect('id', equals(original.id));
       expect('email', equals(original.email));
@@ -26,10 +30,16 @@ void main() {
       expect(DateTime(2000), equals(original.dateOfBirth));
 
       expect('new id', equals(copiedWith.id));
-      expect('email', equals(copiedWith.email));
+      expect('new email', equals(copiedWith.email));
       expect('new username', equals(copiedWith.username));
       expect('new photoUrl', equals(copiedWith.photoUrl));
-      expect(DateTime(2000), equals(copiedWith.dateOfBirth));
+      expect(DateTime(2020), equals(copiedWith.dateOfBirth));
+
+      expect('new id', equals(copiedWithAgain.id));
+      expect('new email', equals(copiedWithAgain.email));
+      expect('new username', equals(copiedWithAgain.username));
+      expect('new photoUrl', equals(copiedWithAgain.photoUrl));
+      expect(DateTime(2020), equals(copiedWithAgain.dateOfBirth));
     });
 
     test('mapToUserData method works well', () {

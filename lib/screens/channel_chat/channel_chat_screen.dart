@@ -8,9 +8,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/models/chat_message_data.dart';
+import 'package:lichee/models/user_data.dart';
 import 'package:lichee/screens/channel_chat/channel_chat_controller.dart';
 import 'package:lichee/services/storage_service.dart';
-import 'package:provider/provider.dart';
 
 import 'message_bubble.dart';
 
@@ -18,23 +18,56 @@ class ChannelChatScreen extends StatefulWidget {
   static const String id = 'channel_chat_screen';
 
   final ChannelChatNavigationParams data;
+  final FirebaseFirestore firestore;
+  final StorageService storage;
 
-  const ChannelChatScreen({required this.data, Key? key}) : super(key: key);
+  final ImagePicker imagePicker;
+  final UserData? userData;
+
+  const ChannelChatScreen({
+    Key? key,
+    required this.userData,
+    required this.data,
+    required this.firestore,
+    required this.storage,
+    required this.imagePicker,
+  }) : super(key: key);
 
   @override
-  _ChannelChatScreenState createState() => _ChannelChatScreenState();
+  ChannelChatScreenState createState() => ChannelChatScreenState();
 }
 
-class _ChannelChatScreenState extends State<ChannelChatScreen> {
-  final _channelChatController = ChannelChatController(
-      FirebaseFirestore.instance,
-      StorageService(FirebaseStorage.instance));
+@visibleForTesting
+class ChannelChatScreenState extends State<ChannelChatScreen> {
+  late final ChannelChatController _channelChatController;
 
-  final messageTextController = TextEditingController();
-  final imagePicker = ImagePicker();
+  final _messageTextController = TextEditingController();
+  late final ImagePicker _imagePicker;
 
-  File? file;
-  String messageText = '';
+  File? _file;
+  String _messageText = '';
+
+  File? get file => _file;
+
+  String get messageText => _messageText;
+
+  TextEditingController get messageTextController => _messageTextController;
+
+  ImagePicker get imagePicker => _imagePicker;
+
+  set file(File? value) {
+    setState(() {
+      _file = value;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _channelChatController =
+        ChannelChatController(widget.firestore, widget.storage);
+    _imagePicker = widget.imagePicker;
+  }
 
   StreamBuilder<QuerySnapshot> getMessagesStream() {
     return StreamBuilder(
@@ -56,7 +89,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
                 sender: message.nameSentBy,
                 text: message.messageText,
                 imageUrl: message.imageUrl,
-                isMe: Provider.of<User?>(context)!.uid == message.idSentBy,
+                isMe: widget.userData!.id! == message.idSentBy,
               ),
             );
           }
@@ -90,14 +123,14 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
           Expanded(
             child: TextField(
               decoration: kMessageTextFieldDecoration,
-              controller: messageTextController,
+              controller: _messageTextController,
               onChanged: (value) {
-                messageText = value;
+                _messageText = value;
               },
             ),
           ),
           IconButton(
-            onPressed: () => _sendMessage(),
+            onPressed: () => sendMessage(),
             icon: const Icon(
               Icons.arrow_forward_ios_outlined,
               color: Colors.pinkAccent,
@@ -109,13 +142,13 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
   }
 
   Row getImagePicker() {
-    if (file == null) {
+    if (_file == null) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           IconButton(
             padding: const EdgeInsets.only(left: 8.0),
-            onPressed: () => _chooseImageFromGallery(),
+            onPressed: () => chooseImageFromGallery(),
             icon: const Icon(
               Icons.camera_alt_outlined,
               color: Colors.pinkAccent,
@@ -129,7 +162,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
         children: [
           IconButton(
             padding: const EdgeInsets.only(left: 10.0),
-            onPressed: () => _clearImage(),
+            onPressed: () => clearImage(),
             icon: const Icon(
               Icons.close_outlined,
               color: Colors.pinkAccent,
@@ -143,7 +176,7 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(5.0),
               child: Image.file(
-                file!,
+                _file!,
               ),
             ),
           ),
@@ -174,52 +207,59 @@ class _ChannelChatScreenState extends State<ChannelChatScreen> {
     );
   }
 
-  Future<void> _sendMessage() async {
-    messageTextController.clear();
+  @visibleForTesting
+  Future<void> sendMessage() async {
+    _messageTextController.clear();
     String? imageUrl;
-    if (file == null && messageText.isEmpty) {
+    if (_file == null && _messageText.isEmpty) {
       return;
     }
     DateTime now = DateTime.now();
-    if (file != null) {
+    if (_file != null) {
       try {
         imageUrl = await _channelChatController.uploadPhoto(
-            channelId: widget.data.channelId, currentTime: now, file: file!);
+            channelId: widget.data.channelId, currentTime: now, file: _file!);
         setState(() {
-          file = null;
+          _file = null;
         });
-      } on FirebaseException catch (e) {
+      } on FirebaseException catch (_) {
         Fluttertoast.showToast(
             msg: 'An unexpected error has occurred! Message wasn\'t sent');
       }
     }
     _channelChatController.sendMessage(
-        channelId: widget.data.channelId,
-        userId: Provider.of<User?>(context, listen: false)!.uid,
-        username: Provider.of<User?>(context, listen: false)!.displayName!,
-        messageText: messageText,
+      channelId: widget.data.channelId,
+      chatMessageData: ChatMessageData(
+        idSentBy: widget.userData!.id!,
+        nameSentBy: widget.userData!.username!,
+        messageText: _messageText,
         imageUrl: imageUrl,
-        currentTime: now);
+        sentAt: now,
+      ),
+    );
     _channelChatController.updateChatListWithMostRecentMessage(
         channelId: widget.data.channelId,
-        messageText: messageText,
-        username: Provider.of<User?>(context, listen: false)!.displayName!,
+        messageText: _messageText,
+        username: widget.userData!.username!,
         currentTime: now);
 
-    messageText = '';
+    _messageText = '';
   }
 
-  Future<void> _chooseImageFromGallery() async {
-    final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
-    File image = File(pickedFile!.path); //
+  @visibleForTesting
+  Future<void> chooseImageFromGallery() async {
+    final pickedFile =
+        await _imagePicker.pickImage(source: ImageSource.gallery);
+    File image = File(pickedFile!.path);
     setState(() {
-      file = image;
+      _file = image;
     });
   }
 
-  void _clearImage() {
+  @visibleForTesting
+  void clearImage() {
     setState(() {
-      file = null;
+      _file = null;
     });
   }
 }
