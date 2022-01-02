@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/read/read_channel_service.dart';
 import 'package:lichee/constants/colors.dart';
-import 'package:lichee/screens/channel/channel_screen.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/providers/firebase_provider.dart';
+import 'package:lichee/screens/channel/channel_screen.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String id = 'home_screen';
@@ -14,16 +16,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<ReadChannelDto> promotedChannels = [];
   List<ReadChannelDto> recommendedChannels = [];
 
-  Future<List<ReadChannelDto>> getPromotedChannels() async {
-    promotedChannels = await ReadChannelService().getPromoted();
-    return promotedChannels;
+  late final ReadChannelService _readChannelService;
+
+  @override
+  void initState() {
+    super.initState();
+    _readChannelService = ReadChannelService(
+        firestore: Provider.of<FirebaseProvider>(
+      context,
+      listen: false,
+    ).firestore);
   }
 
-  Future<List<ReadChannelDto>> getRecommendations() async {
-    recommendedChannels = await ReadChannelService().getByCity(city: "Lodz");
+  Future<List<ReadChannelDto>> getPromotedChannels() async {
+    recommendedChannels = await _readChannelService.getPromoted();
     return recommendedChannels;
   }
 
@@ -44,17 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: ListView(
                         children: [
-                          Container(
-                            decoration: const BoxDecoration(
-                              color: Color(0xFF363636),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(50.0),
-                              ),
-                            ),
-                            child: const TextField(
-                              decoration: kHomeSearchBarInputDecoration,
-                            ),
-                          ),
+                          // TODO: Zakomentowane bo narazie nic to nie daje, ale może się przyda potem
+                          // Container(
+                          //   decoration: const BoxDecoration(
+                          //     color: Color(0xFF363636),
+                          //     borderRadius: BorderRadius.all(
+                          //       Radius.circular(50.0),
+                          //     ),
+                          //   ),
+                          //   child: const TextField(
+                          //     decoration: kHomeSearchBarInputDecoration,
+                          //   ),
+                          // ),
                           const SizedBox(height: 20.0),
                           const Text(
                             'Promoted channels',
@@ -67,40 +76,38 @@ class _HomeScreenState extends State<HomeScreen> {
                               enableInfiniteScroll: false,
                               enlargeCenterPage: true,
                             ),
-                            items: promotedChannels
+                            items: recommendedChannels
                                 .map((e) => ClipRRect(
                                       borderRadius: BorderRadius.circular(20.0),
                                       child: InkWell(
                                         onTap: () async {
                                           final channel =
-                                              await ReadChannelService().getById(
-                                                  id: promotedChannels[
-                                                          promotedChannels
-                                                              .indexOf(e)]
-                                                      .channelId);
-                                          Navigator.push(
+                                              await _readChannelService
+                                                  .getById(
+                                                      id: recommendedChannels[
+                                                              recommendedChannels
+                                                                  .indexOf(e)]
+                                                          .channelId);
+                                          Navigator.pushNamed(
                                             context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ChannelScreen(
-                                                      channel: channel),
-                                            ),
+                                            ChannelScreen.id,
+                                            arguments: channel,
                                           );
                                         },
                                         child: Stack(
                                           fit: StackFit.expand,
                                           children: [
                                             Image.network(
-                                              promotedChannels[
-                                                      promotedChannels
+                                              recommendedChannels[
+                                                      recommendedChannels
                                                           .indexOf(e)]
                                                   .channelImageUrl,
                                               fit: BoxFit.cover,
                                             ),
                                             Center(
                                               child: Text(
-                                                promotedChannels[
-                                                        promotedChannels
+                                                recommendedChannels[
+                                                        recommendedChannels
                                                             .indexOf(e)]
                                                     .channelName,
                                                 style: kBannerTextStyle,
@@ -114,17 +121,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 20.0),
                           const Text(
-                            'Selected for you',
+                            'Your channels',
                             style: kBannerTextStyle,
                           ),
-                          const SizedBox(height: 20.0),
-                          Container(
-                            height: 120.0,
-                            decoration: BoxDecoration(
-                              color: LicheeColors.greyColor,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          ),
+                          // TODO (AM chyba?) - sugestia: Może zrobić tu listę kanałów w któych się jest, bo brakuje czegoś takiego trochę
+                          const Text(
+                              'Może by tu zrobić po prostu listę kanałów w których się jest? Przyda się coś takiego a Adam nie zrobi ML'),
                         ],
                       ),
                     )

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/models/channel_chat_data.dart';
+import 'package:lichee/screens/chat_list/chat_list_screen.dart';
 
 import '../channel_chat/channel_chat_screen.dart';
 
@@ -19,6 +20,7 @@ class ChatListCard extends StatelessWidget {
           arguments: ChannelChatNavigationParams(
             channelId: channelChatData.channelId,
             channelName: channelChatData.channelName,
+            fromRoute: ChatListScreen.id
           ),
         );
       },

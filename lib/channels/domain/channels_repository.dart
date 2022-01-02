@@ -1,14 +1,16 @@
-import 'dart:collection';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lichee/channels/domain/channel.dart';
 
 class ChannelRepository {
-  final CollectionReference _channels =
-      FirebaseFirestore.instance.collection('channels');
+  final CollectionReference _channels;
+
+  ChannelRepository({
+    required FirebaseFirestore firestore,
+  }) : _channels = firestore.collection('channels');
 
   Future<Channel> addChannel({required Channel channel}) async {
-    final newChannel = await _channels.doc(channel.channelId).set({
+    await _channels.doc(channel.channelId).set({
       'channelName': channel.channelName,
       'channelId': channel.channelId,
       'channelImageURL': channel.channelImageURL,

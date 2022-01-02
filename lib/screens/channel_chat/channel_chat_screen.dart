@@ -6,11 +6,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/models/chat_message_data.dart';
 import 'package:lichee/models/user_data.dart';
+import 'package:lichee/providers/firebase_provider.dart';
+import 'package:lichee/screens/channel/channel_screen.dart';
 import 'package:lichee/screens/channel_chat/channel_chat_controller.dart';
-import 'package:lichee/services/storage_service.dart';
+import 'package:provider/provider.dart';
 
 import 'message_bubble.dart';
 
@@ -18,8 +21,6 @@ class ChannelChatScreen extends StatefulWidget {
   static const String id = 'channel_chat_screen';
 
   final ChannelChatNavigationParams data;
-  final FirebaseFirestore firestore;
-  final StorageService storage;
 
   final ImagePicker imagePicker;
   final UserData? userData;
@@ -28,8 +29,6 @@ class ChannelChatScreen extends StatefulWidget {
     Key? key,
     required this.userData,
     required this.data,
-    required this.firestore,
-    required this.storage,
     required this.imagePicker,
   }) : super(key: key);
 
@@ -64,8 +63,10 @@ class ChannelChatScreenState extends State<ChannelChatScreen> {
   @override
   void initState() {
     super.initState();
-    _channelChatController =
-        ChannelChatController(widget.firestore, widget.storage);
+    _channelChatController = ChannelChatController(
+      Provider.of<FirebaseProvider>(context, listen: false).firestore,
+      Provider.of<FirebaseProvider>(context, listen: false).storage,
+    );
     _imagePicker = widget.imagePicker;
   }
 
@@ -190,21 +191,61 @@ class ChannelChatScreenState extends State<ChannelChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.data.channelName),
-      ),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            getMessagesStream(),
-            getMessageSender(),
-          ],
-        ),
-      ),
-    );
+    return widget.data.fromRoute == ChannelScreen.id
+        ? Scaffold(
+            appBar: AppBar(
+              title: Text(widget.data.channelName),
+            ),
+            body: SafeArea(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  getMessagesStream(),
+                  getMessageSender(),
+                ],
+              ),
+            ),
+          )
+        : FutureBuilder(
+            future: _channelChatController.getParentChannelByChatId(
+                chatId: widget.data.channelId),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: Text(widget.data.channelName),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.group_outlined),
+                        tooltip: 'Go to channel',
+                        onPressed: () {
+                          Navigator.pushNamed(context, ChannelScreen.id,
+                              arguments: snapshot.data);
+                        },
+                      ),
+                    ],
+                  ),
+                  body: SafeArea(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        getMessagesStream(),
+                        getMessageSender(),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: LicheeColors.primary,
+                  ),
+                );
+              }
+            },
+          );
   }
 
   @visibleForTesting
@@ -267,9 +308,11 @@ class ChannelChatScreenState extends State<ChannelChatScreen> {
 class ChannelChatNavigationParams {
   final String channelId;
   final String channelName;
+  final String? fromRoute;
 
   ChannelChatNavigationParams({
     required this.channelId,
     required this.channelName,
+    this.fromRoute = '',
   });
 }
