@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:lichee/models/user_data.dart';
 import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/routes/route_generator.dart';
 import 'package:lichee/screens/tabs_screen.dart';
@@ -27,13 +28,32 @@ class LicheeState extends State<Lichee> {
     return MultiProvider(
       providers: [
         Provider<AuthenticationProvider>(
-          create: (_) => AuthenticationProvider(
-              FirebaseAuth.instance, FirebaseFirestore.instance),
+          create: (_) =>
+              AuthenticationProvider(
+                  FirebaseAuth.instance, FirebaseFirestore.instance),
         ),
         StreamProvider(
-          create: (context) => context.read<AuthenticationProvider>().authState,
+          create: (context) =>
+          context
+              .read<AuthenticationProvider>()
+              .authState,
           initialData: null,
-        )
+        ),
+        Provider<UserData?>(create: (context) {
+          final currentUser =
+              context
+                  .read<AuthenticationProvider>()
+                  .currentUser;
+          if (currentUser != null) {
+            return UserData(
+              id: currentUser.uid,
+              email: currentUser.email,
+              username: currentUser.displayName,
+            );
+          } else {
+            return null;
+          }
+        }),
       ],
       child: MaterialApp(
         theme: CustomTheme.darkTheme,

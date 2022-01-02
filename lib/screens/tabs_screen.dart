@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/add_channel/add_channel_screen.dart';
@@ -18,10 +19,15 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   final List<Map<String, Object>> _pages = [
     {'page': HomeScreen(), 'title': 'Home'},
-    {'page': ChannelListScreen(), 'title': 'Your channels'},
-    {'page': AddChannelScreen(), 'title': 'Add channel'},
-    {'page': const ChatListScreen(), 'title': 'Your chats'},
-    {'page': ProfileScreen(), 'title': 'Your profile'}
+    {'page': const ChannelListScreen(), 'title': 'Your channels'},
+    {'page': const AddChannelScreen(), 'title': 'Add channel'},
+    {
+      'page': ChatListScreen(
+        firestore: FirebaseFirestore.instance,
+      ),
+      'title': 'Your chats'
+    },
+    {'page': const ProfileScreen(), 'title': 'Your profile'}
   ];
 
   int _selectedPageIndex = 0;

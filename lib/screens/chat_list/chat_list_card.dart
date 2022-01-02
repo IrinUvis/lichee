@@ -7,8 +7,7 @@ import '../channel_chat/channel_chat_screen.dart';
 class ChatListCard extends StatelessWidget {
   final ChannelChatData channelChatData;
 
-  const ChatListCard({Key? key, required this.channelChatData})
-      : super(key: key);
+  const ChatListCard({required this.channelChatData});
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +24,11 @@ class ChatListCard extends StatelessWidget {
       },
       child: Card(
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadiusDirectional.horizontal(
-              start: Radius.circular(30),
-              end: Radius.circular(10),
-            )),
+          borderRadius: BorderRadiusDirectional.horizontal(
+            start: Radius.circular(30),
+            end: Radius.circular(10),
+          ),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(5),
           child: Row(
@@ -45,11 +45,15 @@ class ChatListCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      Text(
-                        channelChatData.channelName,
-                        style: kCardChannelNameTextStyle,
+                      Flexible(
+                        child: Text(
+                          channelChatData.channelName,
+                          style: kCardChannelNameTextStyle,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       const SizedBox(
                         height: 5,
@@ -74,8 +78,8 @@ class ChatListCard extends StatelessWidget {
     );
   }
 
-  List<Text> getRecentMessageDetails() {
-    final List<Text> widgets = [];
+  List<Widget> getRecentMessageDetails() {
+    final List<Widget> widgets = [];
     final DateTime? date = channelChatData.recentMessageSentAt;
     if (date == null) {
       widgets.add(const Text(
@@ -86,25 +90,32 @@ class ChatListCard extends StatelessWidget {
       final String text = channelChatData.recentMessageText!;
       if (text.isNotEmpty) {
         widgets.add(
-          Text(
-            channelChatData.recentMessageSentBy!.toString() +
-                ': ' +
-                channelChatData.recentMessageText!,
-            style: kCardLatestMessageTextStyle,
+          Flexible(
+            child: Text(
+              channelChatData.recentMessageSentBy! +
+                  ': ' +
+                  channelChatData.recentMessageText!,
+              overflow: TextOverflow.ellipsis,
+              style: kCardLatestMessageTextStyle,
+            ),
           ),
         );
       } else {
         widgets.add(
-          Text(
-            channelChatData.recentMessageSentBy!.toString() +
-                ' shared file',
-            style: kCardLatestMessageTextStyle,
+          Flexible(
+            child: Text(
+              channelChatData.recentMessageSentBy! + ' shared file',
+              style: kCardLatestMessageTextStyle,
+              overflow: TextOverflow.ellipsis,
+              softWrap: false,
+            ),
           ),
         );
       }
       widgets.add(
         Text(
-          getFormattedDate(channelChatData.recentMessageSentAt!),
+          getFormattedDate(
+              DateTime.now(), channelChatData.recentMessageSentAt!),
           style: kCardLatestMessageTimeTextStyle,
         ),
       );
@@ -113,21 +124,25 @@ class ChatListCard extends StatelessWidget {
   }
 
   @visibleForTesting
-  String getFormattedDate(DateTime date) {
-    final currentDate = DateTime.now();
-    if (_isDateTheSame(date, currentDate)) {
+  String getFormattedDate(DateTime now, DateTime date) {
+    final dayDifference = now.difference(date).inDays;
+    if (dayDifference == 0) {
       return 'Today';
     } else {
-      final dayDifference = currentDate.difference(date).inDays;
-      return dayDifference == 1
-          ? dayDifference.toString() + ' day ago'
-          : dayDifference.toString() + ' days ago';
+      if (dayDifference <= 7) {
+        return dayDifference == 1
+            ? dayDifference.toString() + ' day ago'
+            : dayDifference.toString() + ' days ago';
+      } else if (dayDifference <= 70) {
+        final weeks = dayDifference ~/ 7;
+        if (weeks == 1) {
+          return weeks.toString() + ' week ago';
+        } else {
+          return weeks.toString() + ' weeks ago';
+        }
+      } else {
+        return (dayDifference ~/ 30).toString() + ' months ago';
+      }
     }
-  }
-
-  bool _isDateTheSame(DateTime date1, DateTime date2) {
-    return date1.day == date2.day &&
-        date1.month == date2.month &&
-        date1.year == date2.year;
   }
 }

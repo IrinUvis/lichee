@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import '../channel_list/categories_tree_view.dart';
 import 'package:diacritic/diacritic.dart';
 
-import '../not_logged_in_view.dart';
+import '../auth/screens/not_logged_in_view.dart';
 
 class AddChannelScreen extends StatefulWidget {
   const AddChannelScreen({Key? key}) : super(key: key);

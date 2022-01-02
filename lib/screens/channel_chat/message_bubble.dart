@@ -22,33 +22,17 @@ class MessageBubble extends StatelessWidget {
             ClipRRect(
               borderRadius: isMe
                   ? const BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      bottomLeft: Radius.circular(5.0),
-                      bottomRight: Radius.circular(5.0))
+                  topLeft: Radius.circular(10.0),
+                  bottomLeft: Radius.circular(5.0),
+                  bottomRight: Radius.circular(5.0))
                   : const BorderRadius.only(
-                      bottomLeft: Radius.circular(5.0),
-                      bottomRight: Radius.circular(5.0),
-                      topRight: Radius.circular(10.0),
-                    ),
+                bottomLeft: Radius.circular(5.0),
+                bottomRight: Radius.circular(5.0),
+                topRight: Radius.circular(10.0),
+              ),
               child: Image.network(
                 imageUrl!,
-                loadingBuilder: (BuildContext context, Widget child,
-                    ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) {
-                    return child;
-                  }
-                  return Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
-                    ),
-                  );
-                },
+                loadingBuilder: getCircularProgressWidget,
               ),
             ),
             const SizedBox(
@@ -71,15 +55,18 @@ class MessageBubble extends StatelessWidget {
             ClipRRect(
               borderRadius: isMe
                   ? const BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      bottomLeft: Radius.circular(10.0),
-                      bottomRight: Radius.circular(10.0))
+                  topLeft: Radius.circular(10.0),
+                  bottomLeft: Radius.circular(10.0),
+                  bottomRight: Radius.circular(10.0))
                   : const BorderRadius.only(
-                      bottomLeft: Radius.circular(10.0),
-                      bottomRight: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0),
-                    ),
-              child: Image.network(imageUrl!),
+                bottomLeft: Radius.circular(10.0),
+                bottomRight: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
+              ),
+              child: Image.network(
+                imageUrl!,
+                loadingBuilder: getCircularProgressWidget,
+              ),
             ),
           ],
         );
@@ -107,7 +94,7 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       child: Column(
         crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
           Text(
             sender,
@@ -117,19 +104,23 @@ class MessageBubble extends StatelessWidget {
             ),
           ),
           Container(
+            key: const Key('messageContentContainer'),
             constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.6),
+                maxWidth: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.6),
             child: Material(
               borderRadius: isMe
                   ? const BorderRadius.only(
-                      topLeft: Radius.circular(20.0),
-                      bottomLeft: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0))
+                  topLeft: Radius.circular(20.0),
+                  bottomLeft: Radius.circular(20.0),
+                  bottomRight: Radius.circular(20.0))
                   : const BorderRadius.only(
-                      bottomLeft: Radius.circular(20.0),
-                      bottomRight: Radius.circular(20.0),
-                      topRight: Radius.circular(20.0),
-                    ),
+                bottomLeft: Radius.circular(20.0),
+                bottomRight: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
+              ),
               elevation: 5.0,
               color: isMe ? Colors.pinkAccent : const Color(0xFF444444),
               child: Padding(
@@ -140,6 +131,24 @@ class MessageBubble extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget getCircularProgressWidget(BuildContext context, Widget child,
+      ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) {
+      return child;
+    }
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded /
+              loadingProgress.expectedTotalBytes!
+              : null,
+        ),
       ),
     );
   }

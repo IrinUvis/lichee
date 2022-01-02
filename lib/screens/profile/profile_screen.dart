@@ -11,6 +11,7 @@ class ProfileScreen extends StatefulWidget {
   ProfileScreenState createState() => ProfileScreenState();
 }
 
+@visibleForTesting
 class ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(context) {

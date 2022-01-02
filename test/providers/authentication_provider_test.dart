@@ -89,5 +89,19 @@ void main() {
       _authProvider.signOut();
       expect(null, _fakeAuth.currentUser);
     });
+
+    test('current auth state returns', () async {
+      final authState = _authProvider.authState;
+      _authProvider.signIn(email: email, password: password);
+
+      expect(authState, emitsAnyOf([null]));
+    });
+
+    test('current user returns', () async {
+      final currentUser = _authProvider.currentUser;
+      _authProvider.signIn(email: email, password: password);
+
+      expect(currentUser, null);
+    });
   });
 }

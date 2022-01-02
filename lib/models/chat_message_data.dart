@@ -11,7 +11,7 @@ class ChatMessageData {
     required this.idSentBy,
     required this.nameSentBy,
     required this.messageText,
-    this.imageUrl,
+    required this.imageUrl,
     required this.sentAt,
   });
 
