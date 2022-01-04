@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/constants/colors.dart';
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
@@ -122,7 +123,7 @@ class MessageBubble extends StatelessWidget {
                 topRight: Radius.circular(20.0),
               ),
               elevation: 5.0,
-              color: isMe ? Colors.pinkAccent : const Color(0xFF444444),
+              color: isMe ? LicheeColors.primary : const Color(0xFF444444),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                     vertical: 10.0, horizontal: 10.0),
