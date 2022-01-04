@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:lichee/models/user_data.dart';
 import 'package:lichee/components/logo.dart';
+import 'package:lichee/models/user_data.dart';
+import 'package:lichee/screens/auth/role.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -306,7 +307,7 @@ class AuthScreenState extends State<AuthScreen> {
           userData: UserData(
             username: usernameEditingController.text.trim(),
             email: emailEditingController.text.trim(),
-            photoUrl: 'none',
+            role: Role.normalUser,
             dateOfBirth: selectedDateOfBirth!,
           ),
           password: passwordEditingController.text.trim(),

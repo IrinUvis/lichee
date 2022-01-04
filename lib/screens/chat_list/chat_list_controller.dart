@@ -12,9 +12,9 @@ class ChatListController {
     return _firestore
         .collection('channel_chats')
         .where('channelNameLower',
-        isGreaterThanOrEqualTo: query.toLowerCase().trim())
+            isGreaterThanOrEqualTo: query.toLowerCase().trim())
         .where('channelNameLower',
-        isLessThanOrEqualTo: query.toLowerCase().trim() + '~')
+            isLessThanOrEqualTo: query.toLowerCase().trim() + '~')
         .where('userIds', arrayContains: userId)
         .snapshots();
   }
