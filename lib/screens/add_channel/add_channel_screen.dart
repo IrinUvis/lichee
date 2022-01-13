@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lichee/constants/constants.dart';
-import 'package:lichee/models/channel_chat_data.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/screens/add_channel/add_channel_controller.dart';
 import 'package:lichee/screens/auth/auth_type.dart';
@@ -70,7 +69,6 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
     super.dispose();
   }
 
-  //TODO add possibility to upload channel image
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
@@ -340,20 +338,11 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         );
       },
     );
-
     channelParentId ??= '';
-
     if (channelParentId != '') {
-      CollectionReference categories =
-          FirebaseFirestore.instance.collection('categories');
-      final parentCategory = await categories.doc(channelParentId).get();
-      Map<String, dynamic> parentCategoryMap =
-          parentCategory.data() as Map<String, dynamic>;
-      String channelParentName = parentCategoryMap['name'];
-
-      chosenCategoryName = channelParentName;
+      chosenCategoryName = await _addChannelController.getCategoryNameById(
+          channelParentId: channelParentId);
     }
-
     setState(() {
       isCategoryEmpty = false;
       chosenCategoryId = channelParentId;
@@ -369,13 +358,17 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         });
         return;
       }
-
       String? imageUrl;
       var uuid = const Uuid();
       DateTime now = DateTime.now();
+      String city = cityEditingController.text.capitalize();
+      city = removeDiacritics(city);
+      final myId = Provider.of<User?>(context, listen: false)!.uid;
+      List<String> usersIds = [myId];
 
       if (_file == null) {
-        imageUrl = 'https://www.fivb.org/Vis2009/Images/GetImage.asmx?No=202004911&width=920&height=588&stretch=uniformtofill';
+        imageUrl =
+            'https://www.fivb.org/Vis2009/Images/GetImage.asmx?No=202004911&width=920&height=588&stretch=uniformtofill';
       }
       if (_file != null) {
         try {
@@ -390,61 +383,24 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         }
       }
 
-      CollectionReference channels =
-          FirebaseFirestore.instance.collection('channels');
-      String city = cityEditingController.text.capitalize();
-      city = removeDiacritics(city);
-      final myId = Provider.of<User?>(context, listen: false)!.uid;
-      List<String> usersIds = [myId];
-      final newChannel = await channels.add({
-        'channelName': channelNameEditingController.text,
-        'channelImageURL': imageUrl,
-        'city': city,
-        'createdOn': DateTime(now.year, now.month, now.day),
-        'description': channelDescriptionEditingController.text,
-        'userIds': usersIds,
-        'ownerId': myId,
-        'parentCategoryId': chosenCategoryId,
-      });
-
-      CollectionReference channelChats =
-          FirebaseFirestore.instance.collection('channel_chats');
-      await channelChats.doc(newChannel.id).set(ChannelChatData(
-              channelId: newChannel.id,
-              channelName: channelNameEditingController.text,
-              photoUrl: imageUrl!,
-              userIds: usersIds)
-          .toMap());
-
-      CollectionReference categories =
-          FirebaseFirestore.instance.collection('categories');
-      List<String> childrenIds = List.empty();
-      await categories.doc(newChannel.id).set({
-        'name': channelNameEditingController.text,
-        'type': 'channel',
-        'parentId': chosenCategoryId,
-        'childrenIds': childrenIds,
-        'isLastCategory': false,
-      });
-
-      // get parent category of newly created channel in order to read its
-      // array of children ids. This array will be extended by another id
-      // (newChannel.id). Then, the parent category will be updated with
-      // new list of children ids.
-      final parentCategory = await categories.doc(chosenCategoryId).get();
-      Map<String, dynamic> parentCategoryMap =
-          parentCategory.data() as Map<String, dynamic>;
-      List<String> childrenIdList = List.from(parentCategoryMap['childrenIds']);
-      childrenIdList.add(newChannel.id);
-      await categories.doc(chosenCategoryId).update({
-        'childrenIds': childrenIdList,
-      });
+      _addChannelController.addChannel(
+          channelName: channelNameEditingController.text,
+          imageUrl: imageUrl!,
+          city: city,
+          now: now,
+          description: channelDescriptionEditingController.text,
+          usersIds: usersIds,
+          userId: myId,
+          parentCategoryId: chosenCategoryId);
 
       ScaffoldMessenger.of(context).showSnackBar(kChannelAddedSnackBar);
 
       channelNameEditingController.clear();
       cityEditingController.clear();
       channelDescriptionEditingController.clear();
+      setState(() {
+        chosenCategoryId = '';
+      });
     }
   }
 }
