@@ -8,22 +8,18 @@ class TreeNodeCard extends StatelessWidget {
     Key? key,
     required this.name,
     required this.type,
-    required this.parentId,
     required this.childrenIds,
   }) : super(key: key);
 
   final String name;
   final String type;
-  final String parentId;
   final List<String>? childrenIds;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       color: LicheeColors.greyColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30.0),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
         child: Row(
