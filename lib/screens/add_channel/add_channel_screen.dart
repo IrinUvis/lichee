@@ -178,8 +178,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       textInputAction: TextInputAction.done,
       decoration: kAddChannelDescriptionBarInputDecoration,
     );
-
-    // TODO AM - sugestia: Moim zdaniem krawędzie tych pól tesktowych są bardzo oczojebne i trochę nie pasują do reszty aplikacji
+    
     return Column(
       children: [
         Form(

@@ -20,7 +20,12 @@ final kAddChannelNameBarInputDecoration = InputDecoration(
   fillColor: LicheeColors.greyColor,
   contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel name',
-  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   suffixIcon: const Icon(Icons.title),
 );
 
@@ -29,7 +34,12 @@ final kAddChannelCityBarInputDecoration = InputDecoration(
   fillColor: LicheeColors.greyColor,
   contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel city',
-  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   suffixIcon: const Icon(Icons.location_city),
 );
 
@@ -38,7 +48,12 @@ final kAddChannelDescriptionBarInputDecoration = InputDecoration(
   fillColor: LicheeColors.greyColor,
   contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel description',
-  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   suffixIcon: const Icon(Icons.description),
 );
 
