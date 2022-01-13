@@ -57,6 +57,34 @@ final kAddChannelDescriptionBarInputDecoration = InputDecoration(
   suffixIcon: const Icon(Icons.description),
 );
 
+final kAddEventTitleBarInputDecoration = InputDecoration(
+  filled: true,
+  fillColor: LicheeColors.greyColor,
+  contentPadding: const EdgeInsets.all(20.0),
+  hintText: 'Add event title',
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  suffixIcon: const Icon(Icons.title),
+);
+
+final kAddEventLocalizationBarInputDecoration = InputDecoration(
+  filled: true,
+  fillColor: LicheeColors.greyColor,
+  contentPadding: const EdgeInsets.all(20.0),
+  hintText: 'Add event localization',
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  suffixIcon: const Icon(Icons.location_city),
+);
+
 const kBannerTextStyle = TextStyle(
   fontSize: 30.0,
   fontWeight: FontWeight.bold,
@@ -166,6 +194,14 @@ const kCreateChannelButtonText = Padding(
   padding: EdgeInsets.all(8.0),
   child: Text(
     'Create channel',
+    style: TextStyle(color: Colors.white, fontSize: 30.0),
+  ),
+);
+
+const kCreateEventButtonText = Padding(
+  padding: EdgeInsets.all(8.0),
+  child: Text(
+    'Create event',
     style: TextStyle(color: Colors.white, fontSize: 30.0),
   ),
 );

@@ -3,11 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lichee/models/channel_chat_data.dart';
 import 'package:lichee/services/storage_service.dart';
 
-class AddChannelController {
+class AddChannelOrEventController {
   final FirebaseFirestore _firestore;
   final StorageService _storage;
 
-  AddChannelController(this._firestore, this._storage);
+  AddChannelOrEventController(this._firestore, this._storage);
 
   Future<String> uploadPhoto({
     required String uuid,

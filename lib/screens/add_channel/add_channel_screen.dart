@@ -6,14 +6,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/providers/firebase_provider.dart';
-import 'package:lichee/screens/add_channel/add_channel_controller.dart';
+import 'package:lichee/screens/add_channel/add_channel_or_event_controller.dart';
+import 'package:lichee/screens/add_channel/time_picker_button.dart';
 import 'package:lichee/screens/auth/auth_type.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../auth/screens/not_logged_in_view.dart';
 import '../channel_list/categories_tree_view.dart';
+import 'date_picker_button.dart';
+import 'event_date.dart';
 
 class AddChannelScreen extends StatefulWidget {
   final ImagePicker imagePicker;
@@ -34,13 +38,21 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
 
   final _formKey = GlobalKey<FormState>();
   final channelNameEditingController = TextEditingController();
-  final cityEditingController = TextEditingController();
+  final channelCityEditingController = TextEditingController();
   final channelDescriptionEditingController = TextEditingController();
   late FocusNode _focusNode;
 
-  late final AddChannelController _addChannelController;
+  final eventTitleEditingController = TextEditingController();
+  final eventLocalizationEditingController = TextEditingController();
+
+  late final AddChannelOrEventController _addChannelController;
   File? _file;
   late final ImagePicker _imagePicker;
+
+  //DateTime? eventDate;
+  TimeOfDay? eventTime;
+
+  late EventDate eventDate = EventDate();
 
   //File? get file => _file;
 
@@ -55,7 +67,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   @override
   void initState() {
     super.initState();
-    _addChannelController = AddChannelController(
+    _addChannelController = AddChannelOrEventController(
       Provider.of<FirebaseProvider>(context, listen: false).firestore,
       Provider.of<FirebaseProvider>(context, listen: false).storage,
     );
@@ -123,19 +135,91 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
                   )
                 : Container(),
             isAddEventPressed
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Center(
-                      child: Text(
-                        'add an event',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        getEventData(),
+                        const SizedBox(height: 25.0),
+                        ElevatedButton(
+                          onPressed: _createEvent,
+                          child: kCreateEventButtonText,
+                          style: kCategoriesTreeViewButtonStyle,
+                        ),
+                      ],
                     ),
                   )
                 : Container(),
           ],
         ),
       ),
+    );
+  }
+
+  Column getEventData() {
+    final eventTitleField = TextFormField(
+      autofocus: false,
+      controller: eventTitleEditingController,
+      keyboardType: TextInputType.name,
+      validator: (value) {
+        RegExp regex = RegExp(r'^.{3,}$');
+        if (value!.isEmpty) {
+          return ('Event title cannot be empty');
+        }
+        if (!regex.hasMatch(value)) {
+          return ('Enter valid event title (min. 3 characters)');
+        }
+        return null;
+      },
+      onSaved: (value) {
+        eventTitleEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: kAddEventTitleBarInputDecoration,
+    );
+
+    final eventLocalizationField = TextFormField(
+      autofocus: false,
+      controller: eventLocalizationEditingController,
+      keyboardType: TextInputType.name,
+      validator: (value) {
+        RegExp regex = RegExp(r'^.{3,}$');
+        if (value!.isEmpty) {
+          return ('Localization cannot be empty');
+        }
+        if (!regex.hasMatch(value)) {
+          return ('Enter valid localization (min. 3 characters)');
+        }
+        return null;
+      },
+      onSaved: (value) {
+        eventLocalizationEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: kAddEventLocalizationBarInputDecoration,
+    );
+
+    return Column(
+      children: [
+        Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              const SizedBox(height: 25.0),
+              eventTitleField,
+              const SizedBox(height: 25.0),
+              eventLocalizationField,
+              const SizedBox(height: 25.0),
+            ],
+          ),
+        ),
+        DatePickerButton(eventDate: eventDate),
+        const SizedBox(height: 25.0),
+        //ElevatedButton(onPressed: () => pickTime(context), child: getTimeText()),
+        TimePickerButton(eventDate: eventDate),
+      ],
     );
   }
 
@@ -161,9 +245,9 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       decoration: kAddChannelNameBarInputDecoration,
     );
 
-    final cityField = TextFormField(
+    final channelCityField = TextFormField(
       autofocus: false,
-      controller: cityEditingController,
+      controller: channelCityEditingController,
       keyboardType: TextInputType.name,
       validator: (value) {
         RegExp regex = RegExp(r'^.{3,}$');
@@ -176,7 +260,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         return null;
       },
       onSaved: (value) {
-        cityEditingController.text = value!;
+        channelCityEditingController.text = value!;
       },
       textInputAction: TextInputAction.next,
       decoration: kAddChannelCityBarInputDecoration,
@@ -214,7 +298,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
               const SizedBox(height: 25.0),
               channelNameField,
               const SizedBox(height: 25.0),
-              cityField,
+              channelCityField,
               const SizedBox(height: 25.0),
               channelDescriptionField,
               const SizedBox(height: 25.0),
@@ -361,7 +445,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       String? imageUrl;
       var uuid = const Uuid();
       DateTime now = DateTime.now();
-      String city = cityEditingController.text.capitalize();
+      String city = channelCityEditingController.text.capitalize();
       city = removeDiacritics(city);
       final myId = Provider.of<User?>(context, listen: false)!.uid;
       List<String> usersIds = [myId];
@@ -396,11 +480,16 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       ScaffoldMessenger.of(context).showSnackBar(kChannelAddedSnackBar);
 
       channelNameEditingController.clear();
-      cityEditingController.clear();
+      channelCityEditingController.clear();
       channelDescriptionEditingController.clear();
       setState(() {
         chosenCategoryId = '';
       });
     }
   }
+
+  void _createEvent() {
+    print(eventDate.getCombinedDate());
+  }
+
 }
