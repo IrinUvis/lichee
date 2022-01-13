@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/constants/colors.dart';
 
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
@@ -30,7 +31,10 @@ class MessageBubble extends StatelessWidget {
                 bottomRight: Radius.circular(5.0),
                 topRight: Radius.circular(10.0),
               ),
-              child: Image.network(imageUrl!),
+              child: Image.network(
+                imageUrl!,
+                loadingBuilder: getCircularProgressWidget,
+              ),
             ),
             const SizedBox(
               height: 5,
@@ -60,7 +64,10 @@ class MessageBubble extends StatelessWidget {
                 bottomRight: Radius.circular(10.0),
                 topRight: Radius.circular(10.0),
               ),
-              child: Image.network(imageUrl!),
+              child: Image.network(
+                imageUrl!,
+                loadingBuilder: getCircularProgressWidget,
+              ),
             ),
           ],
         );
@@ -98,8 +105,12 @@ class MessageBubble extends StatelessWidget {
             ),
           ),
           Container(
+            key: const Key('messageContentContainer'),
             constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.6),
+                maxWidth: MediaQuery
+                    .of(context)
+                    .size
+                    .width * 0.6),
             child: Material(
               borderRadius: isMe
                   ? const BorderRadius.only(
@@ -112,7 +123,7 @@ class MessageBubble extends StatelessWidget {
                 topRight: Radius.circular(20.0),
               ),
               elevation: 5.0,
-              color: isMe ? Colors.pinkAccent : const Color(0xFF444444),
+              color: isMe ? LicheeColors.primary : const Color(0xFF444444),
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                     vertical: 10.0, horizontal: 10.0),
@@ -121,6 +132,24 @@ class MessageBubble extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget getCircularProgressWidget(BuildContext context, Widget child,
+      ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) {
+      return child;
+    }
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded /
+              loadingProgress.expectedTotalBytes!
+              : null,
+        ),
       ),
     );
   }

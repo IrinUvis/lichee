@@ -3,8 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
-import 'package:lichee/models/user_data.dart';
 import 'package:lichee/components/logo.dart';
+import 'package:lichee/models/user_data.dart';
+import 'package:lichee/screens/auth/role.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 
@@ -12,13 +13,14 @@ import '../../../providers/authentication_provider.dart';
 import '../auth_type.dart';
 
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({Key? key}) : super(key: key);
+  const AuthScreen();
 
   @override
-  _AuthScreenState createState() => _AuthScreenState();
+  AuthScreenState createState() => AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+@visibleForTesting
+class AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final usernameEditingController = TextEditingController();
@@ -26,6 +28,8 @@ class _AuthScreenState extends State<AuthScreen> {
   final passwordEditingController = TextEditingController();
   final confirmPasswordEditingController = TextEditingController();
   DateTime? selectedDateOfBirth;
+
+
 
   String? errorMessage;
   bool inAsyncCall = false;
@@ -53,8 +57,9 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Form getAppropriateForm() {
-    final firstNameField = TextFormField(
+  TextFormField getFirstNameField() {
+    return TextFormField(
+      key: const Key('firstNameField'),
       autofocus: false,
       controller: usernameEditingController,
       keyboardType: TextInputType.name,
@@ -68,9 +73,6 @@ class _AuthScreenState extends State<AuthScreen> {
         }
         return null;
       },
-      onSaved: (value) {
-        usernameEditingController.text = value!;
-      },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
         prefixIcon: const Icon(Icons.account_circle),
@@ -81,8 +83,11 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
 
-    final emailField = TextFormField(
+  TextFormField getEmailField() {
+    return TextFormField(
+      key: const Key('emailField'),
       autofocus: false,
       controller: emailEditingController,
       keyboardType: TextInputType.emailAddress,
@@ -95,9 +100,6 @@ class _AuthScreenState extends State<AuthScreen> {
         }
         return null;
       },
-      onSaved: (value) {
-        usernameEditingController.text = value!;
-      },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
         prefixIcon: const Icon(Icons.mail),
@@ -108,14 +110,18 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
 
-    final dateOfBirthField = DateTimeField(
+  DateTimeField getDateOfBirthField() {
+    return DateTimeField(
+      key: const Key('dateOfBirthField'),
       validator: (value) {
         if (value == null) {
           return ('Please enter your date of birth');
         }
         return null;
       },
+      initialValue: DateTime(2000),
       format: DateFormat('yyyy-MM-dd'),
       onShowPicker: (context, currentValue) async {
         DateTime? chosenDate = await showDatePicker(
@@ -135,8 +141,11 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
 
-    final passwordField = TextFormField(
+  TextFormField getPasswordField() {
+    return TextFormField(
+      key: const Key('passwordField'),
       autofocus: false,
       controller: passwordEditingController,
       obscureText: true,
@@ -149,9 +158,6 @@ class _AuthScreenState extends State<AuthScreen> {
           return ('Enter valid password (min. 6 characters)');
         }
       },
-      onSaved: (value) {
-        usernameEditingController.text = value!;
-      },
       textInputAction: TextInputAction.next,
       decoration: InputDecoration(
         prefixIcon: const Icon(Icons.vpn_key),
@@ -162,8 +168,11 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
 
-    final confirmPasswordField = TextFormField(
+  TextFormField getConfirmPasswordField() {
+    return TextFormField(
+      key: const Key('confirmPasswordField'),
       autofocus: false,
       controller: confirmPasswordEditingController,
       obscureText: true,
@@ -173,9 +182,6 @@ class _AuthScreenState extends State<AuthScreen> {
           return 'Passwords don\'t match';
         }
         return null;
-      },
-      onSaved: (value) {
-        confirmPasswordEditingController.text = value!;
       },
       textInputAction: TextInputAction.done,
       decoration: InputDecoration(
@@ -187,8 +193,11 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
 
-    final authorizeButton = Material(
+  Material getAuthorizeButton() {
+    return Material(
+      key: const Key('authorizeButton'),
       elevation: 5,
       borderRadius: BorderRadius.circular(30),
       color: Colors.pinkAccent,
@@ -196,7 +205,7 @@ class _AuthScreenState extends State<AuthScreen> {
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
         onPressed:
-            authType == AuthType.register ? () => signUp() : () => signIn(),
+        authType == AuthType.register ? () => signUp() : () => signIn(),
         child: Text(
           authType == AuthType.register ? 'Sign up' : 'Log in',
           textAlign: TextAlign.center,
@@ -208,8 +217,11 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ),
     );
+  }
 
-    final authTypeChanger = Row(
+  Row getAuthTypeChanger() {
+    return Row(
+      key: const Key('authTypeChanger'),
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         authType == AuthType.register
@@ -234,7 +246,9 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
       ],
     );
+  }
 
+  Form getAppropriateForm() {
     return Form(
       key: _formKey,
       child: Column(
@@ -249,19 +263,19 @@ class _AuthScreenState extends State<AuthScreen> {
                   authType: authType,
                 ),
                 const SizedBox(height: 30),
-                firstNameField,
+                getFirstNameField(),
                 const SizedBox(height: 20),
-                emailField,
+                getEmailField(),
                 const SizedBox(height: 20),
-                dateOfBirthField,
+                getDateOfBirthField(),
                 const SizedBox(height: 20),
-                passwordField,
+                getPasswordField(),
                 const SizedBox(height: 20),
-                confirmPasswordField,
+                getConfirmPasswordField(),
                 const SizedBox(height: 20),
-                authorizeButton,
+                getAuthorizeButton(),
                 const SizedBox(height: 15),
-                authTypeChanger,
+                getAuthTypeChanger(),
               ]
             : <Widget>[
                 const SizedBox(height: 40),
@@ -271,18 +285,19 @@ class _AuthScreenState extends State<AuthScreen> {
                   authType: authType,
                 ),
                 const SizedBox(height: 30),
-                emailField,
+                getEmailField(),
                 const SizedBox(height: 20),
-                passwordField,
+                getPasswordField(),
                 const SizedBox(height: 20),
-                authorizeButton,
+                getAuthorizeButton(),
                 const SizedBox(height: 15),
-                authTypeChanger,
+                getAuthTypeChanger(),
               ],
       ),
     );
   }
 
+  @visibleForTesting
   void signUp() async {
     if (_formKey.currentState!.validate()) {
       setState(() => toggleInAsyncCall());
@@ -292,7 +307,7 @@ class _AuthScreenState extends State<AuthScreen> {
           userData: UserData(
             username: usernameEditingController.text.trim(),
             email: emailEditingController.text.trim(),
-            photoUrl: 'none',
+            role: Role.normalUser,
             dateOfBirth: selectedDateOfBirth!,
           ),
           password: passwordEditingController.text.trim(),
@@ -312,7 +327,7 @@ class _AuthScreenState extends State<AuthScreen> {
             errorMessage = 'User with this email has been disabled.';
             break;
           case 'too-many-requests':
-            errorMessage = 'Too many requests';
+            errorMessage = 'Too many requests.';
             break;
           case 'operation-not-allowed':
             errorMessage = 'Signing in with email and password is not enabled.';
@@ -326,6 +341,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  @visibleForTesting
   void signIn() async {
     if (_formKey.currentState!.validate()) {
       setState(() => toggleInAsyncCall());
@@ -350,7 +366,7 @@ class _AuthScreenState extends State<AuthScreen> {
             errorMessage = 'User with this email has been disabled.';
             break;
           case 'too-many-requests':
-            errorMessage = 'Too many requests';
+            errorMessage = 'Too many requests.';
             break;
           case 'operation-not-allowed':
             errorMessage = 'Signing in with email and password is not enabled.';
@@ -364,6 +380,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
   }
 
+  @visibleForTesting
   void toggleInAsyncCall() {
     inAsyncCall = !inAsyncCall;
   }

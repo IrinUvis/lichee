@@ -1,28 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class MessageData {
+class ChatMessageData {
   final String idSentBy;
   final String nameSentBy;
   final String messageText;
   final String? imageUrl;
   final DateTime sentAt;
 
-  MessageData({
+  ChatMessageData({
     required this.idSentBy,
     required this.nameSentBy,
     required this.messageText,
-    this.imageUrl,
+    required this.imageUrl,
     required this.sentAt,
   });
 
-  MessageData copyWith({
+  ChatMessageData copyWith({
     String? idSentBy,
     String? nameSentBy,
     String? messageText,
     String? imageUrl,
     DateTime? sentAt,
   }) {
-    return MessageData(
+    return ChatMessageData(
       idSentBy: idSentBy ?? this.idSentBy,
       nameSentBy: nameSentBy ?? this.nameSentBy,
       messageText: messageText ?? this.messageText,
@@ -31,9 +31,9 @@ class MessageData {
     );
   }
 
-  static MessageData mapToMessageData(Map<String, dynamic> map) {
+  static ChatMessageData mapToChatMessageData(Map<String, dynamic> map) {
     Timestamp sentAt = map['sentAt'];
-    MessageData messageData = MessageData(
+    ChatMessageData messageData = ChatMessageData(
       idSentBy: map['idSentBy'],
       nameSentBy: map['nameSentBy'],
       messageText: map['messageText'],

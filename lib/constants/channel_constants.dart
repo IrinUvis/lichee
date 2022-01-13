@@ -23,3 +23,7 @@ const kReportInputDecoration = InputDecoration(
     borderSide: BorderSide(color: LicheeColors.primary),
   ),
 );
+
+const kDescriptiveText = TextStyle(
+  color: Colors.grey,
+);

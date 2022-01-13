@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/constants/icons.dart';
+import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/screens/channel_list/tree_node_card.dart';
+import 'package:provider/provider.dart';
 
+// TODO AM - bug: Overflowów tu jest cała masa z tymi kategoriami
 class CategoriesTreeView extends StatefulWidget {
   const CategoriesTreeView(
       {Key? key, required this.isChoosingCategoryForChannelAddingAvailable})
@@ -32,7 +35,8 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
   }
 
   void getCitiesFromChannels() async {
-    await FirebaseFirestore.instance
+    await Provider.of<FirebaseProvider>(context, listen: false)
+        .firestore
         .collection('channels')
         .get()
         .then((querySnapshot) => {
@@ -89,7 +93,8 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
 
   StreamBuilder<QuerySnapshot> _getNodesTree() {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
+      stream: Provider.of<FirebaseProvider>(context, listen: false)
+          .firestore
           .collection('categories')
           .where('parentId', isEqualTo: parentId)
           .snapshots(),
@@ -207,7 +212,8 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
         selectedFiltersList = List.from(list!);
 
         idsOfChannelsFromCity.clear();
-        await FirebaseFirestore.instance
+        await Provider.of<FirebaseProvider>(context, listen: false)
+            .firestore
             .collection('channels')
             .get()
             .then((querySnapshot) => {

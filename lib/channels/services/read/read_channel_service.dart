@@ -1,12 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lichee/channels/domain/channels_repository.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 
 class ReadChannelService {
-  final _repository = ChannelRepository();
+  final ChannelRepository _repository;
+
+  ReadChannelService({
+    required FirebaseFirestore firestore,
+  }) : _repository = ChannelRepository(firestore: firestore);
 
   Future<ReadChannelDto> getById({required String id}) async {
-      final channel = await _repository.getById(id: id);
-      return channel.toDto();
+    final channel = await _repository.getById(id: id);
+    return channel.toDto();
   }
 
   Future<List<ReadChannelDto>> getByName({required String name}) async {
@@ -32,5 +37,10 @@ class ReadChannelService {
   Future<List<ReadChannelDto>> getPromoted() async {
     final channels = await _repository.getPromoted();
     return channels.map((channel) => channel.toDto()).toList();
+  }
+
+  Future<bool> getIfUserIsInTheChannelById(String id, String user) async {
+    final channel = await _repository.getById(id: id);
+    return channel.userIds!.contains(user);
   }
 }

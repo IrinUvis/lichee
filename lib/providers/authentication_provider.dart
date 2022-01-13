@@ -3,39 +3,45 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lichee/models/user_data.dart';
 
 class AuthenticationProvider {
-  final FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firebaseFirestore;
+  final FirebaseAuth _auth;
+  final FirebaseFirestore _firestore;
 
-  AuthenticationProvider(this._firebaseAuth, this._firebaseFirestore);
+  AuthenticationProvider({
+    required FirebaseAuth auth,
+    required FirebaseFirestore firestore,
+  })  : _auth = auth,
+        _firestore = firestore;
 
-  Stream<User?> get authState => _firebaseAuth.idTokenChanges();
+  Stream<User?> get authState => _auth.authStateChanges();
 
-  Future<void> signUp({
+  User? get currentUser => _auth.currentUser;
+
+  Future<UserCredential> signUp({
     required UserData userData,
     required String password,
   }) async {
-    final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: userData.email, password: password);
+    final userCredential = await _auth.createUserWithEmailAndPassword(
+        email: userData.email!, password: password);
     await userCredential.user!.updateDisplayName(userData.username);
-    await signIn(email: userData.email, password: password);
-    _firebaseFirestore.collection('users').add(
+    await signIn(email: userData.email!, password: password);
+    _firestore.collection('users').doc(userData.id).set(
           userData
               .copyWith(
                 id: userCredential.user!.uid,
               )
               .toMap(),
         );
+    return userCredential;
   }
 
-  Future<void> signIn({
+  Future<UserCredential> signIn({
     required String email,
     required String password,
-  }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+  }) {
+    return _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    await _auth.signOut();
   }
 }

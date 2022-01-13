@@ -42,7 +42,7 @@ void main() {
   final FakeFirebaseAuth _fakeAuth =
       FakeFirebaseAuth(signedIn: false, mockUser: user);
   final FakeFirebaseFirestore _fakeFirestore = FakeFirebaseFirestore();
-  final _authProvider = AuthenticationProvider(_fakeAuth, _fakeFirestore);
+  final _authProvider = AuthenticationProvider(auth: _fakeAuth, firestore: _fakeFirestore);
 
   group('Authentication services', () {
     setUp(() async {
@@ -88,6 +88,20 @@ void main() {
       expect(user, _fakeAuth.currentUser);
       _authProvider.signOut();
       expect(null, _fakeAuth.currentUser);
+    });
+
+    test('current auth state returns', () async {
+      final authState = _authProvider.authState;
+      _authProvider.signIn(email: email, password: password);
+
+      expect(authState, emitsAnyOf([null]));
+    });
+
+    test('current user returns', () async {
+      final currentUser = _authProvider.currentUser;
+      _authProvider.signIn(email: email, password: password);
+
+      expect(currentUser, null);
     });
   });
 }

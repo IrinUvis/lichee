@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/models/channel_chat_data.dart';
 import 'package:lichee/screens/auth/auth_type.dart';
 import 'package:provider/provider.dart';
-import '../channel_list/categories_tree_view.dart';
-import 'package:diacritic/diacritic.dart';
 
-import '../not_logged_in_view.dart';
+import '../auth/screens/not_logged_in_view.dart';
+import '../channel_list/categories_tree_view.dart';
 
 class AddChannelScreen extends StatefulWidget {
   const AddChannelScreen({Key? key}) : super(key: key);
@@ -42,7 +43,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
     super.dispose();
   }
 
-//TODO add possibility to upload channel image
+  //TODO add possibility to upload channel image
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
@@ -178,6 +179,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       decoration: kAddChannelDescriptionBarInputDecoration,
     );
 
+    // TODO AM - sugestia: Moim zdaniem krawędzie tych pól tesktowych są bardzo oczojebne i trochę nie pasują do reszty aplikacji
     return Column(
       children: [
         Form(
@@ -301,7 +303,8 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       String city = cityEditingController.text.capitalize();
       city = removeDiacritics(city);
       DateTime now = DateTime.now();
-      List<String> usersIds = List.empty();
+      final myId = Provider.of<User?>(context, listen: false)!.uid;
+      List<String> usersIds = [myId];
       final newChannel = await channels.add({
         'channelName': channelNameEditingController.text,
         'channelImageURL':
@@ -310,9 +313,17 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         'createdOn': DateTime(now.year, now.month, now.day),
         'description': channelDescriptionEditingController.text,
         'userIds': usersIds,
-        'ownerId': FirebaseAuth.instance.currentUser!.uid,
+        'ownerId': myId,
         'parentCategoryId': chosenCategoryId,
       });
+
+      CollectionReference channelChats =
+          FirebaseFirestore.instance.collection('channel_chats');
+      await channelChats.doc(newChannel.id).set(ChannelChatData(
+          channelId: newChannel.id,
+          channelName: channelNameEditingController.text,
+          photoUrl: 'https://www.fivb.org/Vis2009/Images/GetImage.asmx?No=202004911&width=920&height=588&stretch=uniformtofill',
+          userIds: usersIds).toMap());
 
       CollectionReference categories =
           FirebaseFirestore.instance.collection('categories');
