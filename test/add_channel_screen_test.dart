@@ -10,21 +10,21 @@ import 'setup/auth_mock_setup/firebase_auth_mocks_base.dart';
 import 'setup/auth_mock_setup/mock_user.dart';
 import 'setup/auth_mock_setup/mock_user_credential.dart';
 
-Widget createAddChannelScreen() => const MaterialApp(
-      home: AddChannelScreen(),
-    );
-
-void main() async {
-  setupFirebaseAuthMocks();
-
-  setUpAll(() async {
-    await Firebase.initializeApp();
-  });
-
-  group('Add channel screen Tests', () {
-    testWidgets('Test if add channel screen shows up', (tester) async {
-      await tester.pumpWidget(createAddChannelScreen());
-      expect(find.byType(Column), findsOneWidget);
-    });
-  });
-}
+// Widget createAddChannelScreen() => const MaterialApp(
+//       home: AddChannelScreen(),
+//     );
+//
+// void main() async {
+//   setupFirebaseAuthMocks();
+//
+//   setUpAll(() async {
+//     await Firebase.initializeApp();
+//   });
+//
+//   group('Add channel screen Tests', () {
+//     testWidgets('Test if add channel screen shows up', (tester) async {
+//       await tester.pumpWidget(createAddChannelScreen());
+//       expect(find.byType(Column), findsOneWidget);
+//     });
+//   });
+// }

@@ -100,7 +100,7 @@ final kCategoriesTreeViewButtonStyle = ElevatedButton.styleFrom(
   ),
 );
 
-final kCategoriesTreeViewInactiveButtonStyle = ElevatedButton.styleFrom(
+final kCategoryAddingInactiveButtonStyle = ElevatedButton.styleFrom(
   primary: LicheeColors.greyColor,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(20.0),
@@ -135,9 +135,31 @@ const kAddEventButtonText = Text(
   style: TextStyle(color: Colors.white, fontSize: 20.0),
 );
 
-const kChooseCategoryButtonText = Text(
-  'Choose category',
-  style: TextStyle(color: Colors.white, fontSize: 20.0),
+final kAddChannelImageButtonContent = Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: const [
+    Icon(
+      Icons.camera_alt_outlined,
+      color: Colors.pinkAccent,
+    ),
+    SizedBox(
+      width: 10.0,
+    ),
+    Text(
+      'Choose channel image',
+      style: TextStyle(color: Colors.white, fontSize: 20.0),
+    )
+  ],
+);
+
+final kChooseCategoryButtonText = Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: const [
+    Text(
+      'Choose category',
+      style: TextStyle(color: Colors.white, fontSize: 20.0),
+    )
+  ],
 );
 
 const kCreateChannelButtonText = Padding(
