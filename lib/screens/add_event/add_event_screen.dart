@@ -33,6 +33,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   late EventDate eventDate = EventDate();
 
+  bool isDatePicked = false;
+
   //File? get file => _file;
 
   //ImagePicker get imagePicker => _imagePicker;
@@ -76,6 +78,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
               Text('Add event',
                   style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
               Expanded(child: getEventData()),
+              isDatePicked ? Text('You have to choose date and time of the event') : Container(),
               ElevatedButton(
                 onPressed: _createEvent,
                 child: kCreateEventButtonText,
@@ -202,7 +205,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
   // }
 
   void _createEvent() {
-    print(eventDate.getCombinedDate());
+    if (_formKey.currentState!.validate()) {
+      if (!eventDate.validate()) {
+        setState(() {
+          isDatePicked = true;
+        });
+        return;
+      }
+      print(eventDate.getCombinedDate());
+    }
   }
 }
 
