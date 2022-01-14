@@ -3,11 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lichee/models/channel_chat_data.dart';
 import 'package:lichee/services/storage_service.dart';
 
-class AddChannelOrEventController {
+class AddEventController {
   final FirebaseFirestore _firestore;
   final StorageService _storage;
 
-  AddChannelOrEventController(this._firestore, this._storage);
+  AddEventController(this._firestore, this._storage);
 
   Future<String> uploadPhoto({
     required String uuid,
@@ -24,13 +24,13 @@ class AddChannelOrEventController {
 
   Future<void> addChannel(
       {required String channelName,
-      required String imageUrl,
-      required String city,
-      required DateTime now,
-      required String description,
-      required List<String> usersIds,
-      required String userId,
-      required String parentCategoryId}) async {
+        required String imageUrl,
+        required String city,
+        required DateTime now,
+        required String description,
+        required List<String> usersIds,
+        required String userId,
+        required String parentCategoryId}) async {
     final newChannel = await _firestore.collection('channels').add({
       'channelName': channelName,
       'channelImageURL': imageUrl,
@@ -44,10 +44,10 @@ class AddChannelOrEventController {
 
     await _firestore.collection('channel_chats').doc(newChannel.id).set(
         ChannelChatData(
-                channelId: newChannel.id,
-                channelName: channelName,
-                photoUrl: imageUrl,
-                userIds: usersIds)
+            channelId: newChannel.id,
+            channelName: channelName,
+            photoUrl: imageUrl,
+            userIds: usersIds)
             .toMap());
 
     await _firestore.collection('categories').doc(newChannel.id).set({
@@ -59,9 +59,9 @@ class AddChannelOrEventController {
     });
 
     final parentCategory =
-        await _firestore.collection('categories').doc(parentCategoryId).get();
+    await _firestore.collection('categories').doc(parentCategoryId).get();
     Map<String, dynamic> parentCategoryMap =
-        parentCategory.data() as Map<String, dynamic>;
+    parentCategory.data() as Map<String, dynamic>;
     List<String> childrenIdsList = List.from(parentCategoryMap['childrenIds']);
     childrenIdsList.add(newChannel.id);
     await _firestore.collection('categories').doc(parentCategoryId).update({
@@ -71,9 +71,9 @@ class AddChannelOrEventController {
 
   Future<String> getCategoryNameById({required String channelParentId}) async {
     final parentCategory =
-        await _firestore.collection('categories').doc(channelParentId).get();
+    await _firestore.collection('categories').doc(channelParentId).get();
     Map<String, dynamic> parentCategoryMap =
-        parentCategory.data() as Map<String, dynamic>;
+    parentCategory.data() as Map<String, dynamic>;
     String channelParentName = parentCategoryMap['name'];
     return channelParentName;
   }

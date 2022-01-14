@@ -58,17 +58,17 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
             ElevatedButton(
               onPressed: _resetCategoriesTreeView,
               child: kResetCategoriesTreeViewIcon,
-              style: kCategoriesTreeViewButtonStyle,
+              style: kPinkRoundedButtonStyle,
             ),
             ElevatedButton(
               onPressed: _openFilterDialog,
               child: kCategoriesTreeViewFiltersButtonText,
-              style: kCategoriesTreeViewButtonStyle,
+              style: kPinkRoundedButtonStyle,
             ),
             ElevatedButton(
               onPressed: _returnToUpperLevelInCategoriesTreeView,
               child: kReturnToUpperLevelInTreeViewIcon,
-              style: kCategoriesTreeViewButtonStyle,
+              style: kPinkRoundedButtonStyle,
             ),
           ],
         ),
@@ -83,7 +83,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                 ? ElevatedButton(
                     onPressed: () => Navigator.pop(context, parentId),
                     child: kChooseCategoryForAddingChannelButtonText,
-                    style: kCategoriesTreeViewButtonStyle,
+                    style: kPinkRoundedButtonStyle,
                   )
                 : Container()
             : Container(),

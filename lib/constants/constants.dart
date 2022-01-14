@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/colors.dart';
+import 'icons.dart';
 
 const kHomeSearchBarInputDecoration = InputDecoration(
   contentPadding: EdgeInsets.all(20.0),
@@ -26,7 +27,7 @@ final kAddChannelNameBarInputDecoration = InputDecoration(
   border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(100),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
-  suffixIcon: const Icon(Icons.title),
+  suffixIcon: const Icon(Icons.title, color: Colors.white),
 );
 
 final kAddChannelCityBarInputDecoration = InputDecoration(
@@ -40,7 +41,7 @@ final kAddChannelCityBarInputDecoration = InputDecoration(
   border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(100),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
-  suffixIcon: const Icon(Icons.location_city),
+  suffixIcon: const Icon(Icons.location_city, color: Colors.white),
 );
 
 final kAddChannelDescriptionBarInputDecoration = InputDecoration(
@@ -54,7 +55,7 @@ final kAddChannelDescriptionBarInputDecoration = InputDecoration(
   border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(100),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
-  suffixIcon: const Icon(Icons.description),
+  suffixIcon: const Icon(Icons.description, color: Colors.white),
 );
 
 final kAddEventTitleBarInputDecoration = InputDecoration(
@@ -68,7 +69,7 @@ final kAddEventTitleBarInputDecoration = InputDecoration(
   border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(100),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
-  suffixIcon: const Icon(Icons.title),
+  suffixIcon: const Icon(Icons.title, color: Colors.white),
 );
 
 final kAddEventLocalizationBarInputDecoration = InputDecoration(
@@ -82,7 +83,7 @@ final kAddEventLocalizationBarInputDecoration = InputDecoration(
   border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(100),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
-  suffixIcon: const Icon(Icons.location_city),
+  suffixIcon: const Icon(Icons.location_city, color: Colors.white),
 );
 
 const kBannerTextStyle = TextStyle(
@@ -121,18 +122,19 @@ const kRegisterTextStyle = TextStyle(
   fontSize: 14.0,
 );
 
-final kCategoriesTreeViewButtonStyle = ElevatedButton.styleFrom(
+final kPinkRoundedButtonStyle = ElevatedButton.styleFrom(
   primary: Colors.pinkAccent,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(40.0),
   ),
 );
 
-final kCategoryAddingInactiveButtonStyle = ElevatedButton.styleFrom(
+final kGreyRoundedButtonStyle = ElevatedButton.styleFrom(
   primary: LicheeColors.greyColor,
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(20.0),
+    borderRadius: BorderRadius.circular(100.0),
   ),
+  minimumSize: const Size(10.0, 61.0),
 );
 
 const kCategoriesTreeViewFiltersButtonText = Padding(
@@ -166,44 +168,56 @@ const kAddEventButtonText = Text(
 final kAddChannelImageButtonContent = Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: const [
+    Text('Choose channel image',
+        style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    SizedBox(width: 10.0),
     Icon(
-      Icons.camera_alt_outlined,
-      color: Colors.pinkAccent,
+      Icons.camera_alt,
+      color: Colors.white,
     ),
-    SizedBox(
-      width: 10.0,
-    ),
-    Text(
-      'Choose channel image',
-      style: TextStyle(color: Colors.white, fontSize: 20.0),
-    )
   ],
 );
 
-final kChooseCategoryButtonText = Row(
+final kChooseCategoryButtonContent = Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: const [
-    Text(
-      'Choose category',
-      style: TextStyle(color: Colors.white, fontSize: 20.0),
-    )
+    Text('Choose category',
+        style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    SizedBox(width: 10.0),
+    kCategoryIcon
+  ],
+);
+
+final kSelectDateButtonContent = Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: const [
+    Text('Select date',
+        style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    SizedBox(width: 10.0),
+    kDateIcon
+  ],
+);
+
+final kSelectTimeButtonContent = Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: const [
+    Text('Select time',
+        style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    SizedBox(width: 10.0),
+    kTimeIcon
   ],
 );
 
 const kCreateChannelButtonText = Padding(
   padding: EdgeInsets.all(8.0),
-  child: Text(
-    'Create channel',
-    style: TextStyle(color: Colors.white, fontSize: 30.0),
-  ),
+  child: Text('Create channel',
+      style: TextStyle(color: Colors.white, fontSize: 30.0)),
 );
 
 const kCreateEventButtonText = Padding(
   padding: EdgeInsets.all(8.0),
-  child: Text(
-    'Create event',
-    style: TextStyle(color: Colors.white, fontSize: 30.0),
-  ),
+  child: Text('Create event',
+      style: TextStyle(color: Colors.white, fontSize: 30.0)),
 );
 
 const kCategoryNodeEmptyText = Text(
@@ -215,10 +229,7 @@ const kCategoryNodeTestStyle = TextStyle(color: Colors.white, fontSize: 20.0);
 
 const kCategoryChoosingCategoryText = Text(
   'Category:',
-  style: TextStyle(
-    color: Colors.white,
-    fontSize: 16.0,
-  ),
+  style: TextStyle(color: Colors.white, fontSize: 16.0),
 );
 
 const kChosenCategoryValidTextStyle = TextStyle(

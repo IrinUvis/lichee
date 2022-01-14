@@ -6,18 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/providers/firebase_provider.dart';
-import 'package:lichee/screens/add_channel/add_channel_or_event_controller.dart';
-import 'package:lichee/screens/add_channel/time_picker_button.dart';
+import 'package:lichee/screens/add_channel/add_channel_controller.dart';
 import 'package:lichee/screens/auth/auth_type.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../auth/screens/not_logged_in_view.dart';
 import '../channel_list/categories_tree_view.dart';
-import 'date_picker_button.dart';
-import 'event_date.dart';
 
 class AddChannelScreen extends StatefulWidget {
   final ImagePicker imagePicker;
@@ -42,17 +38,9 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   final channelDescriptionEditingController = TextEditingController();
   late FocusNode _focusNode;
 
-  final eventTitleEditingController = TextEditingController();
-  final eventLocalizationEditingController = TextEditingController();
-
-  late final AddChannelOrEventController _addChannelController;
+  late final AddChannelController _addChannelController;
   File? _file;
   late final ImagePicker _imagePicker;
-
-  //DateTime? eventDate;
-  TimeOfDay? eventTime;
-
-  late EventDate eventDate = EventDate();
 
   //File? get file => _file;
 
@@ -67,7 +55,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   @override
   void initState() {
     super.initState();
-    _addChannelController = AddChannelOrEventController(
+    _addChannelController = AddChannelController(
       Provider.of<FirebaseProvider>(context, listen: false).firestore,
       Provider.of<FirebaseProvider>(context, listen: false).storage,
     );
@@ -98,128 +86,28 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: _addChannelView,
-                  child: kAddChannelButtonText,
-                  style: isAddChannelPressed
-                      ? kCategoriesTreeViewButtonStyle
-                      : kCategoryAddingInactiveButtonStyle,
-                ),
-                ElevatedButton(
-                  onPressed: _addEventView,
-                  child: kAddEventButtonText,
-                  style: isAddEventPressed
-                      ? kCategoriesTreeViewButtonStyle
-                      : kCategoryAddingInactiveButtonStyle,
-                ),
-              ],
-            ),
-            isAddChannelPressed
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        getChannelData(),
-                        const SizedBox(height: 25.0),
-                        ElevatedButton(
-                          onPressed: _createChannel,
-                          child: kCreateChannelButtonText,
-                          style: kCategoriesTreeViewButtonStyle,
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(),
-            isAddEventPressed
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        getEventData(),
-                        const SizedBox(height: 25.0),
-                        ElevatedButton(
-                          onPressed: _createEvent,
-                          child: kCreateEventButtonText,
-                          style: kCategoriesTreeViewButtonStyle,
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const SizedBox(height: 10.0),
+                  Text('Add channel',
+                      style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+                  getChannelData(),
+                  const SizedBox(height: 25.0),
+                  ElevatedButton(
+                    onPressed: _createChannel,
+                    child: kCreateChannelButtonText,
+                    style: kPinkRoundedButtonStyle,
+                  ),
+                  const SizedBox(height: 10.0),
+                ],
+              ),
+            )
           ],
         ),
       ),
-    );
-  }
-
-  Column getEventData() {
-    final eventTitleField = TextFormField(
-      autofocus: false,
-      controller: eventTitleEditingController,
-      keyboardType: TextInputType.name,
-      validator: (value) {
-        RegExp regex = RegExp(r'^.{3,}$');
-        if (value!.isEmpty) {
-          return ('Event title cannot be empty');
-        }
-        if (!regex.hasMatch(value)) {
-          return ('Enter valid event title (min. 3 characters)');
-        }
-        return null;
-      },
-      onSaved: (value) {
-        eventTitleEditingController.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: kAddEventTitleBarInputDecoration,
-    );
-
-    final eventLocalizationField = TextFormField(
-      autofocus: false,
-      controller: eventLocalizationEditingController,
-      keyboardType: TextInputType.name,
-      validator: (value) {
-        RegExp regex = RegExp(r'^.{3,}$');
-        if (value!.isEmpty) {
-          return ('Localization cannot be empty');
-        }
-        if (!regex.hasMatch(value)) {
-          return ('Enter valid localization (min. 3 characters)');
-        }
-        return null;
-      },
-      onSaved: (value) {
-        eventLocalizationEditingController.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: kAddEventLocalizationBarInputDecoration,
-    );
-
-    return Column(
-      children: [
-        Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const SizedBox(height: 25.0),
-              eventTitleField,
-              const SizedBox(height: 25.0),
-              eventLocalizationField,
-              const SizedBox(height: 25.0),
-            ],
-          ),
-        ),
-        DatePickerButton(eventDate: eventDate),
-        const SizedBox(height: 25.0),
-        //ElevatedButton(onPressed: () => pickTime(context), child: getTimeText()),
-        TimePickerButton(eventDate: eventDate),
-      ],
     );
   }
 
@@ -310,7 +198,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
             _file == null
                 ? ElevatedButton(
                     onPressed: () => chooseImageFromGallery(),
-                    style: kCategoryAddingInactiveButtonStyle,
+                    style: kGreyRoundedButtonStyle,
                     child: kAddChannelImageButtonContent,
                   )
                 : Column(
@@ -325,8 +213,9 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
                         ),
                       ),
                       const SizedBox(height: 5.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 3.0),
+                      Container(
+                        constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height / 5),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(5.0),
                           child: Image.file(
@@ -339,8 +228,8 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
             const SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: _chooseCategoryView,
-              child: kChooseCategoryButtonText,
-              style: kCategoryAddingInactiveButtonStyle,
+              child: kChooseCategoryButtonContent,
+              style: kGreyRoundedButtonStyle,
             ),
             chosenCategoryName != ''
                 ? Column(
@@ -381,20 +270,6 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   void clearImage() {
     setState(() {
       _file = null;
-    });
-  }
-
-  void _addChannelView() {
-    setState(() {
-      isAddChannelPressed = !isAddChannelPressed;
-      isAddEventPressed = false;
-    });
-  }
-
-  void _addEventView() {
-    setState(() {
-      isAddEventPressed = !isAddEventPressed;
-      isAddChannelPressed = false;
     });
   }
 
@@ -487,9 +362,4 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       });
     }
   }
-
-  void _createEvent() {
-    print(eventDate.getCombinedDate());
-  }
-
 }

@@ -40,8 +40,8 @@ class TreeNodeCard extends StatelessWidget {
                     : Container(),
                 const SizedBox(width: 5.0),
                 type == 'category'
-                    ? kCategoryNodeCategoryIcon
-                    : kCategoryNodeChannelIcon,
+                    ? kCategoryIcon
+                    : kChannelIcon,
               ],
             ),
           ],

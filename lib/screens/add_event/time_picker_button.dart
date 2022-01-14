@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lichee/constants/constants.dart';
+import 'package:lichee/constants/icons.dart';
 
 import 'event_date.dart';
 
@@ -12,20 +14,30 @@ class TimePickerButton extends StatefulWidget {
 }
 
 class _TimePickerButtonState extends State<TimePickerButton> {
-  Text getTimeText() {
+  Widget getTimeText() {
     if (widget.eventDate.time == null) {
-      return const Text('Select Time');
+      return kSelectTimeButtonContent;
     } else {
       final hours = widget.eventDate.time!.hour.toString().padLeft(2, '0');
       final minutes = widget.eventDate.time!.minute.toString().padLeft(2, '0');
-
-      return Text('$hours:$minutes');
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('$hours:$minutes',
+              style: const TextStyle(color: Colors.white, fontSize: 20.0)),
+          const SizedBox(width: 10.0),
+          kTimeIcon
+        ],
+      );
     }
   }
 
   @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: () => pickTime(context), child: getTimeText());
+  Widget build(BuildContext context) => ElevatedButton(
+        onPressed: () => pickTime(context),
+        child: getTimeText(),
+        style: kGreyRoundedButtonStyle,
+      );
 
   Future pickTime(BuildContext context) async {
     const initialTime = TimeOfDay(hour: 8, minute: 0);

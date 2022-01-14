@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lichee/constants/constants.dart';
+import 'package:lichee/constants/icons.dart';
 import 'event_date.dart';
 
 class DatePickerButton extends StatefulWidget {
@@ -12,23 +14,36 @@ class DatePickerButton extends StatefulWidget {
 }
 
 class _DatePickerButtonState extends State<DatePickerButton> {
-  Text getDateText() {
+  Widget getDateText() {
     if (widget.eventDate.date == null) {
-      return const Text('Select Date');
+      return kSelectDateButtonContent;
     } else {
-      return Text(DateFormat('dd/MM/yyyy').format(widget.eventDate.date!));
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(DateFormat('dd/MM/yyyy').format(widget.eventDate.date!),
+              style: const TextStyle(color: Colors.white, fontSize: 20.0),),
+          const SizedBox(width: 10.0),
+          kDateIcon
+        ],
+      );
     }
   }
 
   @override
-  Widget build(BuildContext context) => ElevatedButton(onPressed: () => pickDate(context), child: getDateText());
+  Widget build(BuildContext context) => ElevatedButton(
+        onPressed: () => pickDate(context),
+        child: getDateText(),
+        style: kGreyRoundedButtonStyle,
+      );
 
   Future pickDate(BuildContext context) async {
     final initialDate = DateTime.now();
     final newDate = await showDatePicker(
       context: context,
       initialDate: widget.eventDate.date ?? initialDate,
-      firstDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
+      firstDate: DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day),
       lastDate: DateTime(DateTime.now().year + 3),
     );
     setState(() => widget.eventDate.date = newDate);
