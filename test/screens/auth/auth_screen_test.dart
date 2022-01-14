@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/models/user_data.dart';
 import 'package:lichee/providers/authentication_provider.dart';
+import 'package:lichee/screens/auth/role.dart';
 import 'package:lichee/screens/auth/screens/auth_screen.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -202,7 +203,7 @@ void main() {
         userData: UserData(
           username: 'testFirstName',
           email: 'testEmail@test.com',
-          photoUrl: 'none',
+          role: Role.normalUser,
           dateOfBirth: DateTime(2000),
         ),
         password: 'testPassword',
@@ -211,7 +212,7 @@ void main() {
         userData: UserData(
           username: 'testFirstName',
           email: 'invalidEmail@test.com',
-          photoUrl: 'none',
+          role: Role.normalUser,
           dateOfBirth: DateTime(2000),
         ),
         password: 'testPassword',
@@ -220,7 +221,7 @@ void main() {
         userData: UserData(
           username: 'testFirstName',
           email: 'wrongPassword@test.com',
-          photoUrl: 'none',
+          role: Role.normalUser,
           dateOfBirth: DateTime(2000),
         ),
         password: 'testPassword',
@@ -229,7 +230,7 @@ void main() {
         userData: UserData(
           username: 'testFirstName',
           email: 'userNotFound@test.com',
-          photoUrl: 'none',
+          role: Role.normalUser,
           dateOfBirth: DateTime(2000),
         ),
         password: 'testPassword',
@@ -238,7 +239,7 @@ void main() {
         userData: UserData(
           username: 'testFirstName',
           email: 'userDisabled@test.com',
-          photoUrl: 'none',
+          role: Role.normalUser,
           dateOfBirth: DateTime(2000),
         ),
         password: 'testPassword',
@@ -247,7 +248,7 @@ void main() {
         userData: UserData(
           username: 'testFirstName',
           email: 'tooManyRequests@test.com',
-          photoUrl: 'none',
+          role: Role.normalUser,
           dateOfBirth: DateTime(2000),
         ),
         password: 'testPassword',
@@ -256,7 +257,7 @@ void main() {
         userData: UserData(
           username: 'testFirstName',
           email: 'operationNotAllowed@test.com',
-          photoUrl: 'none',
+          role: Role.normalUser,
           dateOfBirth: DateTime(2000),
         ),
         password: 'testPassword',
@@ -265,7 +266,7 @@ void main() {
         userData: UserData(
           username: 'testFirstName',
           email: 'undefined@test.com',
-          photoUrl: 'none',
+          role: Role.normalUser,
           dateOfBirth: DateTime(2000),
         ),
         password: 'testPassword',
@@ -307,7 +308,7 @@ void main() {
           userData: UserData(
             username: 'testFirstName',
             email: 'testEmail',
-            photoUrl: 'none',
+            role: Role.normalUser,
             dateOfBirth: DateTime(2000),
           ),
           password: 'testPassword',
@@ -326,93 +327,93 @@ void main() {
           userData: UserData(
             username: 'testFirstName',
             email: 'testEmail@test.com',
-            photoUrl: 'none',
+            role: Role.normalUser,
             dateOfBirth: DateTime(2000),
           ),
           password: 'testPassword',
         )).called(1);
       });
-    });
 
-    testWidgets('check firebase auth exceptions', (tester) async {
-      final authScreen = Provider<AuthenticationProvider>(
-        create: (context) => mockAuthenticationProvider,
-        child: const MaterialApp(
-          home: Scaffold(
-            body: AuthScreen(),
+      testWidgets('check firebase auth exceptions', (tester) async {
+        final authScreen = Provider<AuthenticationProvider>(
+          create: (context) => mockAuthenticationProvider,
+          child: const MaterialApp(
+            home: Scaffold(
+              body: AuthScreen(),
+            ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpWidget(authScreen);
+        await tester.pumpWidget(authScreen);
 
-      await tester.tap(find.text('Sign up'));
-      await tester.pump();
+        await tester.tap(find.text('Sign up'));
+        await tester.pumpAndSettle();
 
-      // invalid email
-      tester
-          .state<AuthScreenState>(find.byType(AuthScreen))
-          .selectedDateOfBirth = DateTime(2000);
-      await tester.enterText(
-          find.byKey(const Key('firstNameField')), 'testFirstName');
-      await tester.enterText(
-          find.byKey(const Key('emailField')), 'invalidEmail@test.com');
-      await tester.enterText(
-          find.byKey(const Key('passwordField')), 'testPassword');
-      await tester.enterText(
-          find.byKey(const Key('confirmPasswordField')), 'testPassword');
-      await tester.tap(find.byKey(const Key('authorizeButton')));
-      expect(
-          tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-          'Your email address appears to be malformed.');
+        // invalid email
+        tester
+            .state<AuthScreenState>(find.byType(AuthScreen))
+            .selectedDateOfBirth = DateTime(2000);
+        await tester.enterText(
+            find.byKey(const Key('firstNameField')), 'testFirstName');
+        await tester.enterText(
+            find.byKey(const Key('emailField')), 'invalidEmail@test.com');
+        await tester.enterText(
+            find.byKey(const Key('passwordField')), 'testPassword');
+        await tester.enterText(
+            find.byKey(const Key('confirmPasswordField')), 'testPassword');
+        await tester.tap(find.byKey(const Key('authorizeButton')));
+        expect(
+            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
+            'Your email address appears to be malformed.');
 
-      // wrong password
-      await tester.enterText(
-          find.byKey(const Key('emailField')), 'wrongPassword@test.com');
-      await tester.tap(find.byKey(const Key('authorizeButton')));
-      expect(
-          tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-          'Your password is wrong.');
+        // wrong password
+        await tester.enterText(
+            find.byKey(const Key('emailField')), 'wrongPassword@test.com');
+        await tester.tap(find.byKey(const Key('authorizeButton')));
+        expect(
+            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
+            'Your password is wrong.');
 
-      // user not found
-      await tester.enterText(
-          find.byKey(const Key('emailField')), 'userNotFound@test.com');
-      await tester.tap(find.byKey(const Key('authorizeButton')));
-      expect(
-          tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-          'User with this email doesn\'t exist.');
+        // user not found
+        await tester.enterText(
+            find.byKey(const Key('emailField')), 'userNotFound@test.com');
+        await tester.tap(find.byKey(const Key('authorizeButton')));
+        expect(
+            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
+            'User with this email doesn\'t exist.');
 
-      // user disabled
-      await tester.enterText(
-          find.byKey(const Key('emailField')), 'userDisabled@test.com');
-      await tester.tap(find.byKey(const Key('authorizeButton')));
-      expect(
-          tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-          'User with this email has been disabled.');
+        // user disabled
+        await tester.enterText(
+            find.byKey(const Key('emailField')), 'userDisabled@test.com');
+        await tester.tap(find.byKey(const Key('authorizeButton')));
+        expect(
+            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
+            'User with this email has been disabled.');
 
-      // too many requests
-      await tester.enterText(
-          find.byKey(const Key('emailField')), 'tooManyRequests@test.com');
-      await tester.tap(find.byKey(const Key('authorizeButton')));
-      expect(
-          tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-          'Too many requests.');
+        // too many requests
+        await tester.enterText(
+            find.byKey(const Key('emailField')), 'tooManyRequests@test.com');
+        await tester.tap(find.byKey(const Key('authorizeButton')));
+        expect(
+            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
+            'Too many requests.');
 
-      // operation not allowed
-      await tester.enterText(
-          find.byKey(const Key('emailField')), 'operationNotAllowed@test.com');
-      await tester.tap(find.byKey(const Key('authorizeButton')));
-      expect(
-          tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-          'Signing in with email and password is not enabled.');
+        // operation not allowed
+        await tester.enterText(
+            find.byKey(const Key('emailField')), 'operationNotAllowed@test.com');
+        await tester.tap(find.byKey(const Key('authorizeButton')));
+        expect(
+            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
+            'Signing in with email and password is not enabled.');
 
-      // undefined code
-      await tester.enterText(
-          find.byKey(const Key('emailField')), 'undefined@test.com');
-      await tester.tap(find.byKey(const Key('authorizeButton')));
-      expect(
-          tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-          'An undefined error has occurred.');
+        // undefined code
+        await tester.enterText(
+            find.byKey(const Key('emailField')), 'undefined@test.com');
+        await tester.tap(find.byKey(const Key('authorizeButton')));
+        expect(
+            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
+            'An undefined error has occurred.');
+      });
     });
   });
 }

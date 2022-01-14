@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lichee/channels/domain/channel.dart';
 
@@ -71,6 +70,15 @@ class ChannelRepository {
   Future<List<Channel>> getPromoted() async {
     final channelReference =
         await _channels.where('isPromoted', isEqualTo: true).get();
+    return channelReference.docs
+        .map((channel) =>
+            _toChannel((channel.id), channel.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Channel>> getChannelsOfUserWithId(String userId) async {
+    final channelReference =
+        await _channels.where('userIds', arrayContains: userId).get();
     return channelReference.docs
         .map((channel) =>
             _toChannel((channel.id), channel.data() as Map<String, dynamic>))

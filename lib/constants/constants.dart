@@ -173,6 +173,12 @@ const kChatListUnavailable = Text(
   style: kLicheeTextStyle,
 );
 
+const kChannelListUnavailable = Text(
+  'Chat list unavailable',
+  textAlign: TextAlign.center,
+  style: kLicheeTextStyle,
+);
+
 const kChannelChatUnavailable = Text(
   'Chat is currently unavailable',
   textAlign: TextAlign.center,
@@ -181,6 +187,16 @@ const kChannelChatUnavailable = Text(
 
 const kLogInToSeeChatList = Text(
   'Log in to see your chat list!',
+  textAlign: TextAlign.center,
+  style: TextStyle(
+    fontSize: 20,
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+  ),
+);
+
+const kLogInToSeeChannelList = Text(
+  'Log in to see your channel list!',
   textAlign: TextAlign.center,
   style: TextStyle(
     fontSize: 20,
