@@ -24,24 +24,17 @@ class AddEventScreen extends StatefulWidget {
 class _AddEventScreenState extends State<AddEventScreen> {
   final _formKey = GlobalKey<FormState>();
   late FocusNode _focusNode;
-  final eventTitleEditingController = TextEditingController();
-  final eventLocalizationEditingController = TextEditingController();
+
+  final _eventTitleEditingController = TextEditingController();
+  final _eventLocalizationEditingController = TextEditingController();
 
   late final AddEventController _addEventController;
 
-  late EventDate eventDate = EventDate();
+  final EventDate _eventDate = EventDate();
+  bool _isDatePicked = true;
 
-  bool isDatePicked = false;
-
-  //File? get file => _file;
-
-  //ImagePicker get imagePicker => _imagePicker;
-
-  // set file(File? value) {
-  //   setState(() {
-  //     _file = value;
-  //   });
-  // }
+  late final TextFormField _eventTitleField;
+  late final TextFormField _eventLocalizationField;
 
   @override
   void initState() {
@@ -49,6 +42,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
     _addEventController = AddEventController(
         Provider.of<FirebaseProvider>(context, listen: false).firestore);
     _focusNode = FocusNode();
+
+    _eventTitleField = _eventTitleFieldF();
+    _eventLocalizationField = _eventLocalizationFieldF();
   }
 
   @override
@@ -73,14 +69,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 20.0),
-                  Text('Add event',
-                      style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+                  kAddEventTitleText,
                   const SizedBox(height: 30.0),
-                  getEventData(),
+                  _getEventData(),
                   const SizedBox(height: 5.0),
-                  isDatePicked
-                      ? Text('You have to choose date and time of the event')
-                      : Container(),
+                  _isDatePicked ? Container() : kNoDateForEventPickedText,
                   const SizedBox(height: 30.0),
                   ElevatedButton(
                     onPressed: _createEvent,
@@ -97,31 +90,28 @@ class _AddEventScreenState extends State<AddEventScreen> {
     );
   }
 
-  Form getEventData() {
-    final eventTitleField = TextFormField(
-      autofocus: false,
-      controller: eventTitleEditingController,
-      keyboardType: TextInputType.name,
-      validator: (value) {
-        RegExp regex = RegExp(r'^.{3,}$');
-        if (value!.isEmpty) {
-          return ('Event title cannot be empty');
-        }
-        if (!regex.hasMatch(value)) {
-          return ('Enter valid event title (min. 3 characters)');
-        }
-        return null;
-      },
-      onSaved: (value) {
-        eventTitleEditingController.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: kAddEventTitleBarInputDecoration,
+  Form _getEventData() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _eventTitleField,
+          const SizedBox(height: 20.0),
+          _eventLocalizationField,
+          const SizedBox(height: 20.0),
+          DatePickerButton(eventDate: _eventDate),
+          const SizedBox(height: 20.0),
+          TimePickerButton(eventDate: _eventDate),
+        ],
+      ),
     );
+  }
 
-    final eventLocalizationField = TextFormField(
+  TextFormField _eventLocalizationFieldF() {
+    return TextFormField(
       autofocus: false,
-      controller: eventLocalizationEditingController,
+      controller: _eventLocalizationEditingController,
       keyboardType: TextInputType.name,
       validator: (value) {
         RegExp regex = RegExp(r'^.{3,}$');
@@ -134,55 +124,62 @@ class _AddEventScreenState extends State<AddEventScreen> {
         return null;
       },
       onSaved: (value) {
-        eventLocalizationEditingController.text = value!;
+        _eventLocalizationEditingController.text = value!;
       },
       textInputAction: TextInputAction.next,
       decoration: kAddEventLocalizationBarInputDecoration,
     );
+  }
 
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          eventTitleField,
-          const SizedBox(height: 20.0),
-          eventLocalizationField,
-          const SizedBox(height: 20.0),
-          DatePickerButton(eventDate: eventDate),
-          const SizedBox(height: 20.0),
-          TimePickerButton(eventDate: eventDate),
-        ],
-      ),
+  TextFormField _eventTitleFieldF() {
+    return TextFormField(
+      autofocus: false,
+      controller: _eventTitleEditingController,
+      keyboardType: TextInputType.name,
+      validator: (value) {
+        RegExp regex = RegExp(r'^.{3,}$');
+        if (value!.isEmpty) {
+          return ('Event title cannot be empty');
+        }
+        if (!regex.hasMatch(value)) {
+          return ('Enter valid event title (min. 3 characters)');
+        }
+        return null;
+      },
+      onSaved: (value) {
+        _eventTitleEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: kAddEventTitleBarInputDecoration,
     );
   }
 
   void _createEvent() {
     if (_formKey.currentState!.validate()) {
-      if (!eventDate.validate()) {
-        setState(() => isDatePicked = true);
+      if (!_eventDate.validate()) {
+        setState(() => _isDatePicked = false);
         return;
       } else {
-        setState(() => isDatePicked = false);
+        setState(() => _isDatePicked = true);
       }
 
       _addEventController.addEvent(
-          title: eventTitleEditingController.text,
-          localization: eventLocalizationEditingController.text,
-          date: eventDate.getCombinedDate(),
+          title: _eventTitleEditingController.text,
+          localization: _eventLocalizationEditingController.text,
+          date: _eventDate.getCombinedDate(),
           interestedUsers: List.empty(),
           goingUsers: List.empty(),
           channelId: widget.data.channelId);
 
       ScaffoldMessenger.of(context).showSnackBar(kEventAddedSnackBar);
-      eventTitleEditingController.clear();
-      eventLocalizationEditingController.clear();
-      setState(() => eventDate.clear());
+      _eventTitleEditingController.clear();
+      _eventLocalizationEditingController.clear();
+      setState(() => _eventDate.clear());
     } else {
-      if (!eventDate.validate()) {
-        setState(() => isDatePicked = true);
+      if (!_eventDate.validate()) {
+        setState(() => _isDatePicked = false);
       } else {
-        setState(() => isDatePicked = false);
+        setState(() => _isDatePicked = true);
       }
     }
   }

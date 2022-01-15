@@ -191,8 +191,7 @@ final kChooseCategoryButtonContent = Row(
 final kSelectDateButtonContent = Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: const [
-    Text('Select date',
-        style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    Text('Select date', style: TextStyle(color: Colors.white, fontSize: 20.0)),
     SizedBox(width: 10.0),
     kDateIcon
   ],
@@ -201,8 +200,7 @@ final kSelectDateButtonContent = Row(
 final kSelectTimeButtonContent = Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: const [
-    Text('Select time',
-        style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    Text('Select time', style: TextStyle(color: Colors.white, fontSize: 20.0)),
     SizedBox(width: 10.0),
     kTimeIcon
   ],
@@ -229,18 +227,12 @@ const kCategoryNodeTestStyle = TextStyle(color: Colors.white, fontSize: 20.0);
 
 const kCategoryChoosingCategoryText = Text(
   'Category:',
-  style: TextStyle(color: Colors.white, fontSize: 16.0),
+  style: TextStyle(color: Colors.white, fontSize: 20.0),
 );
 
 const kChosenCategoryValidTextStyle = TextStyle(
   color: Colors.white,
-  fontSize: 16.0,
-  fontWeight: FontWeight.bold,
-);
-
-const kChosenCategoryInvalidTextStyle = TextStyle(
-  color: Colors.red,
-  fontSize: 16.0,
+  fontSize: 20.0,
   fontWeight: FontWeight.bold,
 );
 
@@ -294,4 +286,28 @@ const kLogInToAddChannelOrList = Text(
     color: Colors.white,
     fontWeight: FontWeight.bold,
   ),
+);
+
+final kAddEventTitleText =
+    Text('Add event', style: kBannerTextStyle.copyWith(letterSpacing: 2.0));
+
+final kAddChannelTitleText =
+    Text('Add channel', style: kBannerTextStyle.copyWith(letterSpacing: 2.0));
+
+const kNoDateForEventPickedText = Text(
+  'You have to choose date and time of the event',
+  style:
+      TextStyle(fontSize: 13.0, color: Colors.red, fontWeight: FontWeight.w300),
+);
+
+const kNoImageForChannelChosenText = Text(
+  'You have to choose channel image',
+  style:
+      TextStyle(fontSize: 13.0, color: Colors.red, fontWeight: FontWeight.w300),
+);
+
+const kNoCategoryForChannelChosenText = Text(
+  'You have to choose channel category',
+  style:
+      TextStyle(fontSize: 13.0, color: Colors.red, fontWeight: FontWeight.w300),
 );

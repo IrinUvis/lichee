@@ -42,3 +42,8 @@ const kTimeIcon = Icon(
   Icons.access_time_filled,
   color: Colors.white,
 );
+
+const kCloseIcon = Icon(
+  Icons.close_outlined,
+  color: Colors.pinkAccent,
+);
