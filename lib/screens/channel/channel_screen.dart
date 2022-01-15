@@ -7,7 +7,7 @@ import 'package:lichee/components/channel_backgroud_photo.dart';
 import 'package:lichee/components/details_list_view.dart';
 import 'package:lichee/components/details_rows.dart';
 import 'package:lichee/components/details_table.dart';
-import 'package:lichee/components/event_tile.dart';
+import 'package:lichee/components/events_view.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/providers/firebase_provider.dart';
@@ -123,7 +123,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
 
   Widget channelForMember(User? user) {
     List members = channel.userIds.toList();
-    //zmienic id na names i dodac foteczki pozniej
+    List membersNames;
+    members.forEach((member) {});
+
     return StreamBuilder<QuerySnapshot>(
       stream: Provider.of<FirebaseProvider>(context, listen: false)
           .firestore
@@ -177,6 +179,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                               ),
                               IconButton(
                                 color: LicheeColors.primary,
+                                tooltip: "Go to chat",
                                 onPressed: () {
                                   Navigator.pushNamed(
                                     context,
@@ -192,34 +195,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             ],
                           ),
                           const SizedBox(height: 10.0),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Events', style: kBannerTextStyle),
-                                events.isEmpty
-                                    ? const Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 16.0),
-                                          child: Text(
-                                            'It seems that no events has been planned yet!',
-                                            style: kDescriptiveText,
-                                          ),
-                                        ),
-                                      )
-                                    : Container(),
-                                for (var e in events)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16.0, horizontal: 10.0),
-                                    child: EventTile(
-                                        event: e, channelId: channel.channelId),
-                                  ),
-                              ],
-                            ),
-                          ),
+                          EventsView(events: events, channel: channel),
                         ],
                       ),
                     ),
@@ -314,7 +290,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
             },
           ),
         ],
-        title: Text(channel.channelName, style: kAppBarTitleTextStyle),
+        title: Text(
+          channel.channelName,
+          style: kAppBarTitleTextStyle,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
       body: channel.userIds.contains(user?.uid)
           ? channelForMember(user)

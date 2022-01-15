@@ -253,19 +253,19 @@ const kEventAddedSnackBar = SnackBar(
 const kChatListUnavailable = Text(
   'Chat list unavailable',
   textAlign: TextAlign.center,
-  style: kLicheeTextStyle,
+  style: kTabTitleTextStyle,
 );
 
 const kChannelListUnavailable = Text(
   'Chat list unavailable',
   textAlign: TextAlign.center,
-  style: kLicheeTextStyle,
+  style: kTabTitleTextStyle,
 );
 
 const kChannelChatUnavailable = Text(
   'Chat is currently unavailable',
   textAlign: TextAlign.center,
-  style: kLicheeTextStyle,
+  style: kTabTitleTextStyle,
 );
 
 const kLogInToSeeChatList = Text(
@@ -289,13 +289,13 @@ const kLogInToSeeChannelList = Text(
 );
 
 const kAddingChannelsOrEventsUnavailable = Text(
-  'Adding channels or events unavailable',
+  'Adding channels unavailable',
   textAlign: TextAlign.center,
-  style: kLicheeTextStyle,
+  style: kTabTitleTextStyle,
 );
 
 const kLogInToAddChannelOrList = Text(
-  'Log in to add channel or event',
+  'Log in to add channel',
   textAlign: TextAlign.center,
   style: TextStyle(
     fontSize: 20,
@@ -331,4 +331,12 @@ const kNoCategoryForChannelChosenText = Text(
 const kChooseCategoryScreenAppBarText = Text(
   'Choose category',
   style: TextStyle(fontSize: 20.0, color: Colors.white),
+);
+
+const kTabTitleTextStyle = TextStyle(
+  color: Colors.white,
+  letterSpacing: 1.0,
+  wordSpacing: 2.0,
+  fontWeight: FontWeight.bold,
+  fontSize: 30.0,
 );

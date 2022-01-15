@@ -16,7 +16,6 @@ class ChannelBackgroundPhoto extends StatelessWidget {
       alignment: Alignment.center,
       children: [
         Container(
-          //hard coded for now
           height: 200.0,
           width: double.infinity,
           decoration: BoxDecoration(

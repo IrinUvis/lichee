@@ -38,7 +38,10 @@ class ChannelListView extends StatelessWidget {
             final channels = snapshot.data! as List<ReadChannelDto>;
             return ListView(
               children: channels
-                  .map((channel) => ChannelListCard(channelDto: channel))
+                  .map((channel) => Padding(
+                    padding: const EdgeInsets.only(bottom: 5.0),
+                    child: ChannelListCard(channelDto: channel),
+                  ))
                   .toList(),
             );
           } else {

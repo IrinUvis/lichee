@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
+import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/screens/channel/channel_screen.dart';
 
@@ -22,14 +23,12 @@ class ChannelListCard extends StatelessWidget {
         );
       },
       child: Card(
+        color: LicheeColors.greyColor,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadiusDirectional.horizontal(
-            start: Radius.circular(30),
-            end: Radius.circular(10),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(8.0)),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
           child: Row(
             children: <Widget>[
               CircleAvatar(
@@ -37,7 +36,7 @@ class ChannelListCard extends StatelessWidget {
                 backgroundImage: NetworkImage(channelDto.channelImageUrl),
               ),
               const SizedBox(
-                width: 10,
+                width: 15,
               ),
               Expanded(
                 child: Padding(
