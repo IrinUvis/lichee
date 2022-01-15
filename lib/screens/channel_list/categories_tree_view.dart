@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
+import 'package:lichee/channels/services/read/read_channel_service.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/constants/icons.dart';
 import 'package:lichee/providers/firebase_provider.dart';
+import 'package:lichee/screens/channel/channel_screen.dart';
 import 'package:lichee/screens/channel_list/tree_node_card.dart';
 import 'package:provider/provider.dart';
 
@@ -27,10 +29,16 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
   bool isLastCategory = false;
   List<String> citiesList = [];
   List<String> idsOfChannelsFromCity = [];
+  late final ReadChannelService _readChannelService;
 
   @override
   void initState() {
     super.initState();
+    _readChannelService = ReadChannelService(
+        firestore: Provider.of<FirebaseProvider>(
+      context,
+      listen: false,
+    ).firestore);
     getCitiesFromChannels();
   }
 
@@ -119,7 +127,9 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                                 .contains(nodesArray[index].id))) {
                       return TextButton(
                         onPressed: nodesList[index]['type'] == 'channel'
-                            ? null
+                            ? () async {
+                                await _openChannel(nodesArray, index, context);
+                              }
                             : () {
                                 _openCategory(nodesList, nodesArray, index);
                               },
@@ -147,6 +157,16 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                 );
         }
       },
+    );
+  }
+
+  Future<void> _openChannel(List<QueryDocumentSnapshot<Object?>> nodesArray,
+      int index, BuildContext context) async {
+    final channel = await _readChannelService.getById(id: nodesArray[index].id);
+    Navigator.pushNamed(
+      context,
+      ChannelScreen.id,
+      arguments: channel,
     );
   }
 
