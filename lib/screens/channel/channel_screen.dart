@@ -189,17 +189,6 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                 },
                                 icon: const Icon(Icons.chat_bubble_outline),
                               ),
-                              IconButton(
-                                color: LicheeColors.primary,
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                      context, AddEventScreen.id,
-                                      arguments: AddEventNavigationParams(
-                                          channelId: channel.channelId,
-                                          channelName: channel.channelName));
-                                },
-                                icon: const Icon(Icons.add),
-                              ),
                             ],
                           ),
                           const SizedBox(height: 10.0),
@@ -274,6 +263,22 @@ class _ChannelScreenState extends State<ChannelScreen> {
       isLogged = false;
     }
     return Scaffold(
+      floatingActionButton: channel.userIds.contains(user?.uid)
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 15.0),
+              child: FloatingActionButton(
+                child: const Icon(Icons.add),
+                mini: true,
+                backgroundColor: LicheeColors.primary,
+                onPressed: () {
+                  Navigator.pushNamed(context, AddEventScreen.id,
+                      arguments: AddEventNavigationParams(
+                          channelId: channel.channelId,
+                          channelName: channel.channelName));
+                },
+              ),
+            )
+          : null,
       bottomSheet: Container(
         height: 30.0,
         child: Center(
