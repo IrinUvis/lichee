@@ -22,7 +22,8 @@ class _ChatListViewState extends State<ChatListView> {
   @override
   void initState() {
     super.initState();
-    chatListController = ChatListController(Provider.of<FirebaseProvider>(context, listen: false).firestore);
+    chatListController = ChatListController(
+        Provider.of<FirebaseProvider>(context, listen: false).firestore);
   }
 
   String textFieldQuery = '';

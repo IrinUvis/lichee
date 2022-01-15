@@ -24,7 +24,7 @@ class AuthenticationProvider {
         email: userData.email!, password: password);
     await userCredential.user!.updateDisplayName(userData.username);
     await signIn(email: userData.email!, password: password);
-    _firestore.collection('users').add(
+    _firestore.collection('users').doc(userData.id).set(
           userData
               .copyWith(
                 id: userCredential.user!.uid,
@@ -38,8 +38,7 @@ class AuthenticationProvider {
     required String email,
     required String password,
   }) {
-    return _auth.signInWithEmailAndPassword(
-        email: email, password: password);
+    return _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> signOut() async {
