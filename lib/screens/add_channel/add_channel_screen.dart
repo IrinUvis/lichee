@@ -6,6 +6,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lichee/constants/channel_constants.dart';
+import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/constants/icons.dart';
 import 'package:lichee/providers/firebase_provider.dart';
@@ -306,33 +308,35 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   void _chooseCategoryView() {
     FocusScope.of(context).unfocus();
     setState(() {
-      _getCategoryForNewChannelDialog();
+      _getCategoryForNewChannelScreen();
     });
   }
 
-  void _getCategoryForNewChannelDialog() async {
-    var channelParentId = await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: 600,
-              child: const CategoriesTreeView(
-                isChoosingCategoryForChannelAddingAvailable: true,
-              ),
+  void _getCategoryForNewChannelScreen() async {
+    String? channelParentId = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+                foregroundColor: LicheeColors.primary,
+                backgroundColor: LicheeColors.appBarColor,
+                title: kChooseCategoryScreenAppBarText),
+            body: const Padding(
+              padding: EdgeInsets.all(10.0),
+              child: CategoriesTreeView(
+                  isChoosingCategoryForChannelAddingAvailable: true),
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ),
     );
     channelParentId ??= '';
     if (channelParentId != '') {
       _chosenCategoryName = await _addChannelController.getCategoryNameById(
           channelParentId: channelParentId);
     }
-    setState(() => _chosenCategoryId = channelParentId);
+    setState(() => _chosenCategoryId = channelParentId!);
   }
 
   Future<void> _createChannel() async {
@@ -343,6 +347,9 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       } else {
         _checkIsImageAndCategoryChosen();
       }
+      print(_chosenCategoryId);
+      print(_chosenCategoryName);
+
       String? imageUrl;
       var uuid = const Uuid();
       DateTime now = DateTime.now();
@@ -351,23 +358,23 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       final myId = Provider.of<User?>(context, listen: false)!.uid;
       List<String> usersIds = [myId];
 
-      try {
-        imageUrl = await _addChannelController.uploadPhoto(
-            uuid: uuid.v1(), currentTime: now, file: _file!);
-      } on FirebaseException catch (_) {
-        Fluttertoast.showToast(
-            msg: 'An unexpected error has occurred! Message wasn\'t sent');
-      }
-
-      _addChannelController.addChannel(
-          channelName: _channelNameEditingController.text,
-          imageUrl: imageUrl!,
-          city: city,
-          now: now,
-          description: _channelDescriptionEditingController.text,
-          usersIds: usersIds,
-          userId: myId,
-          parentCategoryId: _chosenCategoryId);
+      // try {
+      //   imageUrl = await _addChannelController.uploadPhoto(
+      //       uuid: uuid.v1(), currentTime: now, file: _file!);
+      // } on FirebaseException catch (_) {
+      //   Fluttertoast.showToast(
+      //       msg: 'An unexpected error has occurred! Message wasn\'t sent');
+      // }
+      //
+      // _addChannelController.addChannel(
+      //     channelName: _channelNameEditingController.text,
+      //     imageUrl: imageUrl!,
+      //     city: city,
+      //     now: now,
+      //     description: _channelDescriptionEditingController.text,
+      //     usersIds: usersIds,
+      //     userId: myId,
+      //     parentCategoryId: _chosenCategoryId);
 
       ScaffoldMessenger.of(context).showSnackBar(kChannelAddedSnackBar);
 

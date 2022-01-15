@@ -311,3 +311,8 @@ const kNoCategoryForChannelChosenText = Text(
   style:
       TextStyle(fontSize: 13.0, color: Colors.red, fontWeight: FontWeight.w300),
 );
+
+const kChooseCategoryScreenAppBarText = Text(
+  'Choose category',
+  style: TextStyle(fontSize: 20.0, color: Colors.white),
+);
