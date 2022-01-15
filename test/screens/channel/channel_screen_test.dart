@@ -1,4 +1,5 @@
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
@@ -10,6 +11,7 @@ import 'package:network_image_mock/network_image_mock.dart';
 import 'package:provider/provider.dart';
 
 import '../../setup/auth_mock_setup/firebase_auth_mocks_base.dart';
+import '../../setup/auth_mock_setup/mock_user.dart';
 import '../../setup/storage_mock_setup/firebase_storage_mocks_base.dart';
 
 void main() {
@@ -25,6 +27,9 @@ void main() {
       userIds: [' '],
       description: '',
     );
+
+    final mockUser = MockUser(
+        email: 'xyz@xyz.com', displayName: 'userName', isAnonymous: true);
 
     testWidgets('Test if the screen is created properly', (tester) async {
       final _firestore = FakeFirebaseFirestore();
@@ -80,7 +85,6 @@ void main() {
       final _firestore = FakeFirebaseFirestore();
       final _auth = MockFirebaseAuth();
       final _storage = StorageService(MockFirebaseStorage());
-
       final widget = ChannelScreen(channel: channelDTO);
       final screen = Provider<FirebaseProvider>(
         create: (_) => FirebaseProvider(
@@ -176,5 +180,46 @@ void main() {
       expect(find.text('hello from Test'), findsNothing);
     });
 
+    testWidgets(
+        'Logged in user tries to read description of the channel that they recently joined to',
+        (tester) async {
+      final _firestore = FakeFirebaseFirestore();
+      final _auth = MockFirebaseAuth();
+      final _storage = StorageService(MockFirebaseStorage());
+      final widget = ChannelScreen(channel: channelDTO);
+
+      final screen = MultiProvider(
+        providers: [
+          Provider<User?>(
+            create: (_) => MockUser(uid: 'helloFromTest'),
+          ),
+          Provider<FirebaseProvider>(
+            create: (_) => FirebaseProvider(
+              auth: _auth,
+              firestore: _firestore,
+              storage: _storage,
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: widget,
+          ),
+        ),
+      );
+
+      await mockNetworkImagesFor(() => tester.pumpWidget(screen));
+      await tester.pumpWidget(screen);
+
+      final button = find.ancestor(
+          of: find.byIcon(Icons.group_add),
+          matching:
+              find.byWidgetPredicate((widget) => widget is ElevatedButton));
+      expect(button.runtimeType, isNotNull);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(find.text("Joined"), findsOneWidget);
+
+    });
   });
 }
