@@ -305,7 +305,9 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
 
   void _chooseCategoryView() {
     FocusScope.of(context).unfocus();
-    setState(() => _getCategoryForNewChannelDialog());
+    setState(() {
+      _getCategoryForNewChannelDialog();
+    });
   }
 
   void _getCategoryForNewChannelDialog() async {
