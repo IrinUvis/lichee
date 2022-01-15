@@ -15,6 +15,7 @@ class ChannelRepository {
       'channelImageURL': channel.channelImageURL,
       'city': channel.city,
       'createdOn': channel.createdOn,
+      'isPromoted': channel.isPromoted,
       'description': channel.description,
       'userIds': channel.userIds,
       'ownerId': channel.ownerId,

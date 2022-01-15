@@ -2,6 +2,7 @@ import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/models/user_data.dart';
 import 'package:lichee/providers/authentication_provider.dart';
+import 'package:lichee/screens/auth/role.dart';
 
 import '../setup/auth_mock_setup/firebase_auth_mocks_base.dart';
 import '../setup/auth_mock_setup/mock_user.dart';
@@ -56,6 +57,7 @@ void main() {
           username: displayName,
           email: email,
           photoUrl: photoUrl,
+          role: Role.normalUser,
           dateOfBirth: dateOfBirth,
         ),
         password: password,
