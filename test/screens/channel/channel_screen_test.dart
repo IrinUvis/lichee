@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
+import 'package:lichee/channels/services/update/update_channel.dart';
 import 'package:lichee/components/channel_backgroud_photo.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/screens/channel/channel_screen.dart';
@@ -24,12 +25,9 @@ void main() {
       createdOn: DateTime.now(),
       city: 'testCity',
       isPromoted: false,
-      userIds: [' '],
-      description: '',
+      userIds: ['testUser'],
+      description: 'noDescription',
     );
-
-    final mockUser = MockUser(
-        email: 'xyz@xyz.com', displayName: 'userName', isAnonymous: true);
 
     testWidgets('Test if the screen is created properly', (tester) async {
       final _firestore = FakeFirebaseFirestore();
@@ -128,19 +126,16 @@ void main() {
       );
       await mockNetworkImagesFor(() => tester.pumpWidget(screen));
       await tester.pumpWidget(screen);
-      final popupMenu = find.byIcon(Icons.more_horiz);
-      expect(popupMenu, findsOneWidget);
-      await tester.tap(popupMenu);
+
+      await tester.tap(find.byIcon(Icons.more_horiz));
       await tester.pumpAndSettle();
-      var childButton = find.text('Report');
-      expect(childButton, findsOneWidget);
-      await tester.tap(childButton);
+      expect(find.text('Report'), findsOneWidget);
+      await tester.tap(find.text('Report'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'hello from Test');
       await tester.pump();
       expect(find.text('hello from Test'), findsOneWidget);
-      var cancelButton = find.text('Cancel');
-      await tester.tap(cancelButton);
+      await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
       expect(find.text('hello from Test'), findsNothing);
     });
@@ -164,9 +159,7 @@ void main() {
       );
       await mockNetworkImagesFor(() => tester.pumpWidget(screen));
       await tester.pumpWidget(screen);
-      final popupMenu = find.byIcon(Icons.more_horiz);
-      expect(popupMenu, findsOneWidget);
-      await tester.tap(popupMenu);
+      await tester.tap(find.byIcon(Icons.more_horiz));
       await tester.pumpAndSettle();
       var childButton = find.text('Report');
       expect(childButton, findsOneWidget);
@@ -186,6 +179,7 @@ void main() {
       final _firestore = FakeFirebaseFirestore();
       final _auth = MockFirebaseAuth();
       final _storage = StorageService(MockFirebaseStorage());
+      final _updateService = UpdateChannelService(firestore: _firestore);
       final widget = ChannelScreen(channel: channelDTO);
 
       final screen = MultiProvider(
@@ -219,7 +213,6 @@ void main() {
       await tester.tap(button);
       await tester.pumpAndSettle();
       expect(find.text("Joined"), findsOneWidget);
-
     });
   });
 }

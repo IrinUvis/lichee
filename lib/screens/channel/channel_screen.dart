@@ -122,6 +122,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
 
   Widget channelForMember(User? user) {
     List members = channel.userIds.toList();
+    //zmienic id na names i dodac foteczki pozniej
     return StreamBuilder<QuerySnapshot>(
       stream: Provider.of<FirebaseProvider>(context, listen: false)
           .firestore
