@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:filter_list/filter_list.dart';
 import 'package:flutter/material.dart';
-import 'package:lichee/channels/services/read/read_channel_service.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/constants/icons.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/screens/channel/channel_screen.dart';
+import 'package:lichee/screens/channel_list/channel_list_controller.dart';
 import 'package:lichee/screens/channel_list/tree_node_card.dart';
 import 'package:provider/provider.dart';
 
-// TODO AM - bug: Overflowów tu jest cała masa z tymi kategoriami
 class CategoriesTreeView extends StatefulWidget {
   const CategoriesTreeView(
       {Key? key, required this.isChoosingCategoryForChannelAddingAvailable})
@@ -25,35 +24,21 @@ class CategoriesTreeView extends StatefulWidget {
 class _CategoriesTreeViewState extends State<CategoriesTreeView> {
   List<String>? selectedFiltersList = [];
   List<String> parentIdStack = [];
-  String parentId = '';
-  bool isLastCategory = false;
   List<String> citiesList = [];
   List<String> idsOfChannelsFromCity = [];
-  late final ReadChannelService _readChannelService;
+
+  String parentId = '';
+  bool isLastCategory = false;
+
+  late final ChannelListController _channelListController;
 
   @override
   void initState() {
     super.initState();
-    _readChannelService = ReadChannelService(
-        firestore: Provider.of<FirebaseProvider>(
-      context,
-      listen: false,
-    ).firestore);
-    getCitiesFromChannels();
-  }
-
-  void getCitiesFromChannels() async {
-    await Provider.of<FirebaseProvider>(context, listen: false)
-        .firestore
-        .collection('channels')
-        .get()
-        .then((querySnapshot) => {
-              for (var element in querySnapshot.docs)
-                {
-                  if (!citiesList.contains(element.get('city')))
-                    {citiesList.add(element.get('city'))}
-                }
-            });
+    _channelListController = ChannelListController(
+        firestore:
+            Provider.of<FirebaseProvider>(context, listen: false).firestore);
+    _channelListController.getCitiesFromChannels(citiesList: citiesList);
   }
 
   @override
@@ -101,11 +86,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
 
   StreamBuilder<QuerySnapshot> _getNodesTree() {
     return StreamBuilder(
-      stream: Provider.of<FirebaseProvider>(context, listen: false)
-          .firestore
-          .collection('categories')
-          .where('parentId', isEqualTo: parentId)
-          .snapshots(),
+      stream: _channelListController.getCategoriesStream(parentId: parentId),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -136,8 +117,9 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
                         child: TreeNodeCard(
                           name: nodesList[index]['name'],
                           type: nodesList[index]['type'],
-                          childrenIds:
-                              List.from(nodesList[index]['childrenIds']),
+                          childrenIds: List.from(
+                            nodesList[index]['childrenIds'],
+                          ),
                         ),
                       );
                     } else {
@@ -162,12 +144,9 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
 
   Future<void> _openChannel(List<QueryDocumentSnapshot<Object?>> nodesArray,
       int index, BuildContext context) async {
-    final channel = await _readChannelService.getById(id: nodesArray[index].id);
-    Navigator.pushNamed(
-      context,
-      ChannelScreen.id,
-      arguments: channel,
-    );
+    final channel = await _channelListController.getChannelById(
+        channelId: nodesArray[index].id);
+    Navigator.pushNamed(context, ChannelScreen.id, arguments: channel);
   }
 
   void _resetCategoriesTreeView() {
@@ -230,21 +209,9 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
       },
       onApplyButtonClick: (list) async {
         selectedFiltersList = List.from(list!);
-
         idsOfChannelsFromCity.clear();
-        await Provider.of<FirebaseProvider>(context, listen: false)
-            .firestore
-            .collection('channels')
-            .get()
-            .then((querySnapshot) => {
-                  for (var element in querySnapshot.docs)
-                    {
-                      if (selectedFiltersList!.isNotEmpty &&
-                          element.get('city') == selectedFiltersList!.first)
-                        {idsOfChannelsFromCity.add(element.id)}
-                    }
-                });
-
+        _channelListController.getChannelsFromCity(
+            selectedFiltersList, idsOfChannelsFromCity);
         setState(() {});
         Navigator.pop(context);
       },
