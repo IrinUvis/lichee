@@ -21,4 +21,9 @@ class EventDate {
       return true;
     }
   }
+
+  void clear() {
+    date = null;
+    time = null;
+  }
 }

@@ -28,8 +28,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final eventLocalizationEditingController = TextEditingController();
 
   late final AddEventController _addEventController;
-  //DateTime? eventDate;
-  TimeOfDay? eventTime;
 
   late EventDate eventDate = EventDate();
 
@@ -49,9 +47,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   void initState() {
     super.initState();
     _addEventController = AddEventController(
-      Provider.of<FirebaseProvider>(context, listen: false).firestore,
-      Provider.of<FirebaseProvider>(context, listen: false).storage,
-    );
+        Provider.of<FirebaseProvider>(context, listen: false).firestore);
     _focusNode = FocusNode();
   }
 
@@ -69,23 +65,32 @@ class _AddEventScreenState extends State<AddEventScreen> {
             foregroundColor: LicheeColors.primary,
             backgroundColor: LicheeColors.appBarColor,
             title: Text(widget.data.channelName, style: kAppBarTitleTextStyle)),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const SizedBox(height: 50.0),
-              Text('Add event',
-                  style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
-              Expanded(child: getEventData()),
-              isDatePicked ? Text('You have to choose date and time of the event') : Container(),
-              ElevatedButton(
-                onPressed: _createEvent,
-                child: kCreateEventButtonText,
-                style: kPinkRoundedButtonStyle,
+        body: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 20.0),
+                  Text('Add event',
+                      style: kBannerTextStyle.copyWith(letterSpacing: 2.0)),
+                  const SizedBox(height: 30.0),
+                  getEventData(),
+                  const SizedBox(height: 5.0),
+                  isDatePicked
+                      ? Text('You have to choose date and time of the event')
+                      : Container(),
+                  const SizedBox(height: 30.0),
+                  ElevatedButton(
+                    onPressed: _createEvent,
+                    child: kCreateEventButtonText,
+                    style: kPinkRoundedButtonStyle,
+                  ),
+                  const SizedBox(height: 20.0),
+                ],
               ),
-              const SizedBox(height: 50.0),
-            ],
+            ),
           ),
         ),
       ),
@@ -138,81 +143,47 @@ class _AddEventScreenState extends State<AddEventScreen> {
     return Form(
       key: _formKey,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           eventTitleField,
+          const SizedBox(height: 20.0),
           eventLocalizationField,
+          const SizedBox(height: 20.0),
           DatePickerButton(eventDate: eventDate),
+          const SizedBox(height: 20.0),
           TimePickerButton(eventDate: eventDate),
         ],
       ),
     );
   }
 
-  // Future<void> _createChannel() async {
-  //   if (_formKey.currentState!.validate()) {
-  //     if (chosenCategoryId == '') {
-  //       setState(() {
-  //         isCategoryEmpty = true;
-  //         chosenCategoryName = 'Category cannot be empty';
-  //       });
-  //       return;
-  //     }
-  //     String? imageUrl;
-  //     var uuid = const Uuid();
-  //     DateTime now = DateTime.now();
-  //     String city = channelCityEditingController.text.capitalize();
-  //     city = removeDiacritics(city);
-  //     final myId = Provider.of<User?>(context, listen: false)!.uid;
-  //     List<String> usersIds = [myId];
-  //
-  //     if (_file == null) {
-  //       imageUrl =
-  //           'https://www.fivb.org/Vis2009/Images/GetImage.asmx?No=202004911&width=920&height=588&stretch=uniformtofill';
-  //     }
-  //     if (_file != null) {
-  //       try {
-  //         imageUrl = await _addChannelController.uploadPhoto(
-  //             uuid: uuid.v1(), currentTime: now, file: _file!);
-  //         setState(() {
-  //           _file = null;
-  //         });
-  //       } on FirebaseException catch (_) {
-  //         Fluttertoast.showToast(
-  //             msg: 'An unexpected error has occurred! Message wasn\'t sent');
-  //       }
-  //     }
-  //
-  //     _addChannelController.addChannel(
-  //         channelName: channelNameEditingController.text,
-  //         imageUrl: imageUrl!,
-  //         city: city,
-  //         now: now,
-  //         description: channelDescriptionEditingController.text,
-  //         usersIds: usersIds,
-  //         userId: myId,
-  //         parentCategoryId: chosenCategoryId);
-  //
-  //     ScaffoldMessenger.of(context).showSnackBar(kChannelAddedSnackBar);
-  //
-  //     channelNameEditingController.clear();
-  //     channelCityEditingController.clear();
-  //     channelDescriptionEditingController.clear();
-  //     setState(() {
-  //       chosenCategoryId = '';
-  //     });
-  //   }
-  // }
-
   void _createEvent() {
     if (_formKey.currentState!.validate()) {
       if (!eventDate.validate()) {
-        setState(() {
-          isDatePicked = true;
-        });
+        setState(() => isDatePicked = true);
         return;
+      } else {
+        setState(() => isDatePicked = false);
       }
-      print(eventDate.getCombinedDate());
+
+      _addEventController.addEvent(
+          title: eventTitleEditingController.text,
+          localization: eventLocalizationEditingController.text,
+          date: eventDate.getCombinedDate(),
+          interestedUsers: List.empty(),
+          goingUsers: List.empty(),
+          channelId: widget.data.channelId);
+
+      ScaffoldMessenger.of(context).showSnackBar(kEventAddedSnackBar);
+      eventTitleEditingController.clear();
+      eventLocalizationEditingController.clear();
+      setState(() => eventDate.clear());
+    } else {
+      if (!eventDate.validate()) {
+        setState(() => isDatePicked = true);
+      } else {
+        setState(() => isDatePicked = false);
+      }
     }
   }
 }

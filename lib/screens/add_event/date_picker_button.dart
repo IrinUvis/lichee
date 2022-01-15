@@ -38,6 +38,7 @@ class _DatePickerButtonState extends State<DatePickerButton> {
       );
 
   Future pickDate(BuildContext context) async {
+    FocusScope.of(context).unfocus();
     final initialDate = DateTime.now();
     final newDate = await showDatePicker(
       context: context,

@@ -251,6 +251,13 @@ const kChannelAddedSnackBar = SnackBar(
   content: Text('Channel added'),
 );
 
+const kEventAddedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(milliseconds: 1000),
+  content: Text('Event added'),
+);
+
 const kChatListUnavailable = Text(
   'Chat list unavailable',
   textAlign: TextAlign.center,
