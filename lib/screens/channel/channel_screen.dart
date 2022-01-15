@@ -11,6 +11,7 @@ import 'package:lichee/components/event_tile.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/providers/firebase_provider.dart';
+import 'package:lichee/screens/add_event/add_event_screen.dart';
 import 'package:lichee/screens/channel_chat/channel_chat_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -21,7 +22,7 @@ class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';
   final ReadChannelDto channel;
 
-  ChannelScreen({required this.channel});
+  const ChannelScreen({Key? key, required this.channel}) : super(key: key);
 
   @override
   State<ChannelScreen> createState() => _ChannelScreenState();
@@ -187,6 +188,17 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                   );
                                 },
                                 icon: const Icon(Icons.chat_bubble_outline),
+                              ),
+                              IconButton(
+                                color: LicheeColors.primary,
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                      context, AddEventScreen.id,
+                                      arguments: AddEventNavigationParams(
+                                          channelId: channel.channelId,
+                                          channelName: channel.channelName));
+                                },
+                                icon: const Icon(Icons.add),
                               ),
                             ],
                           ),

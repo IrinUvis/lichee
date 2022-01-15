@@ -27,7 +27,11 @@ class TreeNodeCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(name, style: kCategoryNodeTestStyle),
+                Container(
+                  constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width / 10 * 6),
+                  child: Text(name, style: kCategoryNodeTestStyle),
+                ),
                 const SizedBox(width: 5.0),
                 kCategoryNodeArrow,
               ],
@@ -39,9 +43,7 @@ class TreeNodeCard extends StatelessWidget {
                     ? kCategoryNodeEmptyText
                     : Container(),
                 const SizedBox(width: 5.0),
-                type == 'category'
-                    ? kCategoryNodeCategoryIcon
-                    : kCategoryNodeChannelIcon,
+                type == 'category' ? kCategoryIcon : kChannelIcon,
               ],
             ),
           ],

@@ -23,12 +23,27 @@ const kCategoryNodeArrow = Icon(
   color: Colors.white,
 );
 
-const kCategoryNodeCategoryIcon = Icon(
+const kCategoryIcon = Icon(
   Icons.category,
   color: Colors.white,
 );
 
-const kCategoryNodeChannelIcon = Icon(
+const kChannelIcon = Icon(
   Icons.chat,
   color: Colors.white,
+);
+
+const kDateIcon = Icon(
+  Icons.date_range,
+  color: Colors.white,
+);
+
+const kTimeIcon = Icon(
+  Icons.access_time_filled,
+  color: Colors.white,
+);
+
+const kCloseIcon = Icon(
+  Icons.close_outlined,
+  color: Colors.pinkAccent,
 );

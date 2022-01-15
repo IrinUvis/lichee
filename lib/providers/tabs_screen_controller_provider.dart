@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lichee/screens/add_channel/add_channel_screen.dart';
 import 'package:lichee/screens/channel_list/channel_list_screen.dart';
 import 'package:lichee/screens/chat_list/chat_list_screen.dart';
@@ -9,7 +10,7 @@ class TabsScreenControllerProvider {
   final List<Map<String, Object>> pages = [
     {'page': HomeScreen(), 'title': 'Home'},
     {'page': const ChannelListScreen(), 'title': 'Your channels'},
-    {'page': const AddChannelScreen(), 'title': 'Add channel'},
+    {'page': AddChannelScreen(imagePicker: ImagePicker()), 'title': 'Add channel'},
     {'page': const ChatListScreen(), 'title': 'Your chats'},
     {'page': const ProfileScreen(), 'title': 'Your profile'}
   ];
