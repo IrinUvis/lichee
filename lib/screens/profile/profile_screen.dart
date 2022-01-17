@@ -49,7 +49,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       buildTitle(context, "User Info"),
-                      buildInfo(user!),
+                      buildInfo(user!.displayName!),
+                      buildInfo(user!.email!),
                     ],
                   ),
                 ),
@@ -60,14 +61,9 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget buildInfo(User user) {
+  Widget buildInfo(String info) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Text(user.displayName!), Text(user.email!)],
-      ),
-    );
+        padding: const EdgeInsets.symmetric(vertical: 10), child: Text(info));
   }
 
   Widget buildTitle(context, name) {
