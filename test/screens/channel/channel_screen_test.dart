@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/update/update_channel.dart';
-import 'package:lichee/components/channel_backgroud_photo.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/screens/channel/channel_screen.dart';
+import 'package:lichee/screens/channel_chat/channel_chat_screen.dart';
 import 'package:lichee/services/storage_service.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:provider/provider.dart';
@@ -174,18 +174,53 @@ void main() {
     });
 
     testWidgets(
-        'Logged in user tries to read description of the channel that they recently joined to',
+        'Logged in user joins the channel',
         (tester) async {
       final _firestore = FakeFirebaseFirestore();
-      final _auth = MockFirebaseAuth();
+      try {
+        await _firestore.collection("channels").add({
+          'channelName': channelDTO.channelName,
+          'channelId': channelDTO.channelId,
+          'channelImageURL': channelDTO.channelImageUrl,
+          'city': channelDTO.city,
+          'createdOn': channelDTO.createdOn,
+          'isPromoted': channelDTO.isPromoted,
+          'description': channelDTO.description,
+          'userIds': channelDTO.userIds,
+          'ownerId': channelDTO.ownerId,
+        });
+
+        await _firestore
+            .collection("channels")
+            .doc(channelDTO.channelId)
+            .get()
+            .then((value) {
+          print(value.data()!['city']);
+        });
+      } catch (e) {
+        _firestore.collection("channels").doc(channelDTO.channelId).update({
+          'channelName': channelDTO.channelName,
+          'channelId': channelDTO.channelId,
+          'channelImageURL': channelDTO.channelImageUrl,
+          'city': channelDTO.city,
+          'createdOn': channelDTO.createdOn,
+          'isPromoted': channelDTO.isPromoted,
+          'description': channelDTO.description,
+          'userIds': channelDTO.userIds,
+          'ownerId': channelDTO.ownerId,
+        });
+      }
+      final _mock = MockUser(uid: 'helloFromTest');
+      final _auth = MockFirebaseAuth(mockUser: _mock);
       final _storage = StorageService(MockFirebaseStorage());
       final _updateService = UpdateChannelService(firestore: _firestore);
-      final widget = ChannelScreen(channel: channelDTO);
-
+      final widget = ChannelScreen(
+          channel: channelDTO, updateChannelService: _updateService);
+      print(widget.updateChannelService);
       final screen = MultiProvider(
         providers: [
           Provider<User?>(
-            create: (_) => MockUser(uid: 'helloFromTest'),
+            create: (_) => _mock,
           ),
           Provider<FirebaseProvider>(
             create: (_) => FirebaseProvider(
@@ -201,18 +236,100 @@ void main() {
           ),
         ),
       );
-
+      _auth.signInWithEmailAndPassword(email: 'email', password: 'password');
+      expect(_auth.currentUser!.uid, _mock.uid);
       await mockNetworkImagesFor(() => tester.pumpWidget(screen));
       await tester.pumpWidget(screen);
-
       final button = find.ancestor(
           of: find.byIcon(Icons.group_add),
           matching:
               find.byWidgetPredicate((widget) => widget is ElevatedButton));
       expect(button.runtimeType, isNotNull);
       await tester.tap(button);
+      await tester.idle();
       await tester.pumpAndSettle();
       expect(find.text("Joined"), findsOneWidget);
+      final unjoin = find.byIcon(Icons.check_circle_outline);
+      await tester.tap(unjoin);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('logged in users joins and removes themself from the channel', (tester) async {
+      final _firestore = FakeFirebaseFirestore();
+      try {
+        await _firestore.collection("channels").add({
+          'channelName': channelDTO.channelName,
+          'channelId': channelDTO.channelId,
+          'channelImageURL': channelDTO.channelImageUrl,
+          'city': channelDTO.city,
+          'createdOn': channelDTO.createdOn,
+          'isPromoted': channelDTO.isPromoted,
+          'description': channelDTO.description,
+          'userIds': channelDTO.userIds,
+          'ownerId': channelDTO.ownerId,
+        });
+
+        await _firestore
+            .collection("channels")
+            .doc(channelDTO.channelId)
+            .get()
+            .then((value) {
+          print(value.data()!['city']);
+        });
+      } catch (e) {
+        _firestore.collection("channels").doc(channelDTO.channelId).update({
+          'channelName': channelDTO.channelName,
+          'channelId': channelDTO.channelId,
+          'channelImageURL': channelDTO.channelImageUrl,
+          'city': channelDTO.city,
+          'createdOn': channelDTO.createdOn,
+          'isPromoted': channelDTO.isPromoted,
+          'description': channelDTO.description,
+          'userIds': channelDTO.userIds,
+          'ownerId': channelDTO.ownerId,
+        });
+      }
+      final _mock = MockUser(uid: 'helloFromTest');
+      final _auth = MockFirebaseAuth(mockUser: _mock);
+      final _storage = StorageService(MockFirebaseStorage());
+      final _updateService = UpdateChannelService(firestore: _firestore);
+      final widget = ChannelScreen(
+          channel: channelDTO, updateChannelService: _updateService);
+      final screen = MultiProvider(
+        providers: [
+          Provider<User?>(
+            create: (_) => _mock,
+          ),
+          Provider<FirebaseProvider>(
+            create: (_) => FirebaseProvider(
+              auth: _auth,
+              firestore: _firestore,
+              storage: _storage,
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          home: Scaffold(
+            body: widget,
+          ),
+        ),
+      );
+      _auth.signInWithEmailAndPassword(email: 'email', password: 'password');
+      expect(_auth.currentUser!.uid, _mock.uid);
+      await mockNetworkImagesFor(() => tester.pumpWidget(screen));
+      await tester.pumpWidget(screen);
+      final button = find.ancestor(
+          of: find.byIcon(Icons.group_add),
+          matching:
+          find.byWidgetPredicate((widget) => widget is ElevatedButton));
+      expect(button.runtimeType, isNotNull);
+      await tester.tap(button);
+      await tester.idle();
+      await tester.pumpAndSettle();
+      final unjoin = find.byIcon(Icons.check_circle_outline);
+      await tester.tap(unjoin);
+      await tester.pumpAndSettle();
+      expect(find.text("Joined"), findsNothing);
     });
   });
 }

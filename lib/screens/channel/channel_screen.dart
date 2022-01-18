@@ -21,8 +21,11 @@ import '../../constants/channel_constants.dart';
 class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';
   final ReadChannelDto channel;
+  final UpdateChannelService? updateChannelService;
 
-  const ChannelScreen({Key? key, required this.channel}) : super(key: key);
+  const ChannelScreen(
+      {Key? key, required this.channel, this.updateChannelService})
+      : super(key: key);
 
   @override
   State<ChannelScreen> createState() => _ChannelScreenState();
@@ -51,9 +54,13 @@ class _ChannelScreenState extends State<ChannelScreen> {
         currentPage = _controller.page!;
       });
     });
-    _updateChannelService = UpdateChannelService(
-        firestore:
-            Provider.of<FirebaseProvider>(context, listen: false).firestore);
+    if (widget.updateChannelService != null) {
+      _updateChannelService = widget.updateChannelService!;
+    } else {
+      _updateChannelService = UpdateChannelService(
+          firestore:
+              Provider.of<FirebaseProvider>(context, listen: false).firestore);
+    }
   }
 
   void handleTap(String value) {
