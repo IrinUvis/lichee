@@ -30,7 +30,7 @@ class ReadChannelService {
   }
 
   Future<List<ReadChannelDto>> getByOwner({required String owner}) async {
-    final channels = await _repository.getByName(name: owner);
+    final channels = await _repository.getByOwner(owner: owner);
     return channels.map((channel) => channel.toDto()).toList();
   }
 

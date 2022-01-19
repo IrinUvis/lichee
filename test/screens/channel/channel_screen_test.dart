@@ -6,11 +6,9 @@ import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/update/update_channel.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/screens/channel/channel_screen.dart';
-import 'package:lichee/screens/channel_chat/channel_chat_screen.dart';
 import 'package:lichee/services/storage_service.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:provider/provider.dart';
-
 import '../../setup/auth_mock_setup/firebase_auth_mocks_base.dart';
 import '../../setup/auth_mock_setup/mock_user.dart';
 import '../../setup/storage_mock_setup/firebase_storage_mocks_base.dart';
