@@ -246,7 +246,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
       isLogged = false;
     }
     return Scaffold(
-      floatingActionButton: channel.userIds.contains(user?.uid)
+      floatingActionButton: channel.ownerId == user?.uid
           ? Padding(
               padding: const EdgeInsets.only(bottom: 15.0),
               child: FloatingActionButton(
