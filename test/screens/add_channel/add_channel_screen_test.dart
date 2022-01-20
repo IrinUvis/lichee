@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,11 +20,19 @@ void main() {
   late final Provider<FirebaseProvider> addChannelScreenNoAuth;
   late final MultiProvider addChannelScreenAuth;
 
-  setUpAll(() {
+  setUpAll(() async {
     final _firestore = FakeFirebaseFirestore();
     final _auth = MockFirebaseAuth();
     final _storage = StorageService(MockFirebaseStorage());
     final _imagePicker = ImagePicker();
+
+    await _firestore.collection('categories').doc('5xugsbjUdNN4DC50h2Db').set({
+      'childrenIds': List.empty(),
+      'isLastCategory': true,
+      'name': 'testCategory',
+      'parentId': 'testParentId',
+      'type': 'category'
+    });
 
     final addChannelWidget = AddChannelScreen(imagePicker: _imagePicker);
 
@@ -59,6 +68,8 @@ void main() {
         ),
       ),
     );
+
+
   });
 
   testWidgets('check screen state for not logged in user', (tester) async {
@@ -157,17 +168,6 @@ void main() {
     final screenState =
         tester.state<AddChannelScreenState>(find.byType(AddChannelScreen));
 
-    // when(screenState.addChannelController.addChannel(
-    //         channelName: 'testName',
-    //         imageUrl: 'testUrl',
-    //         city: 'testCity',
-    //         now: DateTime(2000),
-    //         description: 'testDescriptionTestDescription',
-    //         usersIds: ['testId'],
-    //         userId: 'testId',
-    //         parentCategoryId: 'testParentId'))
-    //     .thenAnswer((_) async => {});
-
     final nameFieldFinder = find.byKey(const Key('nameField'));
     final cityFieldFinder = find.byKey(const Key('cityField'));
     final descriptionFieldFinder = find.byKey(const Key('descriptionField'));
@@ -184,13 +184,13 @@ void main() {
     await tester.enterText(
         descriptionFieldFinder, 'testDescriptionTestDescription');
     screenState.file = File('./../../test_resources/test_file.jpg');
-    screenState.chosenCategoryId = 'test';
-    screenState.chosenCategoryName = 'test';
+    screenState.chosenCategoryId = '5xugsbjUdNN4DC50h2Db';
+    screenState.chosenCategoryName = 'testCategory';
 
     await tester.pumpAndSettle();
 
     await tester.ensureVisible(createButtonFinder);
-    //await tester.tap(createButtonFinder);
+    await tester.tap(createButtonFinder);
     await tester.pumpAndSettle();
   });
 
