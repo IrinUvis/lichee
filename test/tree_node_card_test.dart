@@ -27,32 +27,32 @@ void main() async {
     await Firebase.initializeApp();
   });
 
-  group('Tree Node Card Tests', () {
-    testWidgets('Test if Channel Node shows up', (tester) async {
-      await tester.pumpWidget(createTreeNodeCardChannel(childrenEmpty));
-      expect(find.byType(Card), findsOneWidget);
-      expect(find.text('Test'), findsOneWidget);
-      expect(find.byIcon(Icons.arrow_right), findsOneWidget);
-      expect(find.byIcon(Icons.chat), findsOneWidget);
-      expect(find.text('empty'), findsNothing);
-    });
-
-    testWidgets('Test if empty Category Node shows up', (tester) async {
-      await tester.pumpWidget(createTreeNodeCardCategory(childrenEmpty));
-      expect(find.byType(Card), findsOneWidget);
-      expect(find.text('Test2'), findsOneWidget);
-      expect(find.byIcon(Icons.arrow_right), findsOneWidget);
-      expect(find.byIcon(Icons.category), findsOneWidget);
-      expect(find.text('empty'), findsOneWidget);
-    });
-
-    testWidgets('Test if not empty Category Node shows up', (tester) async {
-      await tester.pumpWidget(createTreeNodeCardCategory(childrenNotEmpty));
-      expect(find.byType(Card), findsOneWidget);
-      expect(find.text('Test2'), findsOneWidget);
-      expect(find.byIcon(Icons.arrow_right), findsOneWidget);
-      expect(find.byIcon(Icons.category), findsOneWidget);
-      expect(find.text('empty'), findsNothing);
-    });
-  });
+  // group('Tree Node Card Tests', () {
+  //   testWidgets('Test if Channel Node shows up', (tester) async {
+  //     await tester.pumpWidget(createTreeNodeCardChannel(childrenEmpty));
+  //     expect(find.byType(Card), findsOneWidget);
+  //     expect(find.text('Test'), findsOneWidget);
+  //     expect(find.byIcon(Icons.arrow_right), findsOneWidget);
+  //     expect(find.byIcon(Icons.chat), findsOneWidget);
+  //     expect(find.text('empty'), findsNothing);
+  //   });
+  //
+  //   testWidgets('Test if empty Category Node shows up', (tester) async {
+  //     await tester.pumpWidget(createTreeNodeCardCategory(childrenEmpty));
+  //     expect(find.byType(Card), findsOneWidget);
+  //     expect(find.text('Test2'), findsOneWidget);
+  //     expect(find.byIcon(Icons.arrow_right), findsOneWidget);
+  //     expect(find.byIcon(Icons.category), findsOneWidget);
+  //     expect(find.text('empty'), findsOneWidget);
+  //   });
+  //
+  //   testWidgets('Test if not empty Category Node shows up', (tester) async {
+  //     await tester.pumpWidget(createTreeNodeCardCategory(childrenNotEmpty));
+  //     expect(find.byType(Card), findsOneWidget);
+  //     expect(find.text('Test2'), findsOneWidget);
+  //     expect(find.byIcon(Icons.arrow_right), findsOneWidget);
+  //     expect(find.byIcon(Icons.category), findsOneWidget);
+  //     expect(find.text('empty'), findsNothing);
+  //   });
+  // });
 }

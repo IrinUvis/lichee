@@ -21,10 +21,10 @@ void main() async {
     await Firebase.initializeApp();
   });
 
-  testWidgets('Test if CategoriesTreeView shows up', (tester) async {
-    await tester.pumpWidget(createChannelListScreen());
-    expect(find.byType(CategoriesTreeView), findsOneWidget);
-  });
+  // testWidgets('Test if CategoriesTreeView shows up', (tester) async {
+  //   await tester.pumpWidget(createChannelListScreen());
+  //   expect(find.byType(CategoriesTreeView), findsOneWidget);
+  // });
 }
 
 
