@@ -11,11 +11,15 @@ import '../../setup/storage_mock_setup/firebase_storage_mocks_base.dart';
 
 void main() {
   late final Provider<FirebaseProvider> addEventScreen;
+  late final FakeFirebaseFirestore _firestore;
+  late final MockFirebaseAuth _auth;
+  late final StorageService _storage;
+  late final AddEventNavigationParams eventData;
 
   setUpAll(() async {
-    final _firestore = FakeFirebaseFirestore();
-    final _auth = MockFirebaseAuth();
-    final _storage = StorageService(MockFirebaseStorage());
+    _firestore = FakeFirebaseFirestore();
+    _auth = MockFirebaseAuth();
+    _storage = StorageService(MockFirebaseStorage());
 
     await _firestore.collection('categories').doc('5xugsbjUdNN4DC50h2Db').set({
       'childrenIds': List.empty(),
@@ -25,7 +29,7 @@ void main() {
       'type': 'category'
     });
 
-    final eventData = AddEventNavigationParams(
+    eventData = AddEventNavigationParams(
         channelId: 'testChannelId', channelName: 'testChannelName');
 
     final addEventWidget = AddEventScreen(data: eventData);
@@ -111,7 +115,6 @@ void main() {
     //expect(find.text('10:30'), findsOneWidget);
     expect(screenState.eventDate.date, DateTime(2022, 30, 1));
     expect(screenState.eventDate.time, const TimeOfDay(hour: 10, minute: 30));
-    expect(find.byType(ElevatedButton), findsNWidgets(3));
   });
 
   testWidgets('test creating event', (tester) async {
@@ -130,23 +133,50 @@ void main() {
     screenState.eventDate.time = const TimeOfDay(hour: 10, minute: 30);
 
     await tester.pumpAndSettle();
-    expect(find.byType(ElevatedButton), findsOneWidget);
+    expect(find.byType(ElevatedButton), findsNWidgets(3));
     await tester.pumpAndSettle();
 
     await tester.ensureVisible(createButtonFinder);
     await tester.tap(createButtonFinder);
     await tester.pumpAndSettle();
+
+    final snapshot = await _firestore.collection('events').doc(eventData.channelId).collection('events').get();
+    expect(snapshot.docs.length, 1);
+    expect(snapshot.docs.first.get('title'), 'testName');
+    expect(snapshot.docs.first.get('localization'), 'testLocalization');
   });
 
-  testWidgets('test category and image button', (tester) async {
+  testWidgets('test date picking', (tester) async {
     await mockNetworkImagesFor(() => tester.pumpWidget(addEventScreen));
+    final screenState =
+    tester.state<AddEventScreenState>(find.byType(AddEventScreen));
+    final datePickerFinder = find.byKey(const Key('datePicker'));
+    final timePickerFinder = find.byKey(const Key('timePicker'));
+    int day = DateTime.now().day;
+    int month = DateTime.now().month;
+    int year = DateTime.now().year;
 
-    final imageButtonFinder = find.byKey(const Key('imageButton'));
-    final categoryButtonFinder = find.byKey(const Key('categoryButton'));
+    expect(datePickerFinder, findsOneWidget);
+    expect(timePickerFinder, findsOneWidget);
 
-    await tester.tap(imageButtonFinder);
-    await tester.tap(categoryButtonFinder);
-    expect(imageButtonFinder, findsOneWidget);
-    expect(categoryButtonFinder, findsOneWidget);
+    await tester.tap(datePickerFinder);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text(day.toString()));
+    await tester.tap(find.text('OK'));
+    await tester.pump();
+
+    expect(datePickerFinder, findsOneWidget);
+    expect(timePickerFinder, findsOneWidget);
+
+    await tester.tap(timePickerFinder);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('OK'));
+
+    expect(screenState.eventDate.date!.day, day);
+    expect(screenState.eventDate.date!.month, month);
+    expect(screenState.eventDate.date!.year, year);
+    expect(screenState.eventDate.time!.hour, 8);
+    expect(screenState.eventDate.time!.minute, 0);
   });
 }

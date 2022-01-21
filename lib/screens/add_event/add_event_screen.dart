@@ -38,12 +38,6 @@ class AddEventScreenState extends State<AddEventScreen> {
 
   EventDate get eventDate => _eventDate;
 
-  set eventDate(EventDate value) {
-    setState(() {
-      _eventDate = value;
-    });
-  }
-
   @override
   void initState() {
     super.initState();
