@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/screens/add_channel/add_channel_screen.dart';
 import 'package:lichee/screens/auth/screens/not_logged_in_view.dart';
 import 'package:lichee/services/storage_service.dart';
-import 'package:mockito/mockito.dart';
 import 'package:network_image_mock/network_image_mock.dart';
 import 'package:provider/provider.dart';
 import '../../setup/auth_mock_setup/firebase_auth_mocks_base.dart';
