@@ -70,12 +70,12 @@ void main() {
       (tester) async {
     await mockNetworkImagesFor(() => tester.pumpWidget(addEventScreen));
 
-    final nameFieldFinder = find.byKey(const Key('titleField'));
-    final cityFieldFinder = find.byKey(const Key('localizationField'));
+    final titleFieldFinder = find.byKey(const Key('titleField'));
+    final localizationFieldFinder = find.byKey(const Key('localizationField'));
     final createButtonFinder = find.byKey(const Key('createButton'));
 
-    await tester.enterText(nameFieldFinder, 't');
-    await tester.enterText(cityFieldFinder, 't');
+    await tester.enterText(titleFieldFinder, 't');
+    await tester.enterText(localizationFieldFinder, 't');
 
     await tester.ensureVisible(createButtonFinder);
     await tester.tap(createButtonFinder);
@@ -107,11 +107,46 @@ void main() {
     expect(screenState.eventDate.time, isNotNull);
 
     await tester.pumpAndSettle();
-
     //expect(find.text('30/01/2000'), findsOneWidget);
     //expect(find.text('10:30'), findsOneWidget);
     expect(screenState.eventDate.date, DateTime(2022, 30, 1));
     expect(screenState.eventDate.time, const TimeOfDay(hour: 10, minute: 30));
     expect(find.byType(ElevatedButton), findsNWidgets(3));
+  });
+
+  testWidgets('test creating event', (tester) async {
+    await mockNetworkImagesFor(() => tester.pumpWidget(addEventScreen));
+    final screenState =
+    tester.state<AddEventScreenState>(find.byType(AddEventScreen));
+
+    final titleFieldFinder = find.byKey(const Key('titleField'));
+    final localizationFieldFinder = find.byKey(const Key('localizationField'));
+
+    final createButtonFinder = find.byKey(const Key('createButton'));
+
+    await tester.enterText(titleFieldFinder, 'testName');
+    await tester.enterText(localizationFieldFinder, 'testLocalization');
+    screenState.eventDate.date = DateTime(2022, 30, 1);
+    screenState.eventDate.time = const TimeOfDay(hour: 10, minute: 30);
+
+    await tester.pumpAndSettle();
+    expect(find.byType(ElevatedButton), findsOneWidget);
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(createButtonFinder);
+    await tester.tap(createButtonFinder);
+    await tester.pumpAndSettle();
+  });
+
+  testWidgets('test category and image button', (tester) async {
+    await mockNetworkImagesFor(() => tester.pumpWidget(addEventScreen));
+
+    final imageButtonFinder = find.byKey(const Key('imageButton'));
+    final categoryButtonFinder = find.byKey(const Key('categoryButton'));
+
+    await tester.tap(imageButtonFinder);
+    await tester.tap(categoryButtonFinder);
+    expect(imageButtonFinder, findsOneWidget);
+    expect(categoryButtonFinder, findsOneWidget);
   });
 }
