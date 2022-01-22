@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 class DetailsRows {
   final bool isAboutTable;
   final ReadChannelDto channel;
+  String? ownerName;
 
-  DetailsRows({required this.channel, required this.isAboutTable});
+  DetailsRows({required this.channel, required this.isAboutTable, this.ownerName});
 
   List<TableRow> create() {
     List<TableRow> rows = [];
@@ -23,7 +24,7 @@ class DetailsRows {
         ]),
         TableRow(children: [
           const Icon(Icons.person),
-          Text('Created by: ${channel.ownerId}'),
+          ownerName == null ? Text('Created by: ${channel.ownerId}') : Text('Created by: $ownerName'),
         ])
       ];
       return rows;

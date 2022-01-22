@@ -42,6 +42,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   late bool isLogged;
   late final List<String> members = [];
   late final UpdateChannelService _updateChannelService;
+  late final String ownerName;
 
   @override
   void initState() {
@@ -79,8 +80,12 @@ class _ChannelScreenState extends State<ChannelScreen> {
       if (ids.contains(element.id)) {
         members.add(element.get('username'));
       }
+      if (channel.ownerId == element.id) {
+        description.ownerName = element.get('username').toString();
+        about.ownerName = element.get('username').toString();
+      }
     }
-    return members.sublist(0, channel.userIds.length);
+    return members;
   }
 
   Widget channelForNonMember(User? user) {
@@ -142,9 +147,6 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   Widget channelForMember(User? user) {
-    // List members = channel.userIds.toList();
-    //List membersNames;
-
     return StreamBuilder<QuerySnapshot>(
       stream: Provider.of<FirebaseProvider>(context, listen: false)
           .firestore
@@ -230,7 +232,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           description: description,
                           about: about,
                           isMember: true,
-                          members: members),
+                          members: members.sublist(0, channel.userIds.length)),
                     ),
                   ],
                 ),
@@ -250,7 +252,6 @@ class _ChannelScreenState extends State<ChannelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Future<List<String>> members = getMemberNames(channel.userIds);
     final user = Provider.of<User?>(context);
     hasBeenInitiallyPressed = channel.userIds.contains(user?.uid);
     if (user != null) {
@@ -259,7 +260,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
       isLogged = false;
     }
     return FutureBuilder(
-      future: members,
+      future: getMemberNames(channel.userIds),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
