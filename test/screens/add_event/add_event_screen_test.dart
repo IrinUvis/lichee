@@ -111,8 +111,6 @@ void main() {
     expect(screenState.eventDate.time, isNotNull);
 
     await tester.pumpAndSettle();
-    //expect(find.text('30/01/2000'), findsOneWidget);
-    //expect(find.text('10:30'), findsOneWidget);
     expect(screenState.eventDate.date, DateTime(2022, 30, 1));
     expect(screenState.eventDate.time, const TimeOfDay(hour: 10, minute: 30));
   });

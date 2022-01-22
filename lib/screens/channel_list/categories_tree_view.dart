@@ -49,16 +49,19 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
+              key: const Key('homeButton'),
               onPressed: _resetCategoriesTreeView,
               child: kResetCategoriesTreeViewIcon,
               style: kPinkRoundedButtonStyle,
             ),
             ElevatedButton(
+              key: const Key('citiesButton'),
               onPressed: _openFilterDialog,
               child: kCategoriesTreeViewFiltersButtonText,
               style: kPinkRoundedButtonStyle,
             ),
             ElevatedButton(
+              key: const Key('returnButton'),
               onPressed: _returnToUpperLevelInCategoriesTreeView,
               child: kReturnToUpperLevelInTreeViewIcon,
               style: kPinkRoundedButtonStyle,
