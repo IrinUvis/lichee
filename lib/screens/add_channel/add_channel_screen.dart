@@ -52,8 +52,6 @@ class AddChannelScreenState extends State<AddChannelScreen> {
   String get chosenCategoryId => _chosenCategoryId;
   String get chosenCategoryName => _chosenCategoryName;
 
-  //ImagePicker get imagePicker => _imagePicker;
-
   set file(File? value) {
     setState(() {
       _file = value;

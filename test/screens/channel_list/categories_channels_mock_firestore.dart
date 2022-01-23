@@ -85,7 +85,7 @@ class CategoriesChannelsMockFirestore {
       'description': 'testDescriptionTestDescription',
       'ownerId': 'testUserId',
       'parentCategoryId': 'LGmmj4ZitURNSHHkhWqJ',
-      'usersIds': List.empty(),
+      'userIds': ['testUserId'],
     });
 
     await firestore.collection('channels').doc('HFUptpYgbHNQNFod8Xdd').set({
@@ -97,7 +97,7 @@ class CategoriesChannelsMockFirestore {
       'description': 'testDescriptionTestDescription',
       'ownerId': 'testUserId',
       'parentCategoryId': 'LGmmj4ZitURNSHHkhWqJ',
-      'usersIds': List.empty(),
+      'userIds': ['testUserId'],
     });
   }
 }

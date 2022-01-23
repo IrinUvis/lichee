@@ -30,7 +30,7 @@ class AddEventScreenState extends State<AddEventScreen> {
 
   late final AddEventController _addEventController;
 
-  EventDate _eventDate = EventDate();
+  final EventDate _eventDate = EventDate();
   bool _isDatePicked = true;
 
   late final TextFormField _eventTitleField;
