@@ -18,19 +18,21 @@ class CategoriesTreeView extends StatefulWidget {
   final bool isChoosingCategoryForChannelAddingAvailable;
 
   @override
-  _CategoriesTreeViewState createState() => _CategoriesTreeViewState();
+  CategoriesTreeViewState createState() => CategoriesTreeViewState();
 }
 
-class _CategoriesTreeViewState extends State<CategoriesTreeView> {
-  List<String>? selectedFiltersList = [];
-  List<String> parentIdStack = [];
-  List<String> citiesList = [];
-  List<String> idsOfChannelsFromCity = [];
+class CategoriesTreeViewState extends State<CategoriesTreeView> {
+  List<String>? _selectedFiltersList = [];
+  final List<String> _parentIdStack = [];
+  final List<String> _citiesList = [];
+  final List<String> _idsOfChannelsFromCity = [];
 
-  String parentId = '';
-  bool isLastCategory = false;
+  String _parentId = '';
+  bool _isLastCategory = false;
 
   late final ChannelListController _channelListController;
+
+  String get parentId => _parentId;
 
   @override
   void initState() {
@@ -38,7 +40,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
     _channelListController = ChannelListController(
         firestore:
             Provider.of<FirebaseProvider>(context, listen: false).firestore);
-    _channelListController.getCitiesFromChannels(citiesList: citiesList);
+    _channelListController.getCitiesFromChannels(citiesList: _citiesList);
   }
 
   @override
@@ -49,16 +51,19 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             ElevatedButton(
+              key: const Key('homeButton'),
               onPressed: _resetCategoriesTreeView,
               child: kResetCategoriesTreeViewIcon,
               style: kPinkRoundedButtonStyle,
             ),
             ElevatedButton(
+              key: const Key('citiesButton'),
               onPressed: _openFilterDialog,
               child: kCategoriesTreeViewFiltersButtonText,
               style: kPinkRoundedButtonStyle,
             ),
             ElevatedButton(
+              key: const Key('returnButton'),
               onPressed: _returnToUpperLevelInCategoriesTreeView,
               child: kReturnToUpperLevelInTreeViewIcon,
               style: kPinkRoundedButtonStyle,
@@ -72,9 +77,10 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
           ),
         ),
         widget.isChoosingCategoryForChannelAddingAvailable
-            ? isLastCategory
+            ? _isLastCategory
                 ? ElevatedButton(
-                    onPressed: () => Navigator.pop(context, parentId),
+          key: const Key('chooseCategoryButton'),
+                    onPressed: () => Navigator.pop(context, _parentId),
                     child: kChooseCategoryForAddingChannelButtonText,
                     style: kPinkRoundedButtonStyle,
                   )
@@ -86,7 +92,7 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
 
   StreamBuilder<QuerySnapshot> _getNodesTree() {
     return StreamBuilder(
-      stream: _channelListController.getCategoriesStream(parentId: parentId),
+      stream: _channelListController.getCategoriesStream(parentId: _parentId),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(
@@ -101,10 +107,10 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
               ? ListView.builder(
                   itemCount: nodesList.length,
                   itemBuilder: (BuildContext context, int index) {
-                    if (idsOfChannelsFromCity.isEmpty ||
+                    if (_idsOfChannelsFromCity.isEmpty ||
                         nodesList[index]['type'] == 'category' ||
                         (nodesList[index]['type'] == 'channel' &&
-                            idsOfChannelsFromCity
+                            _idsOfChannelsFromCity
                                 .contains(nodesArray[index].id))) {
                       return TextButton(
                         onPressed: nodesList[index]['type'] == 'channel'
@@ -151,21 +157,21 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
 
   void _resetCategoriesTreeView() {
     setState(() {
-      parentId = '';
-      parentIdStack.clear();
+      _parentId = '';
+      _parentIdStack.clear();
       if (widget.isChoosingCategoryForChannelAddingAvailable) {
-        isLastCategory = false;
+        _isLastCategory = false;
       }
     });
   }
 
   void _returnToUpperLevelInCategoriesTreeView() {
     setState(() {
-      if (parentIdStack.isNotEmpty) {
-        parentId = parentIdStack.removeLast();
+      if (_parentIdStack.isNotEmpty) {
+        _parentId = _parentIdStack.removeLast();
       }
       if (widget.isChoosingCategoryForChannelAddingAvailable) {
-        isLastCategory = false;
+        _isLastCategory = false;
       }
     });
   }
@@ -173,8 +179,8 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
   void _openFilterDialog() async {
     await FilterListDialog.display<String>(
       context,
-      listData: citiesList,
-      selectedListData: selectedFiltersList,
+      listData: _citiesList,
+      selectedListData: _selectedFiltersList,
       enableOnlySingleSelection: true,
       hideSelectedTextCount: true,
       backgroundColor: const Color(0xFF1A1A1A),
@@ -208,10 +214,10 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
         return [];
       },
       onApplyButtonClick: (list) async {
-        selectedFiltersList = List.from(list!);
-        idsOfChannelsFromCity.clear();
+        _selectedFiltersList = List.from(list!);
+        _idsOfChannelsFromCity.clear();
         _channelListController.getChannelsFromCity(
-            selectedFiltersList, idsOfChannelsFromCity);
+            _selectedFiltersList, _idsOfChannelsFromCity);
         setState(() {});
         Navigator.pop(context);
       },
@@ -222,10 +228,10 @@ class _CategoriesTreeViewState extends State<CategoriesTreeView> {
       List<QueryDocumentSnapshot<Object?>> nodesArray, int index) {
     setState(() {
       if (widget.isChoosingCategoryForChannelAddingAvailable) {
-        isLastCategory = nodesList[index]['isLastCategory'];
+        _isLastCategory = nodesList[index]['isLastCategory'];
       }
-      parentIdStack.add(parentId);
-      parentId = nodesArray[index].id;
+      _parentIdStack.add(_parentId);
+      _parentId = nodesArray[index].id;
     });
   }
 }

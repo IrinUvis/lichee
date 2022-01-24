@@ -6,7 +6,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lichee/constants/channel_constants.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/constants/icons.dart';
@@ -25,10 +24,10 @@ class AddChannelScreen extends StatefulWidget {
       : super(key: key);
 
   @override
-  _AddChannelScreenState createState() => _AddChannelScreenState();
+  AddChannelScreenState createState() => AddChannelScreenState();
 }
 
-class _AddChannelScreenState extends State<AddChannelScreen> {
+class AddChannelScreenState extends State<AddChannelScreen> {
   final _formKey = GlobalKey<FormState>();
   late FocusNode _focusNode;
 
@@ -36,7 +35,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   final _channelCityEditingController = TextEditingController();
   final _channelDescriptionEditingController = TextEditingController();
 
-  late final AddChannelController _addChannelController;
+  late final AddChannelController addChannelController;
 
   File? _file;
   bool _isImageChosen = true;
@@ -49,20 +48,32 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
   late final TextFormField _channelCityField;
   late final TextFormField _channelDescriptionField;
 
-  //File? get file => _file;
+  File? get file => _file;
+  String get chosenCategoryId => _chosenCategoryId;
+  String get chosenCategoryName => _chosenCategoryName;
 
-  //ImagePicker get imagePicker => _imagePicker;
+  set file(File? value) {
+    setState(() {
+      _file = value;
+    });
+  }
 
-  // set file(File? value) {
-  //   setState(() {
-  //     _file = value;
-  //   });
-  // }
+  set chosenCategoryId(String value) {
+    setState(() {
+      _chosenCategoryId = value;
+    });
+  }
+
+  set chosenCategoryName(String value) {
+    setState(() {
+      _chosenCategoryName = value;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    _addChannelController = AddChannelController(
+    addChannelController = AddChannelController(
       Provider.of<FirebaseProvider>(context, listen: false).firestore,
       Provider.of<FirebaseProvider>(context, listen: false).storage,
     );
@@ -110,6 +121,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
                       _getChannelData(),
                       const SizedBox(height: 30.0),
                       ElevatedButton(
+                        key: const Key('createButton'),
                         onPressed: _createChannel,
                         child: kCreateChannelButtonText,
                         style: kPinkRoundedButtonStyle,
@@ -142,6 +154,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
               const SizedBox(height: 20.0),
               _file == null
                   ? ElevatedButton(
+                      key: const Key('imageButton'),
                       onPressed: () => chooseImageFromGallery(),
                       style: kGreyRoundedButtonStyle,
                       child: kAddChannelImageButtonContent,
@@ -152,6 +165,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
               const SizedBox(height: 20.0),
               _chosenCategoryId == ''
                   ? ElevatedButton(
+                      key: const Key('categoryButton'),
                       onPressed: _chooseCategoryView,
                       child: kChooseCategoryButtonContent,
                       style: kGreyRoundedButtonStyle,
@@ -171,6 +185,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
+          key: const Key('clearCategory'),
           onPressed: () => clearCategory(),
           icon: kCloseIcon,
         ),
@@ -195,6 +210,7 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         IconButton(
+          key: const Key('clearImage'),
           onPressed: () => clearImage(),
           icon: kCloseIcon,
         ),
@@ -213,8 +229,57 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
     );
   }
 
+  TextFormField _channelNameFieldF() {
+    return TextFormField(
+      key: const Key('nameField'),
+      autofocus: false,
+      controller: _channelNameEditingController,
+      keyboardType: TextInputType.name,
+      validator: (value) {
+        RegExp regex = RegExp(r'^.{3,}$');
+        if (value!.isEmpty) {
+          return ('Channel name cannot be empty');
+        }
+        if (!regex.hasMatch(value)) {
+          return ('Enter valid channel name (min. 3 characters)');
+        }
+        return null;
+      },
+      // onSaved: (value) {
+      //   _channelNameEditingController.text = value!;
+      // },
+      textInputAction: TextInputAction.next,
+      decoration: kAddChannelNameBarInputDecoration,
+    );
+  }
+
+  TextFormField _channelCityFieldF() {
+    return TextFormField(
+      key: const Key('cityField'),
+      autofocus: false,
+      controller: _channelCityEditingController,
+      keyboardType: TextInputType.name,
+      validator: (value) {
+        RegExp regex = RegExp(r'^.{3,}$');
+        if (value!.isEmpty) {
+          return ('City cannot be empty');
+        }
+        if (!regex.hasMatch(value)) {
+          return ('Enter valid city (min. 3 characters)');
+        }
+        return null;
+      },
+      // onSaved: (value) {
+      //   _channelCityEditingController.text = value!;
+      // },
+      textInputAction: TextInputAction.next,
+      decoration: kAddChannelCityBarInputDecoration,
+    );
+  }
+
   TextFormField _channelDescriptionFieldF() {
     return TextFormField(
+      key: const Key('descriptionField'),
       autofocus: false,
       controller: _channelDescriptionEditingController,
       keyboardType: TextInputType.multiline,
@@ -229,61 +294,14 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
         }
         return null;
       },
-      onSaved: (value) {
-        _channelDescriptionEditingController.text = value!;
-      },
+      // onSaved: (value) {
+      //   _channelDescriptionEditingController.text = value!;
+      // },
       textInputAction: TextInputAction.done,
       decoration: kAddChannelDescriptionBarInputDecoration,
     );
   }
 
-  TextFormField _channelCityFieldF() {
-    return TextFormField(
-      autofocus: false,
-      controller: _channelCityEditingController,
-      keyboardType: TextInputType.name,
-      validator: (value) {
-        RegExp regex = RegExp(r'^.{3,}$');
-        if (value!.isEmpty) {
-          return ('City cannot be empty');
-        }
-        if (!regex.hasMatch(value)) {
-          return ('Enter valid city (min. 3 characters)');
-        }
-        return null;
-      },
-      onSaved: (value) {
-        _channelCityEditingController.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: kAddChannelCityBarInputDecoration,
-    );
-  }
-
-  TextFormField _channelNameFieldF() {
-    return TextFormField(
-      autofocus: false,
-      controller: _channelNameEditingController,
-      keyboardType: TextInputType.name,
-      validator: (value) {
-        RegExp regex = RegExp(r'^.{3,}$');
-        if (value!.isEmpty) {
-          return ('Channel name cannot be empty');
-        }
-        if (!regex.hasMatch(value)) {
-          return ('Enter valid channel name (min. 3 characters)');
-        }
-        return null;
-      },
-      onSaved: (value) {
-        _channelNameEditingController.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: kAddChannelNameBarInputDecoration,
-    );
-  }
-
-  @visibleForTesting
   Future<void> chooseImageFromGallery() async {
     FocusScope.of(context).unfocus();
     final pickedFile =
@@ -292,12 +310,10 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
     setState(() => _file = image);
   }
 
-  @visibleForTesting
   void clearImage() {
     setState(() => _file = null);
   }
 
-  @visibleForTesting
   void clearCategory() {
     setState(() {
       _chosenCategoryId = '';
@@ -333,13 +349,14 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
     );
     channelParentId ??= '';
     if (channelParentId != '') {
-      _chosenCategoryName = await _addChannelController.getCategoryNameById(
+      _chosenCategoryName = await addChannelController.getCategoryNameById(
           channelParentId: channelParentId);
     }
     setState(() => _chosenCategoryId = channelParentId!);
   }
 
   Future<void> _createChannel() async {
+    FocusScope.of(context).unfocus();
     if (_formKey.currentState!.validate()) {
       if (_file == null || _chosenCategoryId == '') {
         _checkIsImageAndCategoryChosen();
@@ -347,8 +364,8 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       } else {
         _checkIsImageAndCategoryChosen();
       }
-      print(_chosenCategoryId);
-      print(_chosenCategoryName);
+
+      ScaffoldMessenger.of(context).showSnackBar(kChannelBeingAddedSnackBar);
 
       String? imageUrl;
       var uuid = const Uuid();
@@ -358,25 +375,27 @@ class _AddChannelScreenState extends State<AddChannelScreen> {
       final myId = Provider.of<User?>(context, listen: false)!.uid;
       List<String> usersIds = [myId];
 
-      // try {
-      //   imageUrl = await _addChannelController.uploadPhoto(
-      //       uuid: uuid.v1(), currentTime: now, file: _file!);
-      // } on FirebaseException catch (_) {
-      //   Fluttertoast.showToast(
-      //       msg: 'An unexpected error has occurred! Message wasn\'t sent');
-      // }
-      //
-      // _addChannelController.addChannel(
-      //     channelName: _channelNameEditingController.text,
-      //     imageUrl: imageUrl!,
-      //     city: city,
-      //     now: now,
-      //     description: _channelDescriptionEditingController.text,
-      //     usersIds: usersIds,
-      //     userId: myId,
-      //     parentCategoryId: _chosenCategoryId);
+      try {
+        imageUrl = await addChannelController.uploadPhoto(
+            uuid: uuid.v1(), currentTime: now, file: _file!);
+      } on FirebaseException catch (_) {
+        Fluttertoast.showToast(
+            msg: 'An unexpected error has occurred! Message wasn\'t sent');
+      }
 
-      ScaffoldMessenger.of(context).showSnackBar(kChannelAddedSnackBar);
+      addChannelController.addChannel(
+          channelName: _channelNameEditingController.text,
+          imageUrl: imageUrl!,
+          city: city,
+          now: now,
+          description: _channelDescriptionEditingController.text,
+          usersIds: usersIds,
+          userId: myId,
+          parentCategoryId: _chosenCategoryId);
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(kChannelAddedSnackBar);
 
       _channelNameEditingController.clear();
       _channelCityEditingController.clear();

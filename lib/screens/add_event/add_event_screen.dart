@@ -18,10 +18,10 @@ class AddEventScreen extends StatefulWidget {
   const AddEventScreen({Key? key, required this.data}) : super(key: key);
 
   @override
-  _AddEventScreenState createState() => _AddEventScreenState();
+  AddEventScreenState createState() => AddEventScreenState();
 }
 
-class _AddEventScreenState extends State<AddEventScreen> {
+class AddEventScreenState extends State<AddEventScreen> {
   final _formKey = GlobalKey<FormState>();
   late FocusNode _focusNode;
 
@@ -35,6 +35,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   late final TextFormField _eventTitleField;
   late final TextFormField _eventLocalizationField;
+
+  EventDate get eventDate => _eventDate;
 
   @override
   void initState() {
@@ -76,6 +78,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   _isDatePicked ? Container() : kNoDateForEventPickedText,
                   const SizedBox(height: 30.0),
                   ElevatedButton(
+                    key: const Key('createButton'),
                     onPressed: _createEvent,
                     child: kCreateEventButtonText,
                     style: kPinkRoundedButtonStyle,
@@ -100,39 +103,17 @@ class _AddEventScreenState extends State<AddEventScreen> {
           const SizedBox(height: 20.0),
           _eventLocalizationField,
           const SizedBox(height: 20.0),
-          DatePickerButton(eventDate: _eventDate),
+          DatePickerButton(key: const Key('datePicker'), eventDate: _eventDate),
           const SizedBox(height: 20.0),
-          TimePickerButton(eventDate: _eventDate),
+          TimePickerButton(key: const Key('timePicker'), eventDate: _eventDate),
         ],
       ),
     );
   }
 
-  TextFormField _eventLocalizationFieldF() {
-    return TextFormField(
-      autofocus: false,
-      controller: _eventLocalizationEditingController,
-      keyboardType: TextInputType.name,
-      validator: (value) {
-        RegExp regex = RegExp(r'^.{3,}$');
-        if (value!.isEmpty) {
-          return ('Localization cannot be empty');
-        }
-        if (!regex.hasMatch(value)) {
-          return ('Enter valid localization (min. 3 characters)');
-        }
-        return null;
-      },
-      onSaved: (value) {
-        _eventLocalizationEditingController.text = value!;
-      },
-      textInputAction: TextInputAction.next,
-      decoration: kAddEventLocalizationBarInputDecoration,
-    );
-  }
-
   TextFormField _eventTitleFieldF() {
     return TextFormField(
+      key: const Key('titleField'),
       autofocus: false,
       controller: _eventTitleEditingController,
       keyboardType: TextInputType.name,
@@ -154,6 +135,30 @@ class _AddEventScreenState extends State<AddEventScreen> {
     );
   }
 
+  TextFormField _eventLocalizationFieldF() {
+    return TextFormField(
+      key: const Key('localizationField'),
+      autofocus: false,
+      controller: _eventLocalizationEditingController,
+      keyboardType: TextInputType.name,
+      validator: (value) {
+        RegExp regex = RegExp(r'^.{3,}$');
+        if (value!.isEmpty) {
+          return ('Localization cannot be empty');
+        }
+        if (!regex.hasMatch(value)) {
+          return ('Enter valid localization (min. 3 characters)');
+        }
+        return null;
+      },
+      onSaved: (value) {
+        _eventLocalizationEditingController.text = value!;
+      },
+      textInputAction: TextInputAction.next,
+      decoration: kAddEventLocalizationBarInputDecoration,
+    );
+  }
+
   void _createEvent() {
     if (_formKey.currentState!.validate()) {
       if (!_eventDate.validate()) {
@@ -163,6 +168,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
         setState(() => _isDatePicked = true);
       }
 
+      ScaffoldMessenger.of(context).showSnackBar(kEventBeingAddedSnackBar);
+
       _addEventController.addEvent(
           title: _eventTitleEditingController.text,
           localization: _eventLocalizationEditingController.text,
@@ -171,7 +178,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
           goingUsers: List.empty(),
           channelId: widget.data.channelId);
 
-      ScaffoldMessenger.of(context).showSnackBar(kEventAddedSnackBar);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(kEventAddedSnackBar);
+
       _eventTitleEditingController.clear();
       _eventLocalizationEditingController.clear();
       setState(() => _eventDate.clear());
