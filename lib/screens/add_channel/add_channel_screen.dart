@@ -57,11 +57,13 @@ class AddChannelScreenState extends State<AddChannelScreen> {
       _file = value;
     });
   }
+
   set chosenCategoryId(String value) {
     setState(() {
       _chosenCategoryId = value;
     });
   }
+
   set chosenCategoryName(String value) {
     setState(() {
       _chosenCategoryName = value;
@@ -363,6 +365,8 @@ class AddChannelScreenState extends State<AddChannelScreen> {
         _checkIsImageAndCategoryChosen();
       }
 
+      ScaffoldMessenger.of(context).showSnackBar(kChannelBeingAddedSnackBar);
+
       String? imageUrl;
       var uuid = const Uuid();
       DateTime now = DateTime.now();
@@ -389,7 +393,9 @@ class AddChannelScreenState extends State<AddChannelScreen> {
           userId: myId,
           parentCategoryId: _chosenCategoryId);
 
-      ScaffoldMessenger.of(context).showSnackBar(kChannelAddedSnackBar);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(kChannelAddedSnackBar);
 
       _channelNameEditingController.clear();
       _channelCityEditingController.clear();

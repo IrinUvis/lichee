@@ -168,6 +168,8 @@ class AddEventScreenState extends State<AddEventScreen> {
         setState(() => _isDatePicked = true);
       }
 
+      ScaffoldMessenger.of(context).showSnackBar(kEventBeingAddedSnackBar);
+
       _addEventController.addEvent(
           title: _eventTitleEditingController.text,
           localization: _eventLocalizationEditingController.text,
@@ -176,7 +178,10 @@ class AddEventScreenState extends State<AddEventScreen> {
           goingUsers: List.empty(),
           channelId: widget.data.channelId);
 
-      ScaffoldMessenger.of(context).showSnackBar(kEventAddedSnackBar);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(kEventAddedSnackBar);
+
       _eventTitleEditingController.clear();
       _eventLocalizationEditingController.clear();
       setState(() => _eventDate.clear());

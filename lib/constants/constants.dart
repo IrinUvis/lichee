@@ -236,11 +236,25 @@ const kChosenCategoryValidTextStyle = TextStyle(
   fontWeight: FontWeight.bold,
 );
 
+const kChannelBeingAddedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(days: 365),
+  content: Text('Channel is being added'),
+);
+
 const kChannelAddedSnackBar = SnackBar(
   elevation: 10.0,
   behavior: SnackBarBehavior.floating,
   duration: Duration(milliseconds: 1000),
   content: Text('Channel added'),
+);
+
+const kEventBeingAddedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(days: 365),
+  content: Text('Event is being added'),
 );
 
 const kEventAddedSnackBar = SnackBar(
