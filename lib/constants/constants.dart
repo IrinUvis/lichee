@@ -309,7 +309,7 @@ const kAddingChannelsOrEventsUnavailable = Text(
 );
 
 const kLogInToAddChannelOrList = Text(
-  'Log in to add channel',
+  'Log in to add channel!',
   textAlign: TextAlign.center,
   style: TextStyle(
     fontSize: 20,

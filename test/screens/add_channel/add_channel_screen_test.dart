@@ -76,7 +76,7 @@ void main() {
     expect(find.byType(NotLoggedInView), findsNWidgets(1));
     expect(find.text('Adding channels unavailable'), findsOneWidget);
     expect(find.byType(MaterialButton), findsNWidgets(1));
-    expect(find.text('Log in to add channel'), findsOneWidget);
+    expect(find.text('Log in to add channel!'), findsOneWidget);
   });
 
   testWidgets('check initial screen state for logged in user', (tester) async {
