@@ -80,8 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       color: Colors.white,
                                       gradient: RadialGradient(
                                         colors: [
-                                          Colors.black.withOpacity(0.3),
-                                          Colors.grey.shade800.withOpacity(0.3),
+                                          Colors.black.withOpacity(0.5),
+                                          Colors.grey.shade800.withOpacity(0.4),
                                         ],
                                         stops: const [0.0, 1.0],
                                       ),
@@ -91,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Text(
                                       channel.channelName,
                                       style: kBannerTextStyle,
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ],

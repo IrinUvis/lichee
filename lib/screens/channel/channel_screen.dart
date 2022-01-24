@@ -85,10 +85,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
           .collection('users')
           .get();
       for (var element in users.docs) {
-        if (ids.contains(element.id)) {
+        if (ids.contains(element.get('id'))) {
           members.add(element.get('username'));
         }
-        if (channel.ownerId == element.id) {
+        if (channel.ownerId == element.get('id')) {
           ownerName = element.get('username');
           description.ownerName = ownerName;
           about.ownerName = ownerName;
@@ -185,27 +185,40 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               TextButton.icon(
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.check_circle_outline,
-                                  color: LicheeColors.primary,
+                                  color: user!.uid != channel.ownerId
+                                      ? LicheeColors.primary
+                                      : LicheeColors.disabledButton,
                                 ),
-                                onPressed: () {
-                                  setState(
-                                    () {
-                                      if (user != null) {
-                                        hasBeenInitiallyPressed =
-                                            !hasBeenInitiallyPressed;
-                                        _updateChannelService
-                                            .removeUserFromChannelById(
-                                                user.uid, channel.channelId);
-                                        channel.userIds.remove(user.uid);
+                                onPressed: user.uid != channel.ownerId
+                                    ? () {
+                                        setState(
+                                          () {
+                                            hasBeenInitiallyPressed =
+                                                !hasBeenInitiallyPressed;
+                                            _updateChannelService
+                                                .removeUserFromChannelById(
+                                                    user.uid,
+                                                    channel.channelId);
+                                            channel.userIds.remove(user.uid);
+                                            FirebaseFirestore.instance
+                                                .doc(
+                                                    'channel_chats/${channel.channelId}')
+                                                .update({
+                                              'userIds': FieldValue.arrayUnion(
+                                                  [(user.uid)])
+                                            });
+                                          },
+                                        );
                                       }
-                                    },
-                                  );
-                                },
-                                label: const Text(
+                                    : null,
+                                label: Text(
                                   'Joined',
-                                  style: TextStyle(color: LicheeColors.primary),
+                                  style: TextStyle(
+                                      color: user.uid != channel.ownerId
+                                          ? LicheeColors.primary
+                                          : LicheeColors.disabledButton),
                                 ),
                               ),
                               IconButton(
