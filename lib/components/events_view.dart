@@ -24,22 +24,20 @@ class EventsView extends StatelessWidget {
           const Text('Events', style: kBannerTextStyle),
           events.isEmpty
               ? const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                  vertical: 16.0),
-              child: Text(
-                'It seems that no events has been planned yet!',
-                style: kDescriptiveText,
-              ),
-            ),
-          )
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.0),
+                    child: Text(
+                      'It seems that no events has been planned yet!',
+                      style: kDescriptiveText,
+                    ),
+                  ),
+                )
               : Container(),
           for (var e in events)
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  vertical: 16.0, horizontal: 10.0),
-              child: EventTile(
-                  event: e, channelId: channel.channelId),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0),
+              child: EventTile(event: e, channelId: channel.channelId),
             ),
         ],
       ),
