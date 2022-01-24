@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20.0),
+            const SizedBox(height: 5.0),
             const Text(
               'Promoted channels',
               style: kBannerTextStyle,
@@ -73,6 +73,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Image.network(
                                     channel.channelImageUrl,
                                     fit: BoxFit.cover,
+                                  ),
+                                  Container(
+                                    height: 100.0,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      gradient: RadialGradient(
+                                        colors: [
+                                          Colors.black.withOpacity(0.3),
+                                          Colors.grey.shade800.withOpacity(0.3),
+                                        ],
+                                        stops: const [0.0, 1.0],
+                                      ),
+                                    ),
                                   ),
                                   Center(
                                     child: Text(

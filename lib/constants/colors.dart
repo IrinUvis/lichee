@@ -8,4 +8,5 @@ class LicheeColors {
   static const Color backgroundColor = Color(0xFF1A1A1A);
   static const Color appBarColor = Color(0x221A1A1A);
   static const Color greyColor = Color(0xFF363636);
+  static const Color disabledButton = Color(0xDDa8a8a8);
 }
