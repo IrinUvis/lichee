@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/channels/domain/channel.dart';
 import 'package:lichee/channels/domain/channels_repository.dart';
-import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/components/event_tile.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/services/storage_service.dart';

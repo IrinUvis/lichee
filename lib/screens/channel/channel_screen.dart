@@ -22,9 +22,13 @@ class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';
   final ReadChannelDto channel;
   final UpdateChannelService? updateChannelService;
+  bool isTest;
 
-  const ChannelScreen(
-      {Key? key, required this.channel, this.updateChannelService})
+  ChannelScreen(
+      {Key? key,
+      required this.channel,
+      this.updateChannelService,
+      this.isTest = false})
       : super(key: key);
 
   @override
@@ -72,21 +76,26 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   Future<List<String>> getMemberNames(List<String> ids) async {
-    final users = await Provider.of<FirebaseProvider>(context)
-        .firestore
-        .collection('users')
-        .get();
-    for (var element in users.docs) {
-      if (ids.contains(element.id)) {
-        members.add(element.get('username'));
+    if (widget.isTest) {
+      members.addAll(widget.channel.userIds);
+      return members;
+    } else {
+      final users = await Provider.of<FirebaseProvider>(context)
+          .firestore
+          .collection('users')
+          .get();
+      for (var element in users.docs) {
+        if (ids.contains(element.id)) {
+          members.add(element.get('username'));
+        }
+        if (channel.ownerId == element.id) {
+          ownerName = element.get('username');
+          description.ownerName = ownerName;
+          about.ownerName = ownerName;
+        }
       }
-      if (channel.ownerId == element.id) {
-        ownerName = element.get('username');
-        description.ownerName = ownerName;
-        about.ownerName = ownerName;
-      }
+      return members;
     }
-    return members;
   }
 
   Widget channelForNonMember(User? user) {
@@ -233,7 +242,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           description: description,
                           about: about,
                           isMember: true,
-                          members: members.sublist(0, channel.userIds.length)),
+                          members: members.isNotEmpty
+                              ? members.sublist(0, channel.userIds.length)
+                              : members),
                     ),
                   ],
                 ),
@@ -260,11 +271,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
     } else {
       isLogged = false;
     }
-    return FutureBuilder(
-      future: getMemberNames(channel.userIds),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Scaffold(
+    return widget.isTest
+        ? Scaffold(
             floatingActionButton: channel.ownerId == user?.uid
                 ? Padding(
                     padding: const EdgeInsets.only(bottom: 15.0),
@@ -328,16 +336,85 @@ class _ChannelScreenState extends State<ChannelScreen> {
             body: channel.userIds.contains(user?.uid)
                 ? channelForMember(user)
                 : channelForNonMember(user),
+          )
+        : FutureBuilder(
+            future: getMemberNames(channel.userIds),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Scaffold(
+                  floatingActionButton: channel.ownerId == user?.uid
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 15.0),
+                          child: FloatingActionButton(
+                            child: const Icon(Icons.add),
+                            mini: true,
+                            backgroundColor: LicheeColors.primary,
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                AddEventScreen.id,
+                                arguments: AddEventNavigationParams(
+                                    channelId: channel.channelId,
+                                    channelName: channel.channelName),
+                              );
+                            },
+                          ),
+                        )
+                      : null,
+                  bottomSheet: Container(
+                    height: 30.0,
+                    child: Center(
+                      child: SmoothPageIndicator(
+                        controller: _controller,
+                        count: channel.userIds.contains(user?.uid) ? 2 : 1,
+                        effect: const JumpingDotEffect(
+                          dotColor: Colors.grey,
+                          activeDotColor: LicheeColors.primary,
+                          dotHeight: 10.0,
+                          dotWidth: 10.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  extendBodyBehindAppBar: true,
+                  appBar: AppBar(
+                    foregroundColor: LicheeColors.primary,
+                    backgroundColor: LicheeColors.appBarColor,
+                    elevation: 0.0,
+                    leading: null,
+                    actions: [
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_horiz),
+                        onSelected: handleTap,
+                        itemBuilder: (BuildContext context) {
+                          return {'Report'}.map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(choice),
+                            );
+                          }).toList();
+                        },
+                      ),
+                    ],
+                    title: Text(
+                      channel.channelName,
+                      style: kAppBarTitleTextStyle,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  body: channel.userIds.contains(user?.uid)
+                      ? channelForMember(user)
+                      : channelForNonMember(user),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: LicheeColors.primary,
+                  ),
+                );
+              }
+            },
           );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: LicheeColors.primary,
-            ),
-          );
-        }
-      },
-    );
   }
 
   Future<void> _reportDialog(BuildContext context) async {

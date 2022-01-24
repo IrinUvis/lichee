@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,10 @@ void main() {
       final _auth = MockFirebaseAuth();
       final _storage = StorageService(MockFirebaseStorage());
 
-      final widget = ChannelScreen(channel: channelDTO);
+      final widget = ChannelScreen(
+        channel: channelDTO,
+        isTest: true,
+      );
       final screen = Provider<FirebaseProvider>(
         create: (_) => FirebaseProvider(
           auth: _auth,
@@ -56,7 +60,7 @@ void main() {
       final _auth = MockFirebaseAuth();
       final _storage = StorageService(MockFirebaseStorage());
 
-      final widget = ChannelScreen(channel: channelDTO);
+      final widget = ChannelScreen(channel: channelDTO, isTest: true);
       final screen = Provider<FirebaseProvider>(
         create: (_) => FirebaseProvider(
           auth: _auth,
@@ -81,7 +85,7 @@ void main() {
       final _firestore = FakeFirebaseFirestore();
       final _auth = MockFirebaseAuth();
       final _storage = StorageService(MockFirebaseStorage());
-      final widget = ChannelScreen(channel: channelDTO);
+      final widget = ChannelScreen(channel: channelDTO, isTest: true);
       final screen = Provider<FirebaseProvider>(
         create: (_) => FirebaseProvider(
           auth: _auth,
@@ -109,7 +113,7 @@ void main() {
       final _firestore = FakeFirebaseFirestore();
       final _auth = MockFirebaseAuth();
       final _storage = StorageService(MockFirebaseStorage());
-      final widget = ChannelScreen(channel: channelDTO);
+      final widget = ChannelScreen(channel: channelDTO, isTest: true);
       final screen = Provider<FirebaseProvider>(
         create: (_) => FirebaseProvider(
           auth: _auth,
@@ -142,7 +146,10 @@ void main() {
       final _firestore = FakeFirebaseFirestore();
       final _auth = MockFirebaseAuth();
       final _storage = StorageService(MockFirebaseStorage());
-      final widget = ChannelScreen(channel: channelDTO);
+      final widget = ChannelScreen(
+        channel: channelDTO,
+        isTest: true,
+      );
       final screen = Provider<FirebaseProvider>(
         create: (_) => FirebaseProvider(
           auth: _auth,
@@ -171,9 +178,7 @@ void main() {
       expect(find.text('hello from Test'), findsNothing);
     });
 
-    testWidgets(
-        'Logged in user joins the channel',
-        (tester) async {
+    testWidgets('Logged in user joins the channel', (tester) async {
       final _firestore = FakeFirebaseFirestore();
       try {
         await _firestore.collection("channels").add({
@@ -208,13 +213,22 @@ void main() {
           'ownerId': channelDTO.ownerId,
         });
       }
+      _firestore.collection('events/${channelDTO.channelId}/events').add({
+        'title': 'eventTitle',
+        'localization': 'Lodz',
+        'interestedUsers': [],
+        'goingUsers': ['userId'],
+        'date': Timestamp.now(),
+      });
       final _mock = MockUser(uid: 'helloFromTest');
       final _auth = MockFirebaseAuth(mockUser: _mock);
       final _storage = StorageService(MockFirebaseStorage());
       final _updateService = UpdateChannelService(firestore: _firestore);
       final widget = ChannelScreen(
-          channel: channelDTO, updateChannelService: _updateService);
-      print(widget.updateChannelService);
+        channel: channelDTO,
+        updateChannelService: _updateService,
+        isTest: true,
+      );
       final screen = MultiProvider(
         providers: [
           Provider<User?>(
@@ -252,7 +266,8 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('logged in users joins and removes themself from the channel', (tester) async {
+    testWidgets('logged in users joins and removes themself from the channel',
+        (tester) async {
       final _firestore = FakeFirebaseFirestore();
       try {
         await _firestore.collection("channels").add({
@@ -292,7 +307,10 @@ void main() {
       final _storage = StorageService(MockFirebaseStorage());
       final _updateService = UpdateChannelService(firestore: _firestore);
       final widget = ChannelScreen(
-          channel: channelDTO, updateChannelService: _updateService);
+        channel: channelDTO,
+        updateChannelService: _updateService,
+        isTest: true,
+      );
       final screen = MultiProvider(
         providers: [
           Provider<User?>(
@@ -319,7 +337,7 @@ void main() {
       final button = find.ancestor(
           of: find.byIcon(Icons.group_add),
           matching:
-          find.byWidgetPredicate((widget) => widget is ElevatedButton));
+              find.byWidgetPredicate((widget) => widget is ElevatedButton));
       expect(button.runtimeType, isNotNull);
       await tester.tap(button);
       await tester.idle();
