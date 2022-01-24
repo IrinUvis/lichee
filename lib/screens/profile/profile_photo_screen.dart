@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/services/storage_service.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +30,7 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
 
   @override
   Widget build(context) {
-    User? user = Provider.of<User?>(context);
+    User? user = Provider.of<AuthenticationProvider?>(context)!.currentUser;
     _storageService = Provider.of<FirebaseProvider?>(context)!.storage;
 
     return Scaffold(
