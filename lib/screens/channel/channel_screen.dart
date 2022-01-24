@@ -42,7 +42,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   late bool isLogged;
   late final List<String> members = [];
   late final UpdateChannelService _updateChannelService;
-  late final String ownerName;
+  String? ownerName;
 
   @override
   void initState() {
@@ -81,8 +81,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
         members.add(element.get('username'));
       }
       if (channel.ownerId == element.id) {
-        description.ownerName = element.get('username').toString();
-        about.ownerName = element.get('username').toString();
+        ownerName = element.get('username');
+        description.ownerName = ownerName;
+        about.ownerName = ownerName;
       }
     }
     return members;
