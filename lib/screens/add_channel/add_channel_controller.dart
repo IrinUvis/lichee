@@ -40,6 +40,7 @@ class AddChannelController {
       'userIds': usersIds,
       'ownerId': userId,
       'parentCategoryId': parentCategoryId,
+      'isPromoted': false,
     });
 
     await _firestore.collection('channel_chats').doc(newChannel.id).set(
@@ -58,14 +59,8 @@ class AddChannelController {
       'isLastCategory': false,
     });
 
-    final parentCategory =
-        await _firestore.collection('categories').doc(parentCategoryId).get();
-    Map<String, dynamic> parentCategoryMap =
-        parentCategory.data() as Map<String, dynamic>;
-    List<String> childrenIdsList = List.from(parentCategoryMap['childrenIds']);
-    childrenIdsList.add(newChannel.id);
     await _firestore.collection('categories').doc(parentCategoryId).update({
-      'childrenIds': childrenIdsList,
+      'childrenIds': FieldValue.arrayUnion([newChannel.id])
     });
   }
 

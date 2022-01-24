@@ -35,92 +35,93 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 5.0),
-            const Text(
-              'Promoted channels',
-              style: kBannerTextStyle,
-            ),
-            const SizedBox(height: 20.0),
-            FutureBuilder(
-              future: _homeScreenController.getPromotedChannels(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<ReadChannelDto>> snapshot) {
-                if (snapshot.hasData) {
-                  return CarouselSlider(
-                    options: CarouselOptions(
-                      viewportFraction: 0.5,
-                      enableInfiniteScroll: false,
-                      enlargeCenterPage: true,
-                    ),
-                    items: snapshot.data!
-                        .map(
-                          (channel) => ClipRRect(
-                            borderRadius: BorderRadius.circular(20.0),
-                            child: InkWell(
-                              onTap: () async {
-                                Navigator.pushNamed(
-                                  context,
-                                  ChannelScreen.id,
-                                  arguments: channel,
-                                );
-                              },
-                              child: Stack(
-                                fit: StackFit.expand,
-                                children: [
-                                  Image.network(
-                                    channel.channelImageUrl,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Container(
-                                    height: 100.0,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      gradient: RadialGradient(
-                                        colors: [
-                                          Colors.black.withOpacity(0.5),
-                                          Colors.grey.shade800.withOpacity(0.4),
-                                        ],
-                                        stops: const [0.0, 1.0],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 5.0),
+              const Text(
+                'Promoted channels',
+                style: kBannerTextStyle,
+              ),
+              const SizedBox(height: 20.0),
+              FutureBuilder(
+                future: _homeScreenController.getPromotedChannels(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<ReadChannelDto>> snapshot) {
+                  if (snapshot.hasData) {
+                    return CarouselSlider(
+                      options: CarouselOptions(
+                        viewportFraction: 0.5,
+                        enableInfiniteScroll: false,
+                        enlargeCenterPage: true,
+                      ),
+                      items: snapshot.data!
+                          .map(
+                            (channel) => ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: InkWell(
+                                onTap: () async {
+                                  Navigator.pushNamed(
+                                    context,
+                                    ChannelScreen.id,
+                                    arguments: channel,
+                                  );
+                                },
+                                child: Stack(
+                                  fit: StackFit.expand,
+                                  children: [
+                                    Image.network(
+                                      channel.channelImageUrl,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Container(
+                                      height: 100.0,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        gradient: RadialGradient(
+                                          colors: [
+                                            Colors.black.withOpacity(0.5),
+                                            Colors.grey.shade800
+                                                .withOpacity(0.4),
+                                          ],
+                                          stops: const [0.0, 1.0],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Center(
-                                    child: Text(
-                                      channel.channelName,
-                                      style: kBannerTextStyle,
-                                      textAlign: TextAlign.center,
+                                    Center(
+                                      child: Text(
+                                        channel.channelName,
+                                        style: kBannerTextStyle,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: LicheeColors.primary,
-                    ),
-                  );
-                }
-              },
-            ),
-            const SizedBox(height: 20.0),
-            const Text(
-              'Your channels',
-              style: kBannerTextStyle,
-            ),
-            Expanded(
-              child: ChannelListView(
+                          )
+                          .toList(),
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: LicheeColors.primary,
+                      ),
+                    );
+                  }
+                },
+              ),
+              const SizedBox(height: 20.0),
+              const Text(
+                'Your channels',
+                style: kBannerTextStyle,
+              ),
+              ChannelListView(
                 homeScreenController: _homeScreenController,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
