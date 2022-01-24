@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/models/user_data.dart';
+import 'package:lichee/screens/add_event/add_event_screen.dart';
 import 'package:lichee/screens/channel/channel_screen.dart';
 import 'package:lichee/screens/channel_chat/channel_chat_screen.dart';
 import 'package:lichee/screens/tabs_screen.dart';
@@ -27,6 +28,11 @@ class RouteGenerator {
             data: args as ChannelChatNavigationParams,
             imagePicker: ImagePicker(),
           ),
+        );
+      case AddEventScreen.id:
+        final args = settings.arguments!;
+        return MaterialPageRoute(
+          builder: (context) => AddEventScreen(data: args as AddEventNavigationParams,),
         );
       default:
         return _errorRoute();

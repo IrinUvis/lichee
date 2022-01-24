@@ -6,12 +6,12 @@ class NotLoggedInView extends StatelessWidget {
   const NotLoggedInView({
     Key? key,
     required this.context,
-    required this.titleText,
+    this.titleText,
     required this.buttonText,
   }) : super(key: key);
 
   final BuildContext context;
-  final Text titleText;
+  final Text? titleText;
   final Text buttonText;
 
   @override
@@ -21,9 +21,27 @@ class NotLoggedInView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          titleText,
+        children: titleText != null ? [
+          titleText!,
           const SizedBox(height: 30),
+          Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(30),
+            color: Colors.pinkAccent,
+            child: MaterialButton(
+              padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
+              minWidth: MediaQuery.of(context).size.width,
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+                Provider.of<TabsScreenControllerProvider>(
+                  context,
+                  listen: false,
+                ).selectProfilePage();
+              },
+              child: buttonText,
+            ),
+          ),
+        ] : [
           Material(
             elevation: 5,
             borderRadius: BorderRadius.circular(30),

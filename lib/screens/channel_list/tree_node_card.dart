@@ -23,26 +23,31 @@ class TreeNodeCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(name, style: kCategoryNodeTestStyle),
-                const SizedBox(width: 5.0),
-                kCategoryNodeArrow,
-              ],
+            Expanded(
+              flex: 8,
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: Text(name, style: kCategoryNodeTestStyle),
+                  ),
+                  const Expanded(flex: 2, child: kCategoryNodeArrow),
+                ],
+              ),
             ),
-            Row(
-              children: [
-                (childrenIds!.isEmpty || childrenIds == null) &&
-                        type == 'category'
-                    ? kCategoryNodeEmptyText
-                    : Container(),
-                const SizedBox(width: 5.0),
-                type == 'category'
-                    ? kCategoryNodeCategoryIcon
-                    : kCategoryNodeChannelIcon,
-              ],
+            Expanded(
+              flex: 2,
+              child: Column(
+                children: [
+                  (childrenIds!.isEmpty || childrenIds == null) &&
+                          type == 'category'
+                      ? kCategoryNodeEmptyText
+                      : Container(),
+                  const SizedBox(height: 5.0),
+                  type == 'category' ? kCategoryIcon : kChannelIcon,
+                ],
+              ),
             ),
           ],
         ),

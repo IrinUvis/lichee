@@ -106,7 +106,11 @@ class _EventTileState extends State<EventTile> {
                         });
                       }
                     },
-                    icon: Icon(Icons.check, color: LicheeColors.accentColor),
+                    icon: isGoingPressed
+                        ? Icon(Icons.check_circle,
+                            color: LicheeColors.accentColor)
+                        : Icon(Icons.check_circle_outlined,
+                            color: LicheeColors.accentColor),
                     label: Text('Going',
                         style: TextStyle(color: LicheeColors.accentColor))),
               ],

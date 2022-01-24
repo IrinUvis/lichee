@@ -3,14 +3,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/channels/services/update/update_channel.dart';
-import 'package:lichee/components/channel_backgroud_photo.dart';
+import 'package:lichee/components/channel_background_photo.dart';
 import 'package:lichee/components/details_list_view.dart';
 import 'package:lichee/components/details_rows.dart';
 import 'package:lichee/components/details_table.dart';
-import 'package:lichee/components/event_tile.dart';
+import 'package:lichee/components/events_view.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
 import 'package:lichee/providers/firebase_provider.dart';
+import 'package:lichee/screens/add_event/add_event_screen.dart';
 import 'package:lichee/screens/channel_chat/channel_chat_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -20,14 +21,20 @@ import '../../constants/channel_constants.dart';
 class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';
   final ReadChannelDto channel;
+  final UpdateChannelService? updateChannelService;
+  bool isTest;
 
-  ChannelScreen({required this.channel});
+  ChannelScreen(
+      {Key? key,
+      required this.channel,
+      this.updateChannelService,
+      this.isTest = false})
+      : super(key: key);
 
   @override
   State<ChannelScreen> createState() => _ChannelScreenState();
 }
 
-// TODO EL - bug?: Te kropki na dole co oznaczają stronę, stykają się z ekranem
 class _ChannelScreenState extends State<ChannelScreen> {
   String? report;
   late bool hasBeenInitiallyPressed;
@@ -36,8 +43,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
   late DetailsRows description;
   final PageController _controller = PageController();
   double currentPage = 0;
-
+  late bool isLogged;
+  late final List<String> members = [];
   late final UpdateChannelService _updateChannelService;
+  String? ownerName;
 
   @override
   void initState() {
@@ -50,15 +59,42 @@ class _ChannelScreenState extends State<ChannelScreen> {
         currentPage = _controller.page!;
       });
     });
-    _updateChannelService = UpdateChannelService(
-        firestore:
-            Provider.of<FirebaseProvider>(context, listen: false).firestore);
+    if (widget.updateChannelService != null) {
+      _updateChannelService = widget.updateChannelService!;
+    } else {
+      _updateChannelService = UpdateChannelService(
+          firestore:
+              Provider.of<FirebaseProvider>(context, listen: false).firestore);
+    }
   }
 
   void handleTap(String value) {
     switch (value) {
       case 'Report':
         _reportDialog(context);
+    }
+  }
+
+  Future<List<String>> getMemberNames(List<String> ids) async {
+    if (widget.isTest) {
+      members.addAll(widget.channel.userIds);
+      return members;
+    } else {
+      final users = await Provider.of<FirebaseProvider>(context)
+          .firestore
+          .collection('users')
+          .get();
+      for (var element in users.docs) {
+        if (ids.contains(element.get('id'))) {
+          members.add(element.get('username'));
+        }
+        if (channel.ownerId == element.get('id')) {
+          ownerName = element.get('username');
+          description.ownerName = ownerName;
+          about.ownerName = ownerName;
+        }
+      }
+      return members;
     }
   }
 
@@ -73,23 +109,25 @@ class _ChannelScreenState extends State<ChannelScreen> {
                 ElevatedButton.icon(
                   icon: const Icon(Icons.group_add),
                   style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all<Color>(LicheeColors.primary),
+                    backgroundColor: user != null
+                        ? MaterialStateProperty.all<Color>(LicheeColors.primary)
+                        : MaterialStateProperty.all<Color>(
+                            LicheeColors.disabledButton),
+                    foregroundColor: user != null
+                        ? MaterialStateProperty.all<Color>(Colors.white)
+                        : MaterialStateProperty.all<Color>(
+                            const Color(0xFF424242)),
                   ),
-                  onPressed: () {
-                    setState(
-                      () {
-                        if (user != null) {
-                          hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
-                          _updateChannelService.addUserToChannelById(
-                              user.uid, channel.channelId);
-                          channel.userIds.add(user.uid);
+                  onPressed: isLogged
+                      ? () {
+                          setState(() {
+                            hasBeenInitiallyPressed = !hasBeenInitiallyPressed;
+                            _updateChannelService.addUserToChannelById(
+                                user!.uid, channel.channelId);
+                            channel.userIds.add(user.uid);
+                          });
                         }
-                      },
-                    );
-                  },
-                  // TODO EL - sugestia: imo ten przycisk do joinowania kanału powinien być wyszarzony jak ktoś nie jest zalogowany
-                  // bo teraz po prostu można go nacisnąć bez efektu
+                      : null,
                   label: const Text('Join'),
                 ),
                 const SizedBox(height: 10.0),
@@ -119,7 +157,6 @@ class _ChannelScreenState extends State<ChannelScreen> {
   }
 
   Widget channelForMember(User? user) {
-    List members = channel.userIds.toList();
     return StreamBuilder<QuerySnapshot>(
       stream: Provider.of<FirebaseProvider>(context, listen: false)
           .firestore
@@ -131,9 +168,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
               .map((e) => e.data() as Map<String, dynamic>)
               .toList();
           final ids = snapshot.data!.docs.map((e) => e.id).toList();
-          events.forEach((element) {
+          for (var element in events) {
             element.putIfAbsent('id', () => ids[events.indexOf(element)]);
-          });
+          }
           return PageView(
             controller: _controller,
             children: [
@@ -148,31 +185,45 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               TextButton.icon(
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.check_circle_outline,
-                                  color: LicheeColors.primary,
+                                  color: user!.uid != channel.ownerId
+                                      ? LicheeColors.primary
+                                      : LicheeColors.disabledButton,
                                 ),
-                                onPressed: () {
-                                  setState(
-                                    () {
-                                      if (user != null) {
-                                        hasBeenInitiallyPressed =
-                                            !hasBeenInitiallyPressed;
-                                        _updateChannelService
-                                            .removeUserFromChannelById(
-                                                user.uid, channel.channelId);
-                                        channel.userIds.remove(user.uid);
+                                onPressed: user.uid != channel.ownerId
+                                    ? () {
+                                        setState(
+                                          () {
+                                            hasBeenInitiallyPressed =
+                                                !hasBeenInitiallyPressed;
+                                            _updateChannelService
+                                                .removeUserFromChannelById(
+                                                    user.uid,
+                                                    channel.channelId);
+                                            channel.userIds.remove(user.uid);
+                                            FirebaseFirestore.instance
+                                                .doc(
+                                                    'channel_chats/${channel.channelId}')
+                                                .update({
+                                              'userIds': FieldValue.arrayUnion(
+                                                  [(user.uid)])
+                                            });
+                                          },
+                                        );
                                       }
-                                    },
-                                  );
-                                },
-                                label: const Text(
+                                    : null,
+                                label: Text(
                                   'Joined',
-                                  style: TextStyle(color: LicheeColors.primary),
+                                  style: TextStyle(
+                                      color: user.uid != channel.ownerId
+                                          ? LicheeColors.primary
+                                          : LicheeColors.disabledButton),
                                 ),
                               ),
                               IconButton(
                                 color: LicheeColors.primary,
+                                tooltip: "Go to chat",
                                 onPressed: () {
                                   Navigator.pushNamed(
                                     context,
@@ -188,34 +239,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             ],
                           ),
                           const SizedBox(height: 10.0),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Events', style: kBannerTextStyle),
-                                events.isEmpty
-                                    ? const Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 16.0),
-                                          child: Text(
-                                            'It seems that no events has been planned yet!',
-                                            style: kDescriptiveText,
-                                          ),
-                                        ),
-                                      )
-                                    : Container(),
-                                for (var e in events)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 16.0, horizontal: 10.0),
-                                    child: EventTile(
-                                        event: e, channelId: channel.channelId),
-                                  ),
-                              ],
-                            ),
-                          ),
+                          EventsView(events: events, channel: channel),
                         ],
                       ),
                     ),
@@ -231,7 +255,9 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           description: description,
                           about: about,
                           isMember: true,
-                          members: members),
+                          members: members.isNotEmpty
+                              ? members.sublist(0, channel.userIds.length)
+                              : members),
                     ),
                   ],
                 ),
@@ -253,48 +279,155 @@ class _ChannelScreenState extends State<ChannelScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<User?>(context);
     hasBeenInitiallyPressed = channel.userIds.contains(user?.uid);
-    return Scaffold(
-      bottomSheet: Container(
-        height: 15.0,
-        child: Center(
-          child: SmoothPageIndicator(
-            controller: _controller,
-            count: channel.userIds.contains(user?.uid) ? 2 : 1,
-            effect: const JumpingDotEffect(
-              dotColor: Colors.grey,
-              activeDotColor: LicheeColors.primary,
-              dotHeight: 10.0,
-              dotWidth: 10.0,
+    if (user != null) {
+      isLogged = true;
+    } else {
+      isLogged = false;
+    }
+    return widget.isTest
+        ? Scaffold(
+            floatingActionButton: channel.ownerId == user?.uid
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: FloatingActionButton(
+                      child: const Icon(Icons.add),
+                      mini: true,
+                      backgroundColor: LicheeColors.primary,
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          AddEventScreen.id,
+                          arguments: AddEventNavigationParams(
+                              channelId: channel.channelId,
+                              channelName: channel.channelName),
+                        );
+                      },
+                    ),
+                  )
+                : null,
+            bottomSheet: Container(
+              height: 30.0,
+              child: Center(
+                child: SmoothPageIndicator(
+                  controller: _controller,
+                  count: channel.userIds.contains(user?.uid) ? 2 : 1,
+                  effect: const JumpingDotEffect(
+                    dotColor: Colors.grey,
+                    activeDotColor: LicheeColors.primary,
+                    dotHeight: 10.0,
+                    dotWidth: 10.0,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        foregroundColor: LicheeColors.primary,
-        backgroundColor: LicheeColors.appBarColor,
-        elevation: 0.0,
-        leading: null,
-        actions: [
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_horiz),
-            onSelected: handleTap,
-            itemBuilder: (BuildContext context) {
-              return {'Report'}.map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice,
-                  child: Text(choice),
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              foregroundColor: LicheeColors.primary,
+              backgroundColor: LicheeColors.appBarColor,
+              elevation: 0.0,
+              leading: null,
+              actions: [
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_horiz),
+                  onSelected: handleTap,
+                  itemBuilder: (BuildContext context) {
+                    return {'Report'}.map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList();
+                  },
+                ),
+              ],
+              title: Text(
+                channel.channelName,
+                style: kAppBarTitleTextStyle,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            body: channel.userIds.contains(user?.uid)
+                ? channelForMember(user)
+                : channelForNonMember(user),
+          )
+        : FutureBuilder(
+            future: getMemberNames(channel.userIds),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Scaffold(
+                  floatingActionButton: channel.ownerId == user?.uid
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 15.0),
+                          child: FloatingActionButton(
+                            child: const Icon(Icons.add),
+                            mini: true,
+                            backgroundColor: LicheeColors.primary,
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                AddEventScreen.id,
+                                arguments: AddEventNavigationParams(
+                                    channelId: channel.channelId,
+                                    channelName: channel.channelName),
+                              );
+                            },
+                          ),
+                        )
+                      : null,
+                  bottomSheet: Container(
+                    height: 30.0,
+                    child: Center(
+                      child: SmoothPageIndicator(
+                        controller: _controller,
+                        count: channel.userIds.contains(user?.uid) ? 2 : 1,
+                        effect: const JumpingDotEffect(
+                          dotColor: Colors.grey,
+                          activeDotColor: LicheeColors.primary,
+                          dotHeight: 10.0,
+                          dotWidth: 10.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  extendBodyBehindAppBar: true,
+                  appBar: AppBar(
+                    foregroundColor: LicheeColors.primary,
+                    backgroundColor: LicheeColors.appBarColor,
+                    elevation: 0.0,
+                    leading: null,
+                    actions: [
+                      PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_horiz),
+                        onSelected: handleTap,
+                        itemBuilder: (BuildContext context) {
+                          return {'Report'}.map((String choice) {
+                            return PopupMenuItem<String>(
+                              value: choice,
+                              child: Text(choice),
+                            );
+                          }).toList();
+                        },
+                      ),
+                    ],
+                    title: Text(
+                      channel.channelName,
+                      style: kAppBarTitleTextStyle,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  body: channel.userIds.contains(user?.uid)
+                      ? channelForMember(user)
+                      : channelForNonMember(user),
                 );
-              }).toList();
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: LicheeColors.primary,
+                  ),
+                );
+              }
             },
-          ),
-        ],
-        title: Text(channel.channelName, style: kAppBarTitleTextStyle),
-      ),
-      body: channel.userIds.contains(user?.uid)
-          ? channelForMember(user)
-          : channelForNonMember(user),
-    );
+          );
   }
 
   Future<void> _reportDialog(BuildContext context) async {

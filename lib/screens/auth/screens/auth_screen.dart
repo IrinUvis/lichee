@@ -27,7 +27,7 @@ class AuthScreenState extends State<AuthScreen> {
   final emailEditingController = TextEditingController();
   final passwordEditingController = TextEditingController();
   final confirmPasswordEditingController = TextEditingController();
-  DateTime? selectedDateOfBirth = DateTime(2000);
+  DateTime? selectedDateOfBirth = DateTime(2000, 1, 1);
 
   String? errorMessage;
   bool inAsyncCall = false;
@@ -337,7 +337,6 @@ class AuthScreenState extends State<AuthScreen> {
         }
         Fluttertoast.showToast(msg: errorMessage!);
       }
-      setState(() => toggleInAsyncCall());
     }
   }
 

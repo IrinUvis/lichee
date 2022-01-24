@@ -30,6 +30,7 @@ dependencies:
   # tests
   mockito: ^5.0.16
   fake_cloud_firestore: ^1.2.0
+  uuid: ^3.0.5
 
 dev_dependencies:
   flutter_test:

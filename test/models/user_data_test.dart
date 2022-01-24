@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/models/user_data.dart';
+import 'package:lichee/screens/auth/role.dart';
 
 void main() {
   group('UserData', () {
@@ -47,6 +48,7 @@ void main() {
         'id': 'id',
         'email': 'email',
         'username': 'username',
+        'role': 'admin',
         'dateOfBirth': Timestamp.fromDate(DateTime(2000)),
       };
 
@@ -56,18 +58,24 @@ void main() {
       expect('email', equals(userData.email));
       expect('username', equals(userData.username));
       expect(null, equals(userData.photoUrl));
+      expect(Role.admin, equals(userData.role));
       expect(DateTime(2000), equals(userData.dateOfBirth));
     });
 
     test('toMap method works well', () {
       final userData = UserData(
-          username: 'username', email: 'email', dateOfBirth: DateTime(2000));
+        username: 'username',
+        email: 'email',
+        role: Role.normalUser,
+        dateOfBirth: DateTime(2000),
+      );
 
       final map = userData.toMap();
 
       expect(null, equals(map['id']));
       expect('email', equals(map['email']));
       expect('username', equals(map['username']));
+      expect('normalUser', equals(map['role']));
       expect(null, equals(map['photoUrl']));
       expect(DateTime(2000), equals(map['dateOfBirth']));
     });

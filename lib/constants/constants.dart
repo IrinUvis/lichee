@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/constants/colors.dart';
+import 'icons.dart';
 
 const kHomeSearchBarInputDecoration = InputDecoration(
   contentPadding: EdgeInsets.all(20.0),
@@ -20,8 +21,13 @@ final kAddChannelNameBarInputDecoration = InputDecoration(
   fillColor: LicheeColors.greyColor,
   contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel name',
-  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
-  suffixIcon: const Icon(Icons.title),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  suffixIcon: const Icon(Icons.title, color: Colors.white),
 );
 
 final kAddChannelCityBarInputDecoration = InputDecoration(
@@ -29,8 +35,13 @@ final kAddChannelCityBarInputDecoration = InputDecoration(
   fillColor: LicheeColors.greyColor,
   contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel city',
-  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
-  suffixIcon: const Icon(Icons.location_city),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  suffixIcon: const Icon(Icons.location_city, color: Colors.white),
 );
 
 final kAddChannelDescriptionBarInputDecoration = InputDecoration(
@@ -38,8 +49,41 @@ final kAddChannelDescriptionBarInputDecoration = InputDecoration(
   fillColor: LicheeColors.greyColor,
   contentPadding: const EdgeInsets.all(20.0),
   hintText: 'Add channel description',
-  border: OutlineInputBorder(borderRadius: BorderRadius.circular(100)),
-  suffixIcon: const Icon(Icons.description),
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  suffixIcon: const Icon(Icons.description, color: Colors.white),
+);
+
+final kAddEventTitleBarInputDecoration = InputDecoration(
+  filled: true,
+  fillColor: LicheeColors.greyColor,
+  contentPadding: const EdgeInsets.all(20.0),
+  hintText: 'Add event title',
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  suffixIcon: const Icon(Icons.title, color: Colors.white),
+);
+
+final kAddEventLocalizationBarInputDecoration = InputDecoration(
+  filled: true,
+  fillColor: LicheeColors.greyColor,
+  contentPadding: const EdgeInsets.all(20.0),
+  hintText: 'Add event localization',
+  enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(100),
+      borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
+  suffixIcon: const Icon(Icons.location_city, color: Colors.white),
 );
 
 const kBannerTextStyle = TextStyle(
@@ -78,18 +122,19 @@ const kRegisterTextStyle = TextStyle(
   fontSize: 14.0,
 );
 
-final kCategoriesTreeViewButtonStyle = ElevatedButton.styleFrom(
+final kPinkRoundedButtonStyle = ElevatedButton.styleFrom(
   primary: Colors.pinkAccent,
   shape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(40.0),
   ),
 );
 
-final kCategoriesTreeViewInactiveButtonStyle = ElevatedButton.styleFrom(
+final kGreyRoundedButtonStyle = ElevatedButton.styleFrom(
   primary: LicheeColors.greyColor,
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(20.0),
+    borderRadius: BorderRadius.circular(100.0),
   ),
+  minimumSize: const Size(10.0, 61.0),
 );
 
 const kCategoriesTreeViewFiltersButtonText = Padding(
@@ -120,17 +165,57 @@ const kAddEventButtonText = Text(
   style: TextStyle(color: Colors.white, fontSize: 20.0),
 );
 
-const kChooseCategoryButtonText = Text(
-  'Choose category',
-  style: TextStyle(color: Colors.white, fontSize: 20.0),
+final kAddChannelImageButtonContent = Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: const [
+    Text('Choose channel image',
+        style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    SizedBox(width: 10.0),
+    Icon(
+      Icons.camera_alt,
+      color: Colors.white,
+    ),
+  ],
+);
+
+final kChooseCategoryButtonContent = Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: const [
+    Text('Choose category',
+        style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    SizedBox(width: 10.0),
+    kCategoryIcon
+  ],
+);
+
+final kSelectDateButtonContent = Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: const [
+    Text('Select date', style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    SizedBox(width: 10.0),
+    kDateIcon
+  ],
+);
+
+final kSelectTimeButtonContent = Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: const [
+    Text('Select time', style: TextStyle(color: Colors.white, fontSize: 20.0)),
+    SizedBox(width: 10.0),
+    kTimeIcon
+  ],
 );
 
 const kCreateChannelButtonText = Padding(
   padding: EdgeInsets.all(8.0),
-  child: Text(
-    'Create channel',
-    style: TextStyle(color: Colors.white, fontSize: 30.0),
-  ),
+  child: Text('Create channel',
+      style: TextStyle(color: Colors.white, fontSize: 30.0)),
+);
+
+const kCreateEventButtonText = Padding(
+  padding: EdgeInsets.all(8.0),
+  child: Text('Create event',
+      style: TextStyle(color: Colors.white, fontSize: 30.0)),
 );
 
 const kCategoryNodeEmptyText = Text(
@@ -142,22 +227,20 @@ const kCategoryNodeTestStyle = TextStyle(color: Colors.white, fontSize: 20.0);
 
 const kCategoryChoosingCategoryText = Text(
   'Category:',
-  style: TextStyle(
-    color: Colors.white,
-    fontSize: 16.0,
-  ),
+  style: TextStyle(color: Colors.white, fontSize: 20.0),
 );
 
 const kChosenCategoryValidTextStyle = TextStyle(
   color: Colors.white,
-  fontSize: 16.0,
+  fontSize: 20.0,
   fontWeight: FontWeight.bold,
 );
 
-const kChosenCategoryInvalidTextStyle = TextStyle(
-  color: Colors.red,
-  fontSize: 16.0,
-  fontWeight: FontWeight.bold,
+const kChannelBeingAddedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(days: 365),
+  content: Text('Channel is being added'),
 );
 
 const kChannelAddedSnackBar = SnackBar(
@@ -167,16 +250,36 @@ const kChannelAddedSnackBar = SnackBar(
   content: Text('Channel added'),
 );
 
+const kEventBeingAddedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(days: 365),
+  content: Text('Event is being added'),
+);
+
+const kEventAddedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(milliseconds: 1000),
+  content: Text('Event added'),
+);
+
 const kChatListUnavailable = Text(
   'Chat list unavailable',
   textAlign: TextAlign.center,
-  style: kLicheeTextStyle,
+  style: kTabTitleTextStyle,
+);
+
+const kChannelListUnavailable = Text(
+  'Chat list unavailable',
+  textAlign: TextAlign.center,
+  style: kTabTitleTextStyle,
 );
 
 const kChannelChatUnavailable = Text(
   'Chat is currently unavailable',
   textAlign: TextAlign.center,
-  style: kLicheeTextStyle,
+  style: kTabTitleTextStyle,
 );
 
 const kLogInToSeeChatList = Text(
@@ -189,18 +292,65 @@ const kLogInToSeeChatList = Text(
   ),
 );
 
-const kAddingChannelsOrEventsUnavailable = Text(
-  'Adding channels or events unavailable',
-  textAlign: TextAlign.center,
-  style: kLicheeTextStyle,
-);
-
-const kLogInToAddChannelOrList = Text(
-  'Log in to add channel or event',
+const kLogInToSeeChannelList = Text(
+  'Log in to see your channel list!',
   textAlign: TextAlign.center,
   style: TextStyle(
     fontSize: 20,
     color: Colors.white,
     fontWeight: FontWeight.bold,
   ),
+);
+
+const kAddingChannelsOrEventsUnavailable = Text(
+  'Adding channels unavailable',
+  textAlign: TextAlign.center,
+  style: kTabTitleTextStyle,
+);
+
+const kLogInToAddChannelOrList = Text(
+  'Log in to add channel!',
+  textAlign: TextAlign.center,
+  style: TextStyle(
+    fontSize: 20,
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+  ),
+);
+
+final kAddEventTitleText =
+    Text('Add event', style: kBannerTextStyle.copyWith(letterSpacing: 2.0));
+
+final kAddChannelTitleText =
+    Text('Add channel', style: kBannerTextStyle.copyWith(letterSpacing: 2.0));
+
+const kNoDateForEventPickedText = Text(
+  'You have to choose date and time of the event',
+  style:
+      TextStyle(fontSize: 13.0, color: Colors.red, fontWeight: FontWeight.w300),
+);
+
+const kNoImageForChannelChosenText = Text(
+  'You have to choose channel image',
+  style:
+      TextStyle(fontSize: 13.0, color: Colors.red, fontWeight: FontWeight.w300),
+);
+
+const kNoCategoryForChannelChosenText = Text(
+  'You have to choose channel category',
+  style:
+      TextStyle(fontSize: 13.0, color: Colors.red, fontWeight: FontWeight.w300),
+);
+
+const kChooseCategoryScreenAppBarText = Text(
+  'Choose category',
+  style: TextStyle(fontSize: 20.0, color: Colors.white),
+);
+
+const kTabTitleTextStyle = TextStyle(
+  color: Colors.white,
+  letterSpacing: 1.0,
+  wordSpacing: 2.0,
+  fontWeight: FontWeight.bold,
+  fontSize: 30.0,
 );
