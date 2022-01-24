@@ -40,6 +40,7 @@ class AddChannelController {
       'userIds': usersIds,
       'ownerId': userId,
       'parentCategoryId': parentCategoryId,
+      'isPromoted': false,
     });
 
     await _firestore.collection('channel_chats').doc(newChannel.id).set(
