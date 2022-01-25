@@ -48,8 +48,8 @@ class _TabsScreenState extends State<TabsScreen> {
           listen: false,
         ).selectPage,
         type: BottomNavigationBarType.fixed,
-        currentIndex: Provider.of<TabsScreenControllerProvider>(
-          context).selectedPageIndex,
+        currentIndex: Provider.of<TabsScreenControllerProvider>(context)
+            .selectedPageIndex,
         showSelectedLabels: false,
         showUnselectedLabels: false,
         items: const <BottomNavigationBarItem>[

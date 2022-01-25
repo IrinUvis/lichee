@@ -22,9 +22,9 @@ class ChannelScreen extends StatefulWidget {
   static const String id = 'channel_screen';
   final ReadChannelDto channel;
   final UpdateChannelService? updateChannelService;
-  bool isTest;
+  final bool isTest;
 
-  ChannelScreen(
+  const ChannelScreen(
       {Key? key,
       required this.channel,
       this.updateChannelService,
@@ -328,7 +328,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                     ),
                   )
                 : null,
-            bottomSheet: Container(
+            bottomSheet: SizedBox(
               height: 30.0,
               child: Center(
                 child: SmoothPageIndicator(
@@ -397,7 +397,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           ),
                         )
                       : null,
-                  bottomSheet: Container(
+                  bottomSheet: SizedBox(
                     height: 30.0,
                     child: Center(
                       child: SmoothPageIndicator(

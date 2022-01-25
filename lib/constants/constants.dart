@@ -265,6 +265,20 @@ const kEventAddedSnackBar = SnackBar(
   content: Text('Event added'),
 );
 
+const kProfilePictureBeingLoadedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(days: 365),
+  content: Text('Profile picture is being loaded'),
+);
+
+const kProfilePictureLoadedSnackBar = SnackBar(
+  elevation: 10.0,
+  behavior: SnackBarBehavior.floating,
+  duration: Duration(milliseconds: 1000),
+  content: Text('Profile picture loaded'),
+);
+
 const kChatListUnavailable = Text(
   'Chat list unavailable',
   textAlign: TextAlign.center,

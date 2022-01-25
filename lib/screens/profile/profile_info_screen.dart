@@ -9,7 +9,6 @@ import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/screens/auth/role.dart';
 import 'package:lichee/screens/profile/profile_photo_screen.dart';
 import 'package:provider/provider.dart';
-
 import 'edit_profile_screen.dart';
 
 class ProfileInfoScreen extends StatefulWidget {

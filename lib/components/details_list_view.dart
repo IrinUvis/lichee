@@ -73,8 +73,7 @@ class DetailsListView extends StatelessWidget {
                                                 backgroundImage: NetworkImage(
                                                     item.photoUrl!),
                                                 backgroundColor:
-                                                    Colors.transparent,
-                                              )
+                                                    Colors.transparent)
                                             : const Icon(
                                                 Icons.person,
                                                 //color: Colors.white60,

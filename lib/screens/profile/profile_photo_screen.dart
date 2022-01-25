@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lichee/constants/colors.dart';
+import 'package:lichee/constants/constants.dart';
 import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/services/storage_service.dart';
@@ -64,22 +64,25 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
             body: SizedBox(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  buildPhoto(photoUrl, context),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width / 2,
-                    child: Column(
-                      children: [
-                        buildButton(user, context),
-                        Container(height: 20),
-                        buildChangeButton(user, context),
-                      ],
-                    ),
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      buildPhoto(photoUrl, context),
+                      Container(height: 20),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 2,
+                        child: Column(
+                          children: [
+                            buildButton(user, context),
+                            Container(height: 20),
+                            buildChangeButton(user, context),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           );
@@ -101,17 +104,10 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
         _profilePhoto = NetworkImage(photoUrl);
         notChanged = !notChanged;
       }
-      profilePictureWidget = Container(
-        height: MediaQuery.of(context).size.height / 2.5,
-        width: MediaQuery.of(context).size.height / 2.5,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            image: _profilePhoto,
-            fit: BoxFit.fitWidth,
-          ),
-        ),
-      );
+      profilePictureWidget = CircleAvatar(
+          radius: MediaQuery.of(context).size.height / 5.0,
+          backgroundImage: _profilePhoto,
+          backgroundColor: Colors.transparent);
     } else {
       profilePictureWidget = Icon(
         Icons.account_circle_outlined,
@@ -146,7 +142,6 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                             TextButton(
                               onPressed: () => getImage(
                                   user,
-                                  context,
                                   true,
                                   Provider.of<FirebaseProvider>(context,
                                           listen: false)
@@ -172,7 +167,6 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                             TextButton(
                               onPressed: () => getImage(
                                   user,
-                                  context,
                                   false,
                                   Provider.of<FirebaseProvider>(context,
                                           listen: false)
@@ -241,7 +235,6 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                               TextButton(
                                 onPressed: () => getImage(
                                     user,
-                                    context,
                                     true,
                                     Provider.of<FirebaseProvider>(context,
                                             listen: false)
@@ -267,7 +260,6 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                               TextButton(
                                 onPressed: () => getImage(
                                     user,
-                                    context,
                                     false,
                                     Provider.of<FirebaseProvider>(context,
                                             listen: false)
@@ -318,8 +310,7 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     );
   }
 
-  Future getImage(User user, BuildContext context, bool isFromCamera,
-      FirebaseFirestore fs) async {
+  Future getImage(User user, bool isFromCamera, FirebaseFirestore fs) async {
     Navigator.pop(context);
     XFile? image;
     File file;
@@ -332,6 +323,10 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     } else {
       image = await _imagePicker.pickImage(source: ImageSource.gallery);
     }
+
+    ScaffoldMessenger.of(context)
+        .showSnackBar(kProfilePictureBeingLoadedSnackBar);
+
     file = File(image!.path);
     url = await _storageService.uploadFile(
       path: "profilePhotos/${user.uid}/",
@@ -339,6 +334,10 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     );
 
     await setUserPicture(user, fs, url);
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(kProfilePictureLoadedSnackBar);
 
     setState(() {
       _profilePhoto = NetworkImage(url);
