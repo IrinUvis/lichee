@@ -44,7 +44,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
   final PageController _controller = PageController();
   double currentPage = 0;
   late bool isLogged;
-  late final List<String> members = [];
+  late final List<ChannelMember> members = [];
   late final UpdateChannelService _updateChannelService;
   String? ownerName;
 
@@ -75,9 +75,20 @@ class _ChannelScreenState extends State<ChannelScreen> {
     }
   }
 
-  Future<List<String>> getMemberNames(List<String> ids) async {
+  bool containsMember(String name, List<ChannelMember> members) {
+    for (ChannelMember member in members) {
+      if (member.name == name) return true;
+    }
+    return false;
+  }
+
+  Future<List<ChannelMember>> getMemberNamesAndPhotos(List<String> ids) async {
     if (widget.isTest) {
-      members.addAll(widget.channel.userIds);
+      final List<ChannelMember> tempList = [];
+      for (var id in widget.channel.userIds) {
+        tempList.add(ChannelMember(id, null));
+      }
+      members.addAll(tempList);
       return members;
     } else {
       final users = await Provider.of<FirebaseProvider>(context)
@@ -85,9 +96,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
           .collection('users')
           .get();
       for (var element in users.docs) {
+        final ChannelMember temp =
+            ChannelMember(element.get('username'), element.get('photoUrl'));
         if (ids.contains(element.get('id')) &&
-            members.contains(element.get('username')) != true) {
-          members.add(element.get('username'));
+            !containsMember(element.get('username'), members)) {
+          members.add(temp);
         }
         if (channel.ownerId == element.get('id')) {
           ownerName = element.get('username');
@@ -357,7 +370,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                 : channelForNonMember(user),
           )
         : FutureBuilder(
-            future: getMemberNames(channel.userIds),
+            future: getMemberNamesAndPhotos(channel.userIds),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Scaffold(
@@ -476,4 +489,10 @@ class _ChannelScreenState extends State<ChannelScreen> {
       },
     );
   }
+}
+
+class ChannelMember {
+  String name;
+  String? photoUrl;
+  ChannelMember(this.name, this.photoUrl);
 }
