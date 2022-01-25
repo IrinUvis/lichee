@@ -202,8 +202,10 @@ class AuthScreenState extends State<AuthScreen> {
       child: MaterialButton(
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 15),
         minWidth: MediaQuery.of(context).size.width,
-        onPressed:
-        authType == AuthType.register ? () => signUp() : () => signIn(),
+        onPressed: () {
+          FocusManager.instance.primaryFocus?.unfocus();
+          authType == AuthType.register ? signUp() : signIn();
+        },
         child: Text(
           authType == AuthType.register ? 'Sign up' : 'Log in',
           textAlign: TextAlign.center,
@@ -306,7 +308,7 @@ class AuthScreenState extends State<AuthScreen> {
             username: usernameEditingController.text.trim(),
             email: emailEditingController.text.trim(),
             role: Role.normalUser,
-            dateOfBirth: selectedDateOfBirth!,
+            dateOfBirth: selectedDateOfBirth,
           ),
           password: passwordEditingController.text.trim(),
         );
