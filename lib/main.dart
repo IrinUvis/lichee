@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:lichee/models/user_data.dart';
 import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/providers/tabs_screen_controller_provider.dart';
@@ -48,21 +47,6 @@ class LicheeState extends State<Lichee> {
         StreamProvider(
           create: (context) => context.read<AuthenticationProvider>().authState,
           initialData: null,
-        ),
-        Provider<UserData?>(
-          create: (context) {
-            final currentUser =
-                context.read<AuthenticationProvider>().currentUser;
-            if (currentUser != null) {
-              return UserData(
-                id: currentUser.uid,
-                email: currentUser.email,
-                username: currentUser.displayName,
-              );
-            } else {
-              return null;
-            }
-          },
         ),
         Provider<TabsScreenControllerProvider>(
           create: (_) => TabsScreenControllerProvider(

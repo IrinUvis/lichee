@@ -23,14 +23,16 @@ class ChannelChatScreen extends StatefulWidget {
   final ChannelChatNavigationParams data;
 
   final ImagePicker imagePicker;
-  final UserData? userData;
+  UserData? userData;
 
-  const ChannelChatScreen({
+  ChannelChatScreen({
     Key? key,
-    required this.userData,
+    required Future<UserData?> userData,
     required this.data,
     required this.imagePicker,
-  }) : super(key: key);
+  }) : super(key: key) {
+    userData.then((data) => this.userData = data);
+  }
 
   @override
   ChannelChatScreenState createState() => ChannelChatScreenState();
@@ -90,7 +92,7 @@ class ChannelChatScreenState extends State<ChannelChatScreen> {
                 sender: message.nameSentBy,
                 text: message.messageText,
                 imageUrl: message.imageUrl,
-                isMe: widget.userData!.id! == message.idSentBy,
+                isMe: Provider.of<User?>(context)!.uid == message.idSentBy,
               ),
             );
           }
@@ -259,7 +261,10 @@ class ChannelChatScreenState extends State<ChannelChatScreen> {
     if (_file != null) {
       try {
         imageUrl = await _channelChatController.uploadPhoto(
-            channelId: widget.data.channelId, currentTime: now, file: _file!);
+          channelId: widget.data.channelId,
+          currentTime: now,
+          file: _file!,
+        );
         setState(() {
           _file = null;
         });
@@ -279,11 +284,12 @@ class ChannelChatScreenState extends State<ChannelChatScreen> {
       ),
     );
     _channelChatController.updateChatListWithMostRecentMessage(
-        channelId: widget.data.channelId,
-        messageText: _messageText,
-        username: widget.userData!.username!,
-        currentTime: now);
-
+      channelId: widget.data.channelId,
+      messageText: _messageText,
+      userId: widget.userData!.id!,
+      username: widget.userData!.username!,
+      currentTime: now,
+    );
     _messageText = '';
   }
 
