@@ -31,41 +31,46 @@ class DetailsListView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Description',
-                  style: kBannerTextStyle),
+              const Text('Description', style: kBannerTextStyle),
               Container(
                 padding: const EdgeInsets.only(
-                    left: 16.0,
-                    top: 16.0,
-                    right: 16.0,
-                    bottom: 0.0),
+                    left: 16.0, top: 16.0, right: 16.0, bottom: 0.0),
                 child: Text(channel.description),
               ),
               DetailsTable(rows: description.create()),
-              const Text('About this channel',
-                  style: kBannerTextStyle),
+              const Text('About this channel', style: kBannerTextStyle),
               DetailsTable(rows: about.create()),
-              isMember ? const Text('Members', style: kBannerTextStyle) : Container(),
-              isMember ? Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 16.0, horizontal: 30.0),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[850],
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 25.0, vertical: 15.0),
-                  child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                    children: [
-                      for (var item in members) Text('$item'),
-                    ],
-                  ),
-                ),
-              ) : Container(),
+              isMember
+                  ? const Text('Members', style: kBannerTextStyle)
+                  : Container(),
+              isMember
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 16.0, horizontal: 30.0),
+                      child: Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[850],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 25.0, vertical: 15.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              for (var item in members)
+                                Text(
+                                  '$item',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(),
             ],
           ),
         ),

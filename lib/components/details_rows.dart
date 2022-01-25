@@ -7,7 +7,8 @@ class DetailsRows {
   final ReadChannelDto channel;
   String? ownerName;
 
-  DetailsRows({required this.channel, required this.isAboutTable, this.ownerName});
+  DetailsRows(
+      {required this.channel, required this.isAboutTable, this.ownerName});
 
   List<TableRow> create() {
     List<TableRow> rows = [];
@@ -24,7 +25,9 @@ class DetailsRows {
         ]),
         TableRow(children: [
           const Icon(Icons.person),
-          ownerName == null ? Text('Created by: ${channel.ownerId}') : Text('Created by: $ownerName'),
+          ownerName == null
+              ? Text('Created by: ${channel.ownerId}')
+              : Text('Created by: $ownerName'),
         ])
       ];
       return rows;
@@ -35,8 +38,10 @@ class DetailsRows {
           Text(channel.city),
         ]),
         TableRow(children: [
-          const Icon(Icons.trending_up_outlined),
-          Text('Level'),
+          const Icon(Icons.assessment_outlined),
+          channel.isPromoted
+              ? const Text('Channel promoted by owner')
+              : const Text('Regular channel'),
         ]),
       ];
       return rows;
