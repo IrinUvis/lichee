@@ -85,7 +85,8 @@ class _ChannelScreenState extends State<ChannelScreen> {
           .collection('users')
           .get();
       for (var element in users.docs) {
-        if (ids.contains(element.get('id'))) {
+        if (ids.contains(element.get('id')) &&
+            members.contains(element.get('username')) != true) {
           members.add(element.get('username'));
         }
         if (channel.ownerId == element.get('id')) {
@@ -125,6 +126,11 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             _updateChannelService.addUserToChannelById(
                                 user!.uid, channel.channelId);
                             channel.userIds.add(user.uid);
+                            FirebaseFirestore.instance
+                                .doc('channel_chats/${channel.channelId}')
+                                .update({
+                              'userIds': FieldValue.arrayUnion([(user.uid)])
+                            });
                           });
                         }
                       : null,
@@ -164,12 +170,15 @@ class _ChannelScreenState extends State<ChannelScreen> {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final events = snapshot.data!.docs
-              .map((e) => e.data() as Map<String, dynamic>)
-              .toList();
-          final ids = snapshot.data!.docs.map((e) => e.id).toList();
-          for (var element in events) {
-            element.putIfAbsent('id', () => ids[events.indexOf(element)]);
+          List<Map<String, dynamic>> events = List.empty();
+          if (snapshot.data!.docs.isNotEmpty) {
+            events = snapshot.data!.docs
+                .map((e) => e.data() as Map<String, dynamic>)
+                .toList();
+            final ids = snapshot.data!.docs.map((e) => e.id).toList();
+            for (var element in events) {
+              element.putIfAbsent('id', () => ids[events.indexOf(element)]);
+            }
           }
           return PageView(
             controller: _controller,
@@ -206,8 +215,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                                 .doc(
                                                     'channel_chats/${channel.channelId}')
                                                 .update({
-                                              'userIds': FieldValue.arrayUnion(
-                                                  [(user.uid)])
+                                              'userIds': channel.userIds,
                                             });
                                           },
                                         );
@@ -255,9 +263,7 @@ class _ChannelScreenState extends State<ChannelScreen> {
                           description: description,
                           about: about,
                           isMember: true,
-                          members: members.isNotEmpty
-                              ? members.sublist(0, channel.userIds.length)
-                              : members),
+                          members: members),
                     ),
                   ],
                 ),
