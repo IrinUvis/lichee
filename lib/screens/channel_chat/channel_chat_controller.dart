@@ -54,11 +54,13 @@ class ChannelChatController {
   void updateChatListWithMostRecentMessage(
       {required String channelId,
       required String messageText,
+      required String userId,
       required String username,
       required DateTime currentTime}) {
     _firestore.collection('channel_chats').doc(channelId).update({
       'recentMessageText': messageText,
       'recentMessageSentBy': username,
+      'recentMessageSentByUserId': userId,
       'recentMessageSentAt': currentTime,
     });
   }

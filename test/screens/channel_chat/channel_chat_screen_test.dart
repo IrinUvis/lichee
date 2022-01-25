@@ -36,7 +36,7 @@ void main() {
       );
 
       final channelChatWidget = ChannelChatScreen(
-        userData: userData,
+        userData: Future.value(userData),
         data: channelChatParams,
         imagePicker: _imagePicker,
       );
@@ -80,7 +80,7 @@ void main() {
       );
 
       final channelChatWidget = ChannelChatScreen(
-        userData: userData,
+        userData: Future.value(userData),
         data: channelChatParams,
         imagePicker: _imagePicker,
       );
@@ -132,7 +132,7 @@ void main() {
       );
 
       final channelChatWidget = ChannelChatScreen(
-        userData: userData,
+        userData: Future.value(userData),
         data: channelChatParams,
         imagePicker: _imagePicker,
       );
@@ -194,7 +194,7 @@ void main() {
       );
 
       final channelChatWidget = ChannelChatScreen(
-        userData: userData,
+        userData: Future.value(userData),
         data: channelChatParams,
         imagePicker: _imagePicker,
       );
@@ -249,7 +249,7 @@ void main() {
       );
 
       final channelChatWidget = ChannelChatScreen(
-        userData: userData,
+        userData: Future.value(userData),
         data: channelChatParams,
         imagePicker: _imagePicker,
       );
@@ -312,7 +312,7 @@ void main() {
       );
 
       final channelChatWidget = ChannelChatScreen(
-        userData: userData,
+        userData: Future.value(userData),
         data: channelChatParams,
         imagePicker: _imagePicker,
       );
@@ -340,63 +340,6 @@ void main() {
       await tester.pump();
 
       expect(find.byType(MessageBubble), findsNothing);
-      expect(screenState.messageText, '');
-      expect(screenState.file, isNull);
-      expect(screenState.imagePicker, isNotNull);
-      expect(screenState.messageTextController, isNotNull);
-    });
-
-    testWidgets('check state after attempt to send only text message',
-        (tester) async {
-      final _firestore = FakeFirebaseFirestore();
-      final _auth = MockFirebaseAuth();
-      final _storage = StorageService(MockFirebaseStorage());
-      final _imagePicker = ImagePicker();
-
-      final channelChatParams = ChannelChatNavigationParams(
-        channelId: 'testChannelId',
-        channelName: 'testChannelName',
-        fromRoute: ChannelScreen.id,
-      );
-
-      final userData = UserData(
-        id: 'testId',
-        username: 'testUsername',
-      );
-
-      final channelChatWidget = ChannelChatScreen(
-        userData: userData,
-        data: channelChatParams,
-        imagePicker: _imagePicker,
-      );
-
-      final channelChatScreen = Provider<FirebaseProvider>(
-        create: (_) => FirebaseProvider(
-          auth: _auth,
-          firestore: _firestore,
-          storage: _storage,
-        ),
-        child: MaterialApp(
-          home: Scaffold(
-            body: channelChatWidget,
-          ),
-        ),
-      );
-      await tester.pumpWidget(channelChatScreen);
-
-      final screenState =
-          tester.state<ChannelChatScreenState>(find.byType(ChannelChatScreen));
-
-      await tester.enterText(find.byType(TextField), 'testMessage');
-      expect(screenState.messageText, 'testMessage');
-
-      expect(find.byType(MessageBubble), findsNothing);
-
-      await tester.tap(find.byIcon(Icons.arrow_forward_ios_outlined));
-
-      await tester.pump();
-
-      expect(find.byType(MessageBubble), findsOneWidget);
       expect(screenState.messageText, '');
       expect(screenState.file, isNull);
       expect(screenState.imagePicker, isNotNull);
@@ -422,7 +365,7 @@ void main() {
       );
 
       final channelChatWidget = ChannelChatScreen(
-        userData: userData,
+        userData: Future.value(userData),
         data: channelChatParams,
         imagePicker: _imagePicker,
       );

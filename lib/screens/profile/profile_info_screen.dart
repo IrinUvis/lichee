@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lichee/constants/colors.dart';
+import 'package:lichee/models/user_data.dart';
 import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/screens/profile/profile_photo_screen.dart';
 import 'package:provider/provider.dart';
@@ -15,121 +17,163 @@ class ProfileInfoScreen extends StatefulWidget {
 }
 
 class ProfileInfoScreenState extends State<ProfileInfoScreen> {
-  User? user;
   DateFormat dateformat = DateFormat('dd/MM/yyyy HH:mm');
+
+  Future<UserData> loadUserData() async {
+    return await Provider.of<AuthenticationProvider>(context, listen: false)
+        .getCurrentUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    user = Provider.of<AuthenticationProvider?>(context)!.currentUser;
-
-    return Column(children: [
-      GestureDetector(
-        onTap: () async {
-          await Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const ProfilePhotoScreen()));
-
-          setState(() {});
-        },
-        child: buildPhoto(user, context),
-      ),
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        color: Colors.grey[850],
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildTitle(context),
-            buildInfo("Username: ", user?.displayName),
-            buildInfo("Email: ", user?.email),
-            buildInfo("Creation date: ",
-                dateformat.format(user!.metadata.creationTime!)),
-            buildInfo("Last sign in: ",
-                dateformat.format(user!.metadata.lastSignInTime!)),
-          ],
-        ),
-      ),
-      buildSignOutButton(),
-    ]);
-  }
-
-  Widget buildInfo(String title, String? info) {
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            Text(info ?? "Loading"),
-          ],
-        ));
-  }
-
-  Widget buildTitle(context) {
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "User Info",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            TextButton(
-                onPressed: () async {
-                  await Navigator.push(
+    return SingleChildScrollView(
+      child: FutureBuilder(
+        future: loadUserData(),
+        builder: (BuildContext context, AsyncSnapshot<UserData> snapshot) {
+          if (snapshot.hasData) {
+            final userData = snapshot.data!;
+            return Column(
+              children: [
+                GestureDetector(
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const EditScreen()));
-                  setState(() {});
-                },
-                child: const Text(
-                  "Edit",
-                  style: TextStyle(decoration: TextDecoration.underline),
-                ))
-          ],
-        ));
+                        builder: (context) => const ProfilePhotoScreen(),
+                      ),
+                    );
+                  },
+                  child: buildPhoto(),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  color: Colors.grey[850],
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTitle(userData.username!),
+                      buildInfo(
+                        "Username: ",
+                        userData.username!,
+                      ),
+                      buildInfo(
+                        "Email: ",
+                        userData.email!,
+                      ),
+                      buildInfo(
+                        "Creation date: ",
+                        dateformat.format(
+                          Provider.of<User?>(context)!.metadata.creationTime!,
+                        ),
+                      ),
+                      buildInfo(
+                        "Last sign in: ",
+                        dateformat.format(
+                          Provider.of<User?>(context)!.metadata.lastSignInTime!,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                buildSignOutButton(),
+              ],
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: LicheeColors.primary,
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget buildInfo(String title, String info) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
+          Text(info),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTitle(String username) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            "User Info",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          TextButton(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditScreen(username: username),
+                ),
+              );
+              setState(() {});
+            },
+            child: const Text(
+              "Edit",
+              style: TextStyle(decoration: TextDecoration.underline),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Widget buildSignOutButton() {
     return Container(
-        width: MediaQuery.of(context).size.width,
-        color: Colors.grey[850],
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextButton(
-              onPressed: () async {
-                await Provider.of<AuthenticationProvider>(context,
-                        listen: false)
-                    .signOut();
-                setState(() {});
-              },
-              child: const Text('Sign out'),
-            ),
-          ],
-        ));
+      width: MediaQuery.of(context).size.width,
+      color: Colors.grey[850],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextButton(
+            onPressed: () async {
+              await Provider.of<AuthenticationProvider>(
+                context,
+                listen: false,
+              ).signOut();
+            },
+            child: const Text('Sign out'),
+          ),
+        ],
+      ),
+    );
   }
 
-  Widget buildPhoto(User? user, context) {
+  Widget buildPhoto() {
     Widget img;
-
-    if (user?.photoURL != null) {
+    if (Provider.of<User?>(context)!.photoURL != null) {
       img = Container(
         height: MediaQuery.of(context).size.height / 3,
         width: MediaQuery.of(context).size.height / 3,
         decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-                image: NetworkImage(user!.photoURL!), fit: BoxFit.fitWidth)),
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: NetworkImage(Provider.of<User?>(context)!.photoURL!),
+            fit: BoxFit.fitWidth,
+          ),
+        ),
       );
     } else {
       img = Icon(
@@ -140,6 +184,8 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
     }
 
     return Container(
-        padding: const EdgeInsets.symmetric(vertical: 20), child: img);
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: img,
+    );
   }
 }
