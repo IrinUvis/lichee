@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lichee/constants/colors.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/models/user_data.dart';
 import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePhotoScreen extends StatefulWidget {
-  const ProfilePhotoScreen({Key? key}) : super(key: key);
+  ProfilePhotoScreen({Key? key, required this.userData}) : super(key: key);
+  UserData userData;
 
   @override
   ProfilePhotoScreenState createState() => ProfilePhotoScreenState();
@@ -33,16 +35,6 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     ),
   );
 
-  Future<String> getUserPictureUrl(User user) async {
-    final userButDifferent = await Provider.of<FirebaseProvider>(context)
-        .firestore
-        .collection('users')
-        .where('id', isEqualTo: user.uid)
-        .get();
-    photoUrl = userButDifferent.docs[0].get('photoUrl');
-    return photoUrl;
-  }
-
   Future<void> setUserPicture(
       User user, FirebaseFirestore fs, String url) async {
     final users =
@@ -56,44 +48,31 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     User? user = Provider.of<AuthenticationProvider?>(context)!.currentUser;
     _storageService = Provider.of<FirebaseProvider?>(context)!.storage;
 
-    return FutureBuilder(
-      future: getUserPictureUrl(user!),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return Scaffold(
-            body: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: Center(
-                child: SingleChildScrollView(
+    return Scaffold(
+      body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                buildPhoto(widget.userData.photoUrl ?? '', context),
+                Container(height: 20),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 2,
                   child: Column(
                     children: [
-                      buildPhoto(photoUrl, context),
+                      buildButton(user, context),
                       Container(height: 20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 2,
-                        child: Column(
-                          children: [
-                            buildButton(user, context),
-                            Container(height: 20),
-                            buildChangeButton(user, context),
-                          ],
-                        ),
-                      ),
+                      buildChangeButton(user, context),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
-          );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: LicheeColors.primary,
-            ),
-          );
-        }
-      },
+          ),
+        ),
+      ),
     );
   }
 
@@ -110,7 +89,7 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
           backgroundColor: Colors.transparent);
     } else {
       profilePictureWidget = Icon(
-        Icons.account_circle_outlined,
+        Icons.account_circle,
         color: Colors.white60,
         size: MediaQuery.of(context).size.height / 2.5,
       );

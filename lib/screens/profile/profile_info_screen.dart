@@ -61,7 +61,7 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
             await Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const ProfilePhotoScreen(),
+                builder: (context) => ProfilePhotoScreen(userData: userData),
               ),
             );
           },
@@ -209,7 +209,7 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
       img = Icon(
         Icons.account_circle,
         color: Colors.white60,
-        size: MediaQuery.of(context).size.height / 2.5,
+        size: MediaQuery.of(context).size.height / 3,
       );
     }
 
