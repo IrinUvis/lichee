@@ -12,9 +12,9 @@ class HomeScreenController {
     return _readChannelService.getPromoted();
   }
 
-  Future<List<ReadChannelDto>> getChannelsOfUserWithId({
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChannelsOfUserWithIdStream({
     required String userId,
   }) {
-    return _readChannelService.getChannelsOfUserWithId(userId);
+    return _readChannelService.getChannelsOfUserWithIdStream(userId);
   }
 }

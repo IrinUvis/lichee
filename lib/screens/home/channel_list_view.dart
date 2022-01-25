@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
@@ -19,7 +20,7 @@ class ChannelListView extends StatelessWidget {
     final user = Provider.of<User?>(context);
     return user == null
         ? Center(
-            child: NotLoggedInView(
+      child: NotLoggedInView(
               context: context,
               buttonText: kLogInToSeeChannelList,
             ),
@@ -30,12 +31,40 @@ class ChannelListView extends StatelessWidget {
           );
   }
 
-  FutureBuilder getChannelList({required String userId}) {
-    return FutureBuilder(
-        future: homeScreenController.getChannelsOfUserWithId(userId: userId),
+  StreamBuilder getChannelList({required String userId}) {
+    return StreamBuilder<QuerySnapshot>(
+        stream:
+            homeScreenController.getChannelsOfUserWithIdStream(userId: userId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final channels = snapshot.data! as List<ReadChannelDto>;
+            final channels = snapshot.data!.docs.map((doc) {
+              final channel = doc.data() as Map<String, dynamic>;
+              channel['id'] = doc.id;
+              return channel;
+            }).map(
+              (channel) {
+                String channelId = channel['id'];
+                String channelName = channel['channelName'];
+                String channelImageURL = channel['channelImageURL'];
+                String city = channel['city'];
+                Timestamp createdOn = channel['createdOn'];
+                String description = channel['description'];
+                String ownerId = channel['ownerId'];
+                List<String> userIds = List.from(channel['userIds']);
+                bool isPromoted = channel['isPromoted'] ?? false;
+                return ReadChannelDto(
+                  channelId: channelId,
+                  channelName: channelName,
+                  ownerId: ownerId,
+                  userIds: userIds,
+                  description: description,
+                  channelImageURL: channelImageURL,
+                  createdOn: createdOn.toDate(),
+                  city: city,
+                  isPromoted: isPromoted,
+                );
+              },
+            ).toList();
             return Column(
               children: channels
                   .map((channel) => Padding(
