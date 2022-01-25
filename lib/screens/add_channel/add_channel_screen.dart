@@ -245,9 +245,6 @@ class AddChannelScreenState extends State<AddChannelScreen> {
         }
         return null;
       },
-      // onSaved: (value) {
-      //   _channelNameEditingController.text = value!;
-      // },
       textInputAction: TextInputAction.next,
       decoration: kAddChannelNameBarInputDecoration,
     );
@@ -269,9 +266,6 @@ class AddChannelScreenState extends State<AddChannelScreen> {
         }
         return null;
       },
-      // onSaved: (value) {
-      //   _channelCityEditingController.text = value!;
-      // },
       textInputAction: TextInputAction.next,
       decoration: kAddChannelCityBarInputDecoration,
     );
@@ -294,9 +288,6 @@ class AddChannelScreenState extends State<AddChannelScreen> {
         }
         return null;
       },
-      // onSaved: (value) {
-      //   _channelDescriptionEditingController.text = value!;
-      // },
       textInputAction: TextInputAction.done,
       decoration: kAddChannelDescriptionBarInputDecoration,
     );
