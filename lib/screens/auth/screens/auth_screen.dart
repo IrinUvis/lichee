@@ -27,7 +27,7 @@ class AuthScreenState extends State<AuthScreen> {
   final emailEditingController = TextEditingController();
   final passwordEditingController = TextEditingController();
   final confirmPasswordEditingController = TextEditingController();
-  DateTime? selectedDateOfBirth = DateTime(2000, 1, 1);
+  DateTime? selectedDateOfBirth = DateTime(2000);
 
   String? errorMessage;
   bool inAsyncCall = false;
@@ -120,6 +120,7 @@ class AuthScreenState extends State<AuthScreen> {
         return null;
       },
       initialValue: DateTime(2000),
+      resetIcon: null,
       format: DateFormat('yyyy-MM-dd'),
       onShowPicker: (context, currentValue) async {
         DateTime? chosenDate = await showDatePicker(
@@ -127,8 +128,13 @@ class AuthScreenState extends State<AuthScreen> {
             firstDate: DateTime(1900),
             initialDate: currentValue ?? DateTime.now(),
             lastDate: DateTime(2100));
-        selectedDateOfBirth = chosenDate;
-        return selectedDateOfBirth;
+        if (chosenDate == null) {
+          selectedDateOfBirth = currentValue;
+          return currentValue;
+        } else {
+          selectedDateOfBirth = chosenDate;
+          return selectedDateOfBirth;
+        }
       },
       decoration: InputDecoration(
         prefixIcon: const Icon(Icons.date_range),

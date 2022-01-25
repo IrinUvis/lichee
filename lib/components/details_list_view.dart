@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lichee/channels/services/read/read_channel_dto.dart';
 import 'package:lichee/constants/constants.dart';
+import 'package:lichee/screens/channel/channel_screen.dart';
 
 import 'details_rows.dart';
 import 'details_table.dart';
@@ -19,7 +20,7 @@ class DetailsListView extends StatelessWidget {
   final DetailsRows description;
   final DetailsRows about;
   final bool isMember;
-  List members;
+  List<ChannelMember> members;
 
   @override
   Widget build(BuildContext context) {
@@ -60,10 +61,34 @@ class DetailsListView extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              for (var item in members)
-                                Text(
-                                  '$item',
-                                  overflow: TextOverflow.ellipsis,
+                              const SizedBox(height: 3.0),
+                              for (ChannelMember item in members)
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        item.photoUrl != null
+                                            ? CircleAvatar(
+                                                radius: 15.0,
+                                                backgroundImage: NetworkImage(
+                                                    item.photoUrl!),
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                              )
+                                            : const Icon(
+                                                Icons.person,
+                                                //color: Colors.white60,
+                                                size: 30.0,
+                                              ),
+                                        const SizedBox(width: 20.0),
+                                        Text(
+                                          item.name,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 3.0)
+                                  ],
                                 ),
                             ],
                           ),
