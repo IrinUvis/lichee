@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,7 @@ class ProfilePhotoScreen extends StatefulWidget {
 }
 
 class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
-  late final ImagePicker _imagePicker = ImagePicker();
+  final ImagePicker _imagePicker = ImagePicker();
   late StorageService _storageService;
   late NetworkImage _profilePhoto;
   double buttonOpacity = 0;
@@ -26,9 +25,11 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
   late String photoUrl;
 
   Widget buttonContent = const Text(
-    'Choose a pic',
+    'Choose new picture',
     style: TextStyle(
-        color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+      color: Colors.white,
+      fontSize: 16,
+    ),
   );
 
   Future<String> getUserPictureUrl(User user) async {
@@ -64,13 +65,11 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                     child: Column(
                       children: [
                         buildButton(user, context),
-                        Container(
-                          height: 20,
-                        ),
+                        Container(height: 20),
                         buildChangeButton(user, context),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -87,33 +86,36 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
   }
 
   Widget buildPhoto(String photoUrl, context) {
-    Widget img;
+    Widget profilePictureWidget;
     if (photoUrl.isNotEmpty) {
       if (notChanged) {
         _profilePhoto = NetworkImage(photoUrl);
         notChanged = !notChanged;
       }
-
-      img = Container(
+      profilePictureWidget = Container(
         height: MediaQuery.of(context).size.height / 2.5,
         width: MediaQuery.of(context).size.height / 2.5,
         decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(image: _profilePhoto, fit: BoxFit.fitWidth)),
+          shape: BoxShape.circle,
+          image: DecorationImage(
+            image: _profilePhoto,
+            fit: BoxFit.fitWidth,
+          ),
+        ),
       );
     } else {
-      img = Icon(
-        Icons.account_circle,
+      profilePictureWidget = Icon(
+        Icons.account_circle_outlined,
         color: Colors.white60,
         size: MediaQuery.of(context).size.height / 2.5,
       );
     }
-    return Container(child: img);
+    return profilePictureWidget;
   }
 
   Widget buildButton(user, context) {
     return SizedBox(
-      height: 60,
+      height: 50,
       child: ElevatedButton(
         onPressed: buttonContent is Icon
             ? () {
@@ -125,60 +127,66 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                     builder: (context) {
                       return AlertDialog(
                         backgroundColor: Colors.grey[800],
-                        title: const Text('Select route',
-                            style: TextStyle(color: Colors.white)),
+                        title: const Text(
+                          'Select route',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Container(
-                                height: 2,
-                                width: MediaQuery.of(context).size.width,
-                                color: Colors.white),
                             TextButton(
-                              onPressed: () => getCameraImage(user, context),
+                              onPressed: () => getImage(user, context, true),
                               child: Row(
                                 children: const <Widget>[
                                   Icon(Icons.camera_alt, color: Colors.white),
                                   Padding(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: Text('Camera',
-                                          style:
-                                              TextStyle(color: Colors.white)))
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Text(
+                                      'Camera',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             Container(
-                                height: 2,
-                                width: MediaQuery.of(context).size.width,
-                                color: Colors.white),
+                              height: 0.7,
+                              width: MediaQuery.of(context).size.width,
+                              color: LicheeColors.disabledButton,
+                            ),
                             TextButton(
-                              onPressed: () => getGalleryImage(user, context),
+                              onPressed: () => getImage(user, context, false),
                               child: Row(
                                 children: const <Widget>[
-                                  Icon(Icons.photo_size_select_actual,
-                                      color: Colors.white),
+                                  Icon(
+                                    Icons.photo_size_select_actual,
+                                    color: Colors.white,
+                                  ),
                                   Padding(
-                                      padding: EdgeInsets.only(left: 10),
-                                      child: Text('Gallery',
-                                          style:
-                                              TextStyle(color: Colors.white))),
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Text(
+                                      'Gallery',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
-                            Container(
-                                height: 2,
-                                width: MediaQuery.of(context).size.width,
-                                color: Colors.white),
                           ],
                         ),
                       );
                     });
               },
         style: ButtonStyle(
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(25)),
-                    side: BorderSide(color: Colors.red)))),
+          backgroundColor:
+              MaterialStateProperty.all<Color>(LicheeColors.primary),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              side: BorderSide(color: LicheeColors.primary),
+            ),
+          ),
+        ),
         child: Container(
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width,
@@ -194,7 +202,7 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     return Opacity(
       opacity: buttonOpacity,
       child: SizedBox(
-        height: 60,
+        height: 50,
         child: ElevatedButton(
           onPressed: buttonOpacity == 0
               ? null
@@ -209,29 +217,28 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                           content: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Container(
-                                  height: 2,
-                                  width: MediaQuery.of(context).size.width,
-                                  color: Colors.white),
                               TextButton(
-                                onPressed: () => getCameraImage(user, context),
+                                onPressed: () => getImage(user, context, true),
                                 child: Row(
                                   children: const <Widget>[
                                     Icon(Icons.camera_alt, color: Colors.white),
                                     Padding(
-                                        padding: EdgeInsets.only(left: 10),
-                                        child: Text('Camera',
-                                            style:
-                                                TextStyle(color: Colors.white)))
+                                      padding: EdgeInsets.only(left: 10),
+                                      child: Text(
+                                        'Camera',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),
                               Container(
-                                  height: 2,
-                                  width: MediaQuery.of(context).size.width,
-                                  color: Colors.white),
+                                height: 0.7,
+                                width: MediaQuery.of(context).size.width,
+                                color: LicheeColors.disabledButton,
+                              ),
                               TextButton(
-                                onPressed: () => getGalleryImage(user, context),
+                                onPressed: () => getImage(user, context, false),
                                 child: Row(
                                   children: const <Widget>[
                                     Icon(Icons.photo_size_select_actual,
@@ -244,20 +251,21 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                                   ],
                                 ),
                               ),
-                              Container(
-                                  height: 2,
-                                  width: MediaQuery.of(context).size.width,
-                                  color: Colors.white),
                             ],
                           ),
                         );
                       });
                 },
           style: ButtonStyle(
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(25)),
-                      side: BorderSide(color: Colors.red)))),
+            backgroundColor:
+                MaterialStateProperty.all<Color>(LicheeColors.primary),
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                side: BorderSide(color: LicheeColors.primary),
+              ),
+            ),
+          ),
           child: Container(
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width,
@@ -265,11 +273,11 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
             ),
             alignment: Alignment.center,
             child: const Text(
-              'Change',
+              'Change picture',
               style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+                color: Colors.white,
+                fontSize: 16,
+              ),
             ),
           ),
         ),
@@ -277,44 +285,24 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     );
   }
 
-  Future getCameraImage(User user, context) async {
+  Future getImage(User user, context, isFromCamera) async {
     Navigator.pop(context);
-
-    XFile? image = await _imagePicker.pickImage(
-        source: ImageSource.camera, preferredCameraDevice: CameraDevice.front);
-
-    File file = File(image!.path);
-    String url = await _storageService.uploadFile(
-        path: "profilePhotos/${user.uid}/", file: file);
-
-    final users = await FirebaseFirestore.instance
-        .collection('users')
-        .where('id', isEqualTo: user.uid)
-        .get();
-    final userId = users.docs[0].id;
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({'photoUrl': url});
-
-    setState(() {
-      _profilePhoto = NetworkImage(url);
-      buttonContent = const Icon(
-        Icons.arrow_forward,
-        color: Colors.white,
+    XFile? image;
+    File file;
+    String url;
+    if (isFromCamera) {
+      image = await _imagePicker.pickImage(
+        source: ImageSource.camera,
+        preferredCameraDevice: CameraDevice.front,
       );
-      buttonOpacity = 1;
-    });
-  }
-
-  Future getGalleryImage(User user, context) async {
-    Navigator.pop(context);
-
-    var image = await _imagePicker.pickImage(source: ImageSource.gallery);
-    File file = File(image!.path);
-
-    String url = await _storageService.uploadFile(
-        path: "profilePhotos/${user.uid}", file: file);
+    } else {
+      image = await _imagePicker.pickImage(source: ImageSource.gallery);
+    }
+    file = File(image!.path);
+    url = await _storageService.uploadFile(
+      path: "profilePhotos/${user.uid}/",
+      file: file,
+    );
 
     final users = await FirebaseFirestore.instance
         .collection('users')
