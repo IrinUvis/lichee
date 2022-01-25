@@ -27,7 +27,7 @@ class ChannelChatScreen extends StatefulWidget {
 
   ChannelChatScreen({
     Key? key,
-    required Future<UserData?> userData,
+    required Future<UserData> userData,
     required this.data,
     required this.imagePicker,
   }) : super(key: key) {
