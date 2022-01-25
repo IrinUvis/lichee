@@ -48,4 +48,9 @@ class ReadChannelService {
     final channels = await _repository.getChannelsOfUserWithId(userId);
     return channels.map((channel) => channel.toDto()).toList();
   }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChannelsOfUserWithIdStream(
+      String userId) {
+    return _repository.getChannelsOfUserWithIdStream(userId);
+  }
 }

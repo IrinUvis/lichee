@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lichee/channels/domain/channel.dart';
 
 class ChannelRepository {
-  final CollectionReference _channels;
+  final CollectionReference<Map<String, dynamic>> _channels;
 
   ChannelRepository({
     required FirebaseFirestore firestore,
@@ -84,6 +84,11 @@ class ChannelRepository {
         .map((channel) =>
             _toChannel((channel.id), channel.data() as Map<String, dynamic>))
         .toList();
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChannelsOfUserWithIdStream(
+      String userId) {
+    return _channels.where('userIds', arrayContains: userId).snapshots();
   }
 
   Future<Channel> updateById(

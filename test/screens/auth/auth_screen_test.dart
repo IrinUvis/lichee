@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lichee/models/user_data.dart';
@@ -51,27 +50,6 @@ void main() {
       when(mockAuthenticationProvider.signIn(
               email: 'testEmail@test.com', password: 'testPassword'))
           .thenAnswer((_) async => MockUserCredential(false));
-      when(mockAuthenticationProvider.signIn(
-              email: 'invalidEmail@test.com', password: 'testPassword'))
-          .thenThrow(FirebaseAuthException(code: 'invalid-email'));
-      when(mockAuthenticationProvider.signIn(
-              email: 'wrongPassword@test.com', password: 'testPassword'))
-          .thenThrow(FirebaseAuthException(code: 'wrong-password'));
-      when(mockAuthenticationProvider.signIn(
-              email: 'userNotFound@test.com', password: 'testPassword'))
-          .thenThrow(FirebaseAuthException(code: 'user-not-found'));
-      when(mockAuthenticationProvider.signIn(
-              email: 'userDisabled@test.com', password: 'testPassword'))
-          .thenThrow(FirebaseAuthException(code: 'user-disabled'));
-      when(mockAuthenticationProvider.signIn(
-              email: 'tooManyRequests@test.com', password: 'testPassword'))
-          .thenThrow(FirebaseAuthException(code: 'too-many-requests'));
-      when(mockAuthenticationProvider.signIn(
-              email: 'operationNotAllowed@test.com', password: 'testPassword'))
-          .thenThrow(FirebaseAuthException(code: 'operation-not-allowed'));
-      when(mockAuthenticationProvider.signIn(
-              email: 'undefined@test.com', password: 'testPassword'))
-          .thenThrow(FirebaseAuthException(code: 'undefined'));
 
       testWidgets('check inputs and validation works correctly',
           (tester) async {
@@ -93,7 +71,7 @@ void main() {
 
         await tester.tap(find.byKey(const Key('authorizeButton')));
 
-        await tester.pumpAndSettle();
+        await tester.pump();
 
         verifyNever(mockAuthenticationProvider.signIn(
             email: 'testEmail', password: 'testPassword'));
@@ -105,96 +83,11 @@ void main() {
 
         await tester.tap(find.byKey(const Key('authorizeButton')));
 
-        await tester.pumpAndSettle();
+        await tester.pump();
 
         verify(mockAuthenticationProvider.signIn(
                 email: 'testEmail@test.com', password: 'testPassword'))
             .called(1);
-      });
-
-      testWidgets('check firebase auth exceptions', (tester) async {
-        final authScreen = Provider<AuthenticationProvider>(
-          create: (context) => mockAuthenticationProvider,
-          child: const MaterialApp(
-            home: Scaffold(
-              body: AuthScreen(),
-            ),
-          ),
-        );
-
-        await tester.pumpWidget(authScreen);
-
-        // invalid email
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'invalidEmail@test.com');
-        await tester.enterText(
-            find.byKey(const Key('passwordField')), 'testPassword');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester
-                .state<AuthScreenState>(find.byType(AuthScreen))
-                .errorMessage!,
-            'Your email address appears to be malformed.');
-
-        // wrong password
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'wrongPassword@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester
-                .state<AuthScreenState>(find.byType(AuthScreen))
-                .errorMessage!,
-            'Your password is wrong.');
-
-        // user not found
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'userNotFound@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester
-                .state<AuthScreenState>(find.byType(AuthScreen))
-                .errorMessage!,
-            'User with this email doesn\'t exist.');
-
-        // user disabled
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'userDisabled@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester
-                .state<AuthScreenState>(find.byType(AuthScreen))
-                .errorMessage!,
-            'User with this email has been disabled.');
-
-        // too many requests
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'tooManyRequests@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester
-                .state<AuthScreenState>(find.byType(AuthScreen))
-                .errorMessage!,
-            'Too many requests.');
-
-        // operation not allowed
-        await tester.enterText(find.byKey(const Key('emailField')),
-            'operationNotAllowed@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester
-                .state<AuthScreenState>(find.byType(AuthScreen))
-                .errorMessage!,
-            'Signing in with email and password is not enabled.');
-
-        // undefined code
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'undefined@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester
-                .state<AuthScreenState>(find.byType(AuthScreen))
-                .errorMessage!,
-            'An undefined error has occurred.');
       });
     });
 
@@ -208,69 +101,6 @@ void main() {
         ),
         password: 'testPassword',
       )).thenAnswer((_) async => MockUserCredential(false));
-      when(mockAuthenticationProvider.signUp(
-        userData: UserData(
-          username: 'testFirstName',
-          email: 'invalidEmail@test.com',
-          role: Role.normalUser,
-          dateOfBirth: DateTime(2000),
-        ),
-        password: 'testPassword',
-      )).thenThrow(FirebaseAuthException(code: 'invalid-email'));
-      when(mockAuthenticationProvider.signUp(
-        userData: UserData(
-          username: 'testFirstName',
-          email: 'wrongPassword@test.com',
-          role: Role.normalUser,
-          dateOfBirth: DateTime(2000),
-        ),
-        password: 'testPassword',
-      )).thenThrow(FirebaseAuthException(code: 'wrong-password'));
-      when(mockAuthenticationProvider.signUp(
-        userData: UserData(
-          username: 'testFirstName',
-          email: 'userNotFound@test.com',
-          role: Role.normalUser,
-          dateOfBirth: DateTime(2000),
-        ),
-        password: 'testPassword',
-      )).thenThrow(FirebaseAuthException(code: 'user-not-found'));
-      when(mockAuthenticationProvider.signUp(
-        userData: UserData(
-          username: 'testFirstName',
-          email: 'userDisabled@test.com',
-          role: Role.normalUser,
-          dateOfBirth: DateTime(2000),
-        ),
-        password: 'testPassword',
-      )).thenThrow(FirebaseAuthException(code: 'user-disabled'));
-      when(mockAuthenticationProvider.signUp(
-        userData: UserData(
-          username: 'testFirstName',
-          email: 'tooManyRequests@test.com',
-          role: Role.normalUser,
-          dateOfBirth: DateTime(2000),
-        ),
-        password: 'testPassword',
-      )).thenThrow(FirebaseAuthException(code: 'too-many-requests'));
-      when(mockAuthenticationProvider.signUp(
-        userData: UserData(
-          username: 'testFirstName',
-          email: 'operationNotAllowed@test.com',
-          role: Role.normalUser,
-          dateOfBirth: DateTime(2000),
-        ),
-        password: 'testPassword',
-      )).thenThrow(FirebaseAuthException(code: 'operation-not-allowed'));
-      when(mockAuthenticationProvider.signUp(
-        userData: UserData(
-          username: 'testFirstName',
-          email: 'undefined@test.com',
-          role: Role.normalUser,
-          dateOfBirth: DateTime(2000),
-        ),
-        password: 'testPassword',
-      )).thenThrow(FirebaseAuthException(code: 'undefined'));
 
       testWidgets('check inputs and validation works correctly',
           (tester) async {
@@ -302,7 +132,7 @@ void main() {
 
         await tester.tap(find.byKey(const Key('authorizeButton')));
 
-        await tester.pumpAndSettle();
+        await tester.pump();
 
         verifyNever(mockAuthenticationProvider.signUp(
           userData: UserData(
@@ -321,7 +151,7 @@ void main() {
 
         await tester.tap(find.byKey(const Key('authorizeButton')));
 
-        await tester.pumpAndSettle();
+        await tester.pump();
 
         verify(mockAuthenticationProvider.signUp(
           userData: UserData(
@@ -332,87 +162,6 @@ void main() {
           ),
           password: 'testPassword',
         )).called(1);
-      });
-
-      testWidgets('check firebase auth exceptions', (tester) async {
-        final authScreen = Provider<AuthenticationProvider>(
-          create: (context) => mockAuthenticationProvider,
-          child: const MaterialApp(
-            home: Scaffold(
-              body: AuthScreen(),
-            ),
-          ),
-        );
-
-        await tester.pumpWidget(authScreen);
-
-        await tester.tap(find.text('Sign up'));
-        await tester.pumpAndSettle();
-
-        // invalid email
-        tester
-            .state<AuthScreenState>(find.byType(AuthScreen))
-            .selectedDateOfBirth = DateTime(2000);
-        await tester.enterText(
-            find.byKey(const Key('firstNameField')), 'testFirstName');
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'invalidEmail@test.com');
-        await tester.enterText(
-            find.byKey(const Key('passwordField')), 'testPassword');
-        await tester.enterText(
-            find.byKey(const Key('confirmPasswordField')), 'testPassword');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-            'Your email address appears to be malformed.');
-
-        // wrong password
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'wrongPassword@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-            'Your password is wrong.');
-
-        // user not found
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'userNotFound@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-            'User with this email doesn\'t exist.');
-
-        // user disabled
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'userDisabled@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-            'User with this email has been disabled.');
-
-        // too many requests
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'tooManyRequests@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-            'Too many requests.');
-
-        // operation not allowed
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'operationNotAllowed@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-            'Signing in with email and password is not enabled.');
-
-        // undefined code
-        await tester.enterText(
-            find.byKey(const Key('emailField')), 'undefined@test.com');
-        await tester.tap(find.byKey(const Key('authorizeButton')));
-        expect(
-            tester.state<AuthScreenState>(find.byType(AuthScreen)).errorMessage!,
-            'An undefined error has occurred.');
       });
     });
   });

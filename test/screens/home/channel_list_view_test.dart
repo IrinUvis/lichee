@@ -96,7 +96,6 @@ void main() {
 
       await mockNetworkImagesFor(() => tester.pumpAndSettle());
 
-      expect(find.byType(ListView), findsOneWidget);
       expect(find.byType(ChannelListCard), findsOneWidget);
     });
   });

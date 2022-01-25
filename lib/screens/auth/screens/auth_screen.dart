@@ -375,7 +375,6 @@ class AuthScreenState extends State<AuthScreen> {
         }
         Fluttertoast.showToast(msg: errorMessage!);
       }
-      setState(() => toggleInAsyncCall());
     }
   }
 
