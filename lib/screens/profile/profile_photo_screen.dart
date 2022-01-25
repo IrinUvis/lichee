@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lichee/constants/colors.dart';
@@ -40,6 +41,14 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
         .get();
     photoUrl = userButDifferent.docs[0].get('photoUrl');
     return photoUrl;
+  }
+
+  Future<void> setUserPicture(
+      User user, FirebaseFirestore fs, String url) async {
+    final users =
+        await fs.collection('users').where('id', isEqualTo: user.uid).get();
+    final userId = users.docs[0].id;
+    await fs.collection('users').doc(userId).update({'photoUrl': url});
   }
 
   @override
@@ -135,7 +144,13 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             TextButton(
-                              onPressed: () => getImage(user, context, true),
+                              onPressed: () => getImage(
+                                  user,
+                                  context,
+                                  true,
+                                  Provider.of<FirebaseProvider>(context,
+                                          listen: false)
+                                      .firestore),
                               child: Row(
                                 children: const <Widget>[
                                   Icon(Icons.camera_alt, color: Colors.white),
@@ -155,7 +170,13 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                               color: LicheeColors.disabledButton,
                             ),
                             TextButton(
-                              onPressed: () => getImage(user, context, false),
+                              onPressed: () => getImage(
+                                  user,
+                                  context,
+                                  false,
+                                  Provider.of<FirebaseProvider>(context,
+                                          listen: false)
+                                      .firestore),
                               child: Row(
                                 children: const <Widget>[
                                   Icon(
@@ -218,7 +239,13 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
                               TextButton(
-                                onPressed: () => getImage(user, context, true),
+                                onPressed: () => getImage(
+                                    user,
+                                    context,
+                                    true,
+                                    Provider.of<FirebaseProvider>(context,
+                                            listen: false)
+                                        .firestore),
                                 child: Row(
                                   children: const <Widget>[
                                     Icon(Icons.camera_alt, color: Colors.white),
@@ -238,7 +265,13 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                                 color: LicheeColors.disabledButton,
                               ),
                               TextButton(
-                                onPressed: () => getImage(user, context, false),
+                                onPressed: () => getImage(
+                                    user,
+                                    context,
+                                    false,
+                                    Provider.of<FirebaseProvider>(context,
+                                            listen: false)
+                                        .firestore),
                                 child: Row(
                                   children: const <Widget>[
                                     Icon(Icons.photo_size_select_actual,
@@ -285,7 +318,8 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     );
   }
 
-  Future getImage(User user, context, isFromCamera) async {
+  Future getImage(User user, BuildContext context, bool isFromCamera,
+      FirebaseFirestore fs) async {
     Navigator.pop(context);
     XFile? image;
     File file;
@@ -304,15 +338,7 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
       file: file,
     );
 
-    final users = await FirebaseFirestore.instance
-        .collection('users')
-        .where('id', isEqualTo: user.uid)
-        .get();
-    final userId = users.docs[0].id;
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .update({'photoUrl': url});
+    await setUserPicture(user, fs, url);
 
     setState(() {
       _profilePhoto = NetworkImage(url);
