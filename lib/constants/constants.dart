@@ -19,13 +19,13 @@ const kChatsSearchBarInputDecoration = InputDecoration(
 final kAddChannelNameBarInputDecoration = InputDecoration(
   filled: true,
   fillColor: LicheeColors.greyColor,
-  contentPadding: const EdgeInsets.all(20.0),
+  contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 25.0),
   hintText: 'Add channel name',
   enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   suffixIcon: const Icon(Icons.title, color: Colors.white),
 );
@@ -33,13 +33,13 @@ final kAddChannelNameBarInputDecoration = InputDecoration(
 final kAddChannelCityBarInputDecoration = InputDecoration(
   filled: true,
   fillColor: LicheeColors.greyColor,
-  contentPadding: const EdgeInsets.all(20.0),
+  contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 25.0),
   hintText: 'Add channel city',
   enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   suffixIcon: const Icon(Icons.location_city, color: Colors.white),
 );
@@ -47,13 +47,14 @@ final kAddChannelCityBarInputDecoration = InputDecoration(
 final kAddChannelDescriptionBarInputDecoration = InputDecoration(
   filled: true,
   fillColor: LicheeColors.greyColor,
-  contentPadding: const EdgeInsets.all(20.0),
+  // contentPadding: const EdgeInsets.all(20.0),
+  contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 25.0),
   hintText: 'Add channel description',
   enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   suffixIcon: const Icon(Icons.description, color: Colors.white),
 );
@@ -61,13 +62,13 @@ final kAddChannelDescriptionBarInputDecoration = InputDecoration(
 final kAddEventTitleBarInputDecoration = InputDecoration(
   filled: true,
   fillColor: LicheeColors.greyColor,
-  contentPadding: const EdgeInsets.all(20.0),
+  contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 25.0),
   hintText: 'Add event title',
   enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   suffixIcon: const Icon(Icons.title, color: Colors.white),
 );
@@ -75,13 +76,13 @@ final kAddEventTitleBarInputDecoration = InputDecoration(
 final kAddEventLocalizationBarInputDecoration = InputDecoration(
   filled: true,
   fillColor: LicheeColors.greyColor,
-  contentPadding: const EdgeInsets.all(20.0),
+  contentPadding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 25.0),
   hintText: 'Add event localization',
   enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(100),
+      borderRadius: BorderRadius.circular(30),
       borderSide: const BorderSide(color: LicheeColors.greyColor, width: 0.0)),
   suffixIcon: const Icon(Icons.location_city, color: Colors.white),
 );
