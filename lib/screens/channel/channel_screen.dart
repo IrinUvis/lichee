@@ -139,11 +139,13 @@ class _ChannelScreenState extends State<ChannelScreen> {
                             _updateChannelService.addUserToChannelById(
                                 user!.uid, channel.channelId);
                             channel.userIds.add(user.uid);
-                            FirebaseFirestore.instance
-                                .doc('channel_chats/${channel.channelId}')
-                                .update({
-                              'userIds': FieldValue.arrayUnion([(user.uid)])
-                            });
+                            if (!widget.isTest) {
+                              FirebaseFirestore.instance
+                                  .doc('channel_chats/${channel.channelId}')
+                                  .update({
+                                'userIds': FieldValue.arrayUnion([(user.uid)])
+                              });
+                            }
                           });
                         }
                       : null,
@@ -224,12 +226,14 @@ class _ChannelScreenState extends State<ChannelScreen> {
                                                     user.uid,
                                                     channel.channelId);
                                             channel.userIds.remove(user.uid);
-                                            FirebaseFirestore.instance
-                                                .doc(
-                                                    'channel_chats/${channel.channelId}')
-                                                .update({
-                                              'userIds': channel.userIds,
-                                            });
+                                            if (!widget.isTest) {
+                                              FirebaseFirestore.instance
+                                                  .doc(
+                                                      'channel_chats/${channel.channelId}')
+                                                  .update({
+                                                'userIds': channel.userIds,
+                                              });
+                                            }
                                           },
                                         );
                                       }
@@ -494,5 +498,6 @@ class _ChannelScreenState extends State<ChannelScreen> {
 class ChannelMember {
   String name;
   String? photoUrl;
+
   ChannelMember(this.name, this.photoUrl);
 }

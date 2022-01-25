@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lichee/constants/colors.dart';
 import 'package:lichee/models/user_data.dart';
 import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/screens/auth/role.dart';
@@ -43,7 +45,7 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
               email: 'undefined',
               dateOfBirth: null,
               role: Role.undefined,
-              photoUrl: null,
+              photoUrl: '',
             );
             return buildScreen(userData);
           }
@@ -64,7 +66,7 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
               ),
             );
           },
-          child: buildPhoto(),
+          child: buildPhoto(userData.photoUrl!),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -74,6 +76,11 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildTitle(userData.username!),
+              Container(
+                height: 0.5,
+                color: LicheeColors.disabledButton,
+              ),
+              const SizedBox(height: 7.0),
               buildInfo(
                 "Username: ",
                 userData.username!,
@@ -123,13 +130,19 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
   Widget buildTitle(String username) {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.symmetric(vertical: 10),
+      padding: const EdgeInsets.only(
+        top: 10,
+        bottom: 5.0,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const Text(
-            "User Info",
-            style: TextStyle(fontWeight: FontWeight.bold),
+            "Your information",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
           ),
           TextButton(
             onPressed: () async {
@@ -143,7 +156,11 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
             },
             child: const Text(
               "Edit",
-              style: TextStyle(decoration: TextDecoration.underline),
+              style: TextStyle(
+                letterSpacing: 1.1,
+                //fontWeight: FontWeight.bold,
+                fontSize: 19.0,
+              ),
             ),
           )
         ],
@@ -156,7 +173,7 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
       width: MediaQuery.of(context).size.width,
       color: Colors.grey[850],
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           TextButton(
             onPressed: () async {
@@ -165,23 +182,26 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
                 listen: false,
               ).signOut();
             },
-            child: const Text('Sign out'),
+            child: const Text(
+              'Sign out',
+              style: TextStyle(fontSize: 17.0),
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget buildPhoto() {
+  Widget buildPhoto(String url) {
     Widget img;
-    if (Provider.of<User?>(context)!.photoURL != null) {
+    if (url.isNotEmpty) {
       img = Container(
         height: MediaQuery.of(context).size.height / 3,
         width: MediaQuery.of(context).size.height / 3,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           image: DecorationImage(
-            image: NetworkImage(Provider.of<User?>(context)!.photoURL!),
+            image: NetworkImage(url),
             fit: BoxFit.fitWidth,
           ),
         ),
