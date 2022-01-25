@@ -61,32 +61,34 @@ class DetailsListView extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const SizedBox(height: 3.0),
                               for (ChannelMember item in members)
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 3.0),
-                                  child: Row(
-                                    children: [
-                                      item.photoUrl != null
-                                          ? CircleAvatar(
-                                              radius: 15.0,
-                                              backgroundImage:
-                                                  NetworkImage(item.photoUrl!),
-                                              backgroundColor:
-                                                  Colors.transparent,
-                                            )
-                                          : const Icon(
-                                              Icons.account_circle,
-                                              color: Colors.white60,
-                                              size: 30.0,
-                                            ),
-                                      const SizedBox(width: 10.0),
-                                      Text(
-                                        item.name,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
+                                Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        item.photoUrl != null
+                                            ? CircleAvatar(
+                                                radius: 15.0,
+                                                backgroundImage: NetworkImage(
+                                                    item.photoUrl!),
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                              )
+                                            : const Icon(
+                                                Icons.person,
+                                                //color: Colors.white60,
+                                                size: 30.0,
+                                              ),
+                                        const SizedBox(width: 20.0),
+                                        Text(
+                                          item.name,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 3.0)
+                                  ],
                                 ),
                             ],
                           ),
