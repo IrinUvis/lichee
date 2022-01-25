@@ -65,7 +65,7 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
               ),
             );
           },
-          child: buildPhoto(userData.photoUrl!),
+          child: buildPhoto(userData.photoUrl ?? ''),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10),
