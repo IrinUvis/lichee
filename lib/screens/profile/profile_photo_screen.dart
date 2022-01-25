@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lichee/constants/colors.dart';
 import 'package:lichee/providers/authentication_provider.dart';
 import 'package:lichee/providers/firebase_provider.dart';
 import 'package:lichee/services/storage_service.dart';
@@ -22,6 +23,7 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
   late NetworkImage _profilePhoto;
   double buttonOpacity = 0;
   bool notChanged = true;
+  late String photoUrl;
 
   Widget buttonContent = const Text(
     'Choose a pic',
@@ -29,43 +31,66 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
         color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
   );
 
+  Future<String> getUserPictureUrl(User user) async {
+    final userButDifferent = await Provider.of<FirebaseProvider>(context)
+        .firestore
+        .collection('users')
+        .where('id', isEqualTo: user.uid)
+        .get();
+    photoUrl = userButDifferent.docs[0].get('photoUrl');
+    return photoUrl;
+  }
+
   @override
   Widget build(context) {
     User? user = Provider.of<AuthenticationProvider?>(context)!.currentUser;
     _storageService = Provider.of<FirebaseProvider?>(context)!.storage;
 
-    return Scaffold(
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            buildPhoto(user, context),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 2,
+    return FutureBuilder(
+      future: getUserPictureUrl(user!),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Scaffold(
+            body: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  buildButton(user, context),
-                  Container(
-                    height: 20,
-                  ),
-                  buildChangeButton(user, context),
+                  buildPhoto(photoUrl, context),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width / 2,
+                    child: Column(
+                      children: [
+                        buildButton(user, context),
+                        Container(
+                          height: 20,
+                        ),
+                        buildChangeButton(user, context),
+                      ],
+                    ),
+                  )
                 ],
               ),
-            )
-          ],
-        ),
-      ),
+            ),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: LicheeColors.primary,
+            ),
+          );
+        }
+      },
     );
   }
 
-  Widget buildPhoto(user, context) {
+  Widget buildPhoto(String photoUrl, context) {
     Widget img;
-    if (user.photoURL != null) {
+    if (photoUrl.isNotEmpty) {
       if (notChanged) {
-        _profilePhoto = NetworkImage(user.photoURL);
+        _profilePhoto = NetworkImage(photoUrl);
         notChanged = !notChanged;
       }
 
