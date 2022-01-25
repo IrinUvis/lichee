@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -258,16 +259,21 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
         source: ImageSource.camera, preferredCameraDevice: CameraDevice.front);
 
     File file = File(image!.path);
-
     String url = await _storageService.uploadFile(
         path: "profilePhotos/${user.uid}/", file: file);
 
-    await user.updatePhotoURL(url);
-    await user.reload();
+    final users = await FirebaseFirestore.instance
+        .collection('users')
+        .where('id', isEqualTo: user.uid)
+        .get();
+    final userId = users.docs[0].id;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .update({'photoUrl': url});
 
     setState(() {
       _profilePhoto = NetworkImage(url);
-
       buttonContent = const Icon(
         Icons.arrow_forward,
         color: Colors.white,
@@ -285,10 +291,18 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     String url = await _storageService.uploadFile(
         path: "profilePhotos/${user.uid}", file: file);
 
-    setState(() {
-      user.updatePhotoURL(url);
-      user.reload();
+    final users = await FirebaseFirestore.instance
+        .collection('users')
+        .where('id', isEqualTo: user.uid)
+        .get();
+    final userId = users.docs[0].id;
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .update({'photoUrl': url});
 
+    setState(() {
+      _profilePhoto = NetworkImage(url);
       buttonContent = const Icon(
         Icons.arrow_forward,
         color: Colors.white,
