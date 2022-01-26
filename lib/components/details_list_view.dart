@@ -67,7 +67,7 @@ class DetailsListView extends StatelessWidget {
                                   children: [
                                     Row(
                                       children: [
-                                        item.photoUrl != null
+                                        item.photoUrl!.isNotEmpty
                                             ? CircleAvatar(
                                                 radius: 15.0,
                                                 backgroundImage: NetworkImage(
