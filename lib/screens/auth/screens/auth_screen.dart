@@ -315,6 +315,7 @@ class AuthScreenState extends State<AuthScreen> {
             email: emailEditingController.text.trim(),
             role: Role.normalUser,
             dateOfBirth: selectedDateOfBirth,
+            photoUrl: '',
           ),
           password: passwordEditingController.text.trim(),
         );
