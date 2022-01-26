@@ -12,8 +12,9 @@ import 'package:lichee/services/storage_service.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePhotoScreen extends StatefulWidget {
-  ProfilePhotoScreen({Key? key, required this.userData}) : super(key: key);
-  UserData userData;
+  const ProfilePhotoScreen({Key? key, required this.userData})
+      : super(key: key);
+  final UserData userData;
 
   @override
   ProfilePhotoScreenState createState() => ProfilePhotoScreenState();
@@ -27,6 +28,14 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
   bool notChanged = true;
   late String photoUrl;
   late bool isNull;
+
+  late ScaffoldMessengerState snackBar;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    snackBar = ScaffoldMessenger.of(context);
+  }
 
   Widget buttonContent = const Text(
     'Choose new picture',
@@ -373,27 +382,23 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     } else {
       image = await _imagePicker.pickImage(source: ImageSource.gallery);
     }
-    ScaffoldMessenger.of(context)
-        .showSnackBar(kProfilePictureBeingLoadedSnackBar);
-    try {
-      file = File(image!.path);
-      url = await _storageService.uploadFile(
-        path: "profilePhotos/${user.uid}/",
-        file: file,
-      );
-      await setUserPicture(user, fs, url);
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(kProfilePictureLoadedSnackBar);
+    snackBar.showSnackBar(kProfilePictureBeingLoadedSnackBar);
+    file = File(image!.path);
+    url = await _storageService.uploadFile(
+      path: "profilePhotos/${user.uid}/",
+      file: file,
+    );
+    await setUserPicture(user, fs, url);
+    snackBar
+      ..hideCurrentSnackBar()
+      ..showSnackBar(kProfilePictureLoadedSnackBar);
+    if (mounted) {
       setState(() {
         _profilePhoto = NetworkImage(url);
       });
       if (!isNull) {
         Navigator.pop(context);
       }
-    } catch (e) {
-      Navigator.pop(context);
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
     }
   }
 }

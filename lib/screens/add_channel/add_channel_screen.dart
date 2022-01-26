@@ -48,6 +48,8 @@ class AddChannelScreenState extends State<AddChannelScreen> {
   late final TextFormField _channelCityField;
   late final TextFormField _channelDescriptionField;
 
+  late ScaffoldMessengerState snackBar;
+
   File? get file => _file;
   String get chosenCategoryId => _chosenCategoryId;
   String get chosenCategoryName => _chosenCategoryName;
@@ -89,6 +91,13 @@ class AddChannelScreenState extends State<AddChannelScreen> {
   void dispose() {
     _focusNode.dispose();
     super.dispose();
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    snackBar = ScaffoldMessenger.of(context);
   }
 
   @override
@@ -356,7 +365,7 @@ class AddChannelScreenState extends State<AddChannelScreen> {
         _checkIsImageAndCategoryChosen();
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(kChannelBeingAddedSnackBar);
+      snackBar.showSnackBar(kChannelBeingAddedSnackBar);
 
       String? imageUrl;
       var uuid = const Uuid();
@@ -384,20 +393,22 @@ class AddChannelScreenState extends State<AddChannelScreen> {
           userId: myId,
           parentCategoryId: _chosenCategoryId);
 
-      ScaffoldMessenger.of(context)
+      snackBar
         ..hideCurrentSnackBar()
         ..showSnackBar(kChannelAddedSnackBar);
 
       _channelNameEditingController.clear();
       _channelCityEditingController.clear();
       _channelDescriptionEditingController.clear();
-      setState(() {
-        _chosenCategoryId = '';
-        _chosenCategoryName = '';
-        _isCategoryChosen = true;
-        _file = null;
-        _isImageChosen = true;
-      });
+      if (mounted) {
+        setState(() {
+          _chosenCategoryId = '';
+          _chosenCategoryName = '';
+          _isCategoryChosen = true;
+          _file = null;
+          _isImageChosen = true;
+        });
+      }
     } else {
       _checkIsImageAndCategoryChosen();
     }

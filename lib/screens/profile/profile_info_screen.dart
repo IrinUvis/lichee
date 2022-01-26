@@ -19,7 +19,7 @@ class ProfileInfoScreen extends StatefulWidget {
 }
 
 class ProfileInfoScreenState extends State<ProfileInfoScreen> {
-  DateFormat dateformat = DateFormat('dd/MM/yyyy HH:mm');
+  DateFormat dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
   Stream<QuerySnapshot<Map<String, dynamic>>> userDataStream() {
     return Provider.of<AuthenticationProvider>(context, listen: false)
@@ -90,13 +90,13 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
               ),
               buildInfo(
                 "Creation date: ",
-                dateformat.format(
+                dateFormat.format(
                   Provider.of<User?>(context)!.metadata.creationTime!,
                 ),
               ),
               buildInfo(
                 "Last sign in: ",
-                dateformat.format(
+                dateFormat.format(
                   Provider.of<User?>(context)!.metadata.lastSignInTime!,
                 ),
               ),
@@ -194,17 +194,10 @@ class ProfileInfoScreenState extends State<ProfileInfoScreen> {
   Widget buildPhoto(String url) {
     Widget img;
     if (url.isNotEmpty) {
-      img = Container(
-        height: MediaQuery.of(context).size.height / 3,
-        width: MediaQuery.of(context).size.height / 3,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          image: DecorationImage(
-            image: NetworkImage(url),
-            fit: BoxFit.fitWidth,
-          ),
-        ),
-      );
+      img = CircleAvatar(
+          radius: MediaQuery.of(context).size.height / 6.0,
+          backgroundImage: NetworkImage(url),
+          backgroundColor: Colors.transparent);
     } else {
       img = Icon(
         Icons.account_circle,

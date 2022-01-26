@@ -36,6 +36,8 @@ class AddEventScreenState extends State<AddEventScreen> {
   late final TextFormField _eventTitleField;
   late final TextFormField _eventLocalizationField;
 
+  late ScaffoldMessengerState snackBar;
+
   EventDate get eventDate => _eventDate;
 
   @override
@@ -53,6 +55,12 @@ class AddEventScreenState extends State<AddEventScreen> {
   void dispose() {
     _focusNode.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    snackBar = ScaffoldMessenger.of(context);
   }
 
   @override
@@ -168,7 +176,7 @@ class AddEventScreenState extends State<AddEventScreen> {
         setState(() => _isDatePicked = true);
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(kEventBeingAddedSnackBar);
+      snackBar.showSnackBar(kEventBeingAddedSnackBar);
 
       _addEventController.addEvent(
           title: _eventTitleEditingController.text,
@@ -178,7 +186,7 @@ class AddEventScreenState extends State<AddEventScreen> {
           goingUsers: List.empty(),
           channelId: widget.data.channelId);
 
-      ScaffoldMessenger.of(context)
+      snackBar
         ..hideCurrentSnackBar()
         ..showSnackBar(kEventAddedSnackBar);
 
