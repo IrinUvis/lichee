@@ -26,6 +26,10 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
   double buttonOpacity = 0;
   bool notChanged = true;
   late String photoUrl;
+  late bool isNull;
+  late XFile? image;
+  late File file;
+  late String url;
 
   Widget buttonContent = const Text(
     'Choose new picture',
@@ -41,13 +45,14 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
         await fs.collection('users').where('id', isEqualTo: user.uid).get();
     final userId = users.docs[0].id;
     await fs.collection('users').doc(userId).update({'photoUrl': url});
+    isNull = !isNull;
   }
 
   @override
   Widget build(context) {
     User? user = Provider.of<AuthenticationProvider?>(context)!.currentUser;
     _storageService = Provider.of<FirebaseProvider?>(context)!.storage;
-
+    isNull = widget.userData.photoUrl!.isEmpty;
     return Scaffold(
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -62,14 +67,41 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
                   width: MediaQuery.of(context).size.width / 2,
                   child: Column(
                     children: [
-                      buildButton(user, context),
+                      buildChoosePictureButton(user),
                       Container(height: 20),
-                      buildChangeButton(user, context),
+                      buildSaveAndReturn(),
+                      Container(height: 20),
+                      buildDeletePictureAndReturnButton(user, false),
                     ],
                   ),
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildSaveAndReturn() {
+    return ElevatedButton(
+      onPressed: () async {
+        Navigator.pop(context);
+      },
+      child: Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width,
+          minHeight: MediaQuery.of(context).size.height / 16,
+        ),
+        alignment: Alignment.center,
+        child: const Text('Save and return', style: TextStyle(fontSize: 16)),
+      ),
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(LicheeColors.primary),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(8)),
+            side: BorderSide(color: LicheeColors.primary),
           ),
         ),
       ),
@@ -97,12 +129,157 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     return profilePictureWidget;
   }
 
+  Widget buildDeletePictureAndReturnButton(user, bool isNull) {
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: isNull
+            ? null
+            : () async {
+                final users =
+                    await Provider.of<FirebaseProvider>(context, listen: false)
+                        .firestore
+                        .collection('users')
+                        .where('id', isEqualTo: user.uid)
+                        .get();
+                final userId = users.docs[0].id;
+                await Provider.of<FirebaseProvider>(context, listen: false)
+                    .firestore
+                    .collection('users')
+                    .doc(userId)
+                    .update({'photoUrl': ''});
+                Navigator.pop(context);
+              },
+        style: ButtonStyle(
+          backgroundColor: isNull
+              ? MaterialStateProperty.all<Color>(LicheeColors.disabledButton)
+              : MaterialStateProperty.all<Color>(LicheeColors.primary),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            ),
+          ),
+        ),
+        child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width,
+              minHeight: MediaQuery.of(context).size.height / 16,
+            ),
+            alignment: Alignment.center,
+            child: const Text('Delete picture and return')),
+      ),
+    );
+  }
+
+  Widget buildChoosePictureButton(user) {
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: () async {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  backgroundColor: Colors.grey[800],
+                  title: const Text(
+                    'Select route',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      TextButton(
+                        onPressed: () => getImage(
+                            user,
+                            true,
+                            Provider.of<FirebaseProvider>(context,
+                                    listen: false)
+                                .firestore),
+                        child: Row(
+                          children: const <Widget>[
+                            Icon(Icons.camera_alt, color: Colors.white),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Text(
+                                'Camera',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 0.7,
+                        width: MediaQuery.of(context).size.width,
+                        color: LicheeColors.disabledButton,
+                      ),
+                      TextButton(
+                        onPressed: () => getImage(
+                            user,
+                            false,
+                            Provider.of<FirebaseProvider>(context,
+                                    listen: false)
+                                .firestore),
+                        child: Row(
+                          children: const <Widget>[
+                            Icon(
+                              Icons.photo_size_select_actual,
+                              color: Colors.white,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(left: 20),
+                              child: Text(
+                                'Gallery',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              });
+        },
+        style: ButtonStyle(
+          backgroundColor:
+              MaterialStateProperty.all<Color>(LicheeColors.primary),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              side: BorderSide(color: LicheeColors.primary),
+            ),
+          ),
+        ),
+        child: Container(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width,
+              minHeight: MediaQuery.of(context).size.height / 16,
+            ),
+            alignment: Alignment.center,
+            child: Text('Choose new picture')),
+      ),
+    );
+  }
+
   Widget buildButton(user, context) {
     return SizedBox(
       height: 50,
       child: ElevatedButton(
         onPressed: buttonContent is Icon
-            ? () {
+            ? () async {
+                final users =
+                    await Provider.of<FirebaseProvider>(context, listen: false)
+                        .firestore
+                        .collection('users')
+                        .where('id', isEqualTo: user.uid)
+                        .get();
+                final userId = users.docs[0].id;
+                await Provider.of<FirebaseProvider>(context, listen: false)
+                    .firestore
+                    .collection('users')
+                    .doc(userId)
+                    .update({'photoUrl': ''});
                 Navigator.pop(context);
               }
             : () async {
@@ -291,9 +468,6 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
 
   Future getImage(User user, bool isFromCamera, FirebaseFirestore fs) async {
     Navigator.pop(context);
-    XFile? image;
-    File file;
-    String url;
     if (isFromCamera) {
       image = await _imagePicker.pickImage(
         source: ImageSource.camera,
@@ -302,29 +476,27 @@ class ProfilePhotoScreenState extends State<ProfilePhotoScreen> {
     } else {
       image = await _imagePicker.pickImage(source: ImageSource.gallery);
     }
-
     ScaffoldMessenger.of(context)
         .showSnackBar(kProfilePictureBeingLoadedSnackBar);
-
-    file = File(image!.path);
-    url = await _storageService.uploadFile(
-      path: "profilePhotos/${user.uid}/",
-      file: file,
-    );
-
-    await setUserPicture(user, fs, url);
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(kProfilePictureLoadedSnackBar);
-
-    setState(() {
-      _profilePhoto = NetworkImage(url);
-      buttonContent = const Icon(
-        Icons.arrow_forward,
-        color: Colors.white,
+    try {
+      file = File(image!.path);
+      url = await _storageService.uploadFile(
+        path: "profilePhotos/${user.uid}/",
+        file: file,
       );
-      buttonOpacity = 1;
-    });
+      await setUserPicture(user, fs, url);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(kProfilePictureLoadedSnackBar);
+      setState(() {
+        _profilePhoto = NetworkImage(url);
+      });
+      if (!isNull) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    }
   }
 }
