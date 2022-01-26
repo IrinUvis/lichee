@@ -42,15 +42,15 @@ class AuthenticationProvider {
   }) async {
     final userCredential = await _auth.createUserWithEmailAndPassword(
         email: userData.email!, password: password);
-    await userCredential.user!.updateDisplayName(userData.username);
-    await signIn(email: userData.email!, password: password);
-    _firestore.collection('users').doc(userData.id).set(
+    await _firestore.collection('users').doc(userData.id).set(
           userData
               .copyWith(
                 id: userCredential.user!.uid,
               )
               .toMap(),
         );
+    await userCredential.user!.updateDisplayName(userData.username);
+    await signIn(email: userData.email!, password: password);
     return userCredential;
   }
 
