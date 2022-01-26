@@ -343,6 +343,9 @@ class AuthScreenState extends State<AuthScreen> {
             errorMessage = 'An undefined error has occurred.';
         }
         Fluttertoast.showToast(msg: errorMessage!);
+        setState(() {
+          inAsyncCall = false;
+        });
       }
     }
   }
